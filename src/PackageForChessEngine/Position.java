@@ -12,13 +12,13 @@ public class Position {
 	static final int N2 = 2 * N1;
 	static final int N1E1 = -7;
 	static final int E1 = 1;
-	static final int E2 = 2;
+	static final int E2 = 2 * E1;
 	static final int S1E1 = 9;
 	static final int S1 = 8;
 	static final int S2 = 2 * S1;
 	static final int S1W1 = 7;
 	static final int W1 = -1;
-	static final int W2 = -2;
+	static final int W2 = 2 * W1;
 	static final int N1W1 = -9;
 
 	// For knight moves
@@ -30,6 +30,14 @@ public class Position {
 	static final int S1W2 = S1 + W2;
 	static final int N1W2 = N1 + W2;
 	static final int N2W1 = N2 + W1;
+	
+	// Initial squares
+	static final int INITIAL_WHITE_KING_SQR = 60;
+	static final int INITIAL_BLACK_KING_SQR = 4;
+	static final int INITIAL_WHITE_EAST_ROOK_SQR = 63;
+	static final int INITIAL_BLACK_EAST_ROOK_SQR = 7;
+	static final int INITIAL_WHITE_WEST_ROOK_SQR = 56;
+	static final int INITIAL_BLACK_WEST_ROOK_SQR = 0;
 
 	public Position() {
 		// Default constructor
@@ -61,13 +69,38 @@ public class Position {
 			return evaluationOfPosition * -1;
 	}
 
+	public int[] findLegalMoves() {
+		int[] tempMoves = new int[218];
+		int[] possiblePieceMoves = new int[0];
+		int numberOfLegalMoves = 0;
+		
+		for (int i = 0; i < board.length(); i++) {
+			if ((isEmptySqr(i)) || (isOtherColAtSqr(i)))
+				continue;
+			
+			possiblePieceMoves = findPossibleMoves(atSqr(i), i);
+			for (int j = 0; j < possiblePieceMoves.length; j++) {
+
+				if (!isSelfCheckMove(possiblePieceMoves[j])
+						&& (!isCastling(atSqr(possiblePieceMoves[j] / 100), possiblePieceMoves[j]) || !isCheck())) {
+					tempMoves[numberOfLegalMoves] = possiblePieceMoves[j];
+					numberOfLegalMoves++;
+				}
+			}
+		}
+		int[] legalMoves = new int[numberOfLegalMoves];
+		for (int i = 0; i < legalMoves.length; i++) {
+			legalMoves[i] = tempMoves[i];
+		}
+		return legalMoves;
+	}
+	
 	public void makeMove(int move) {
 		// Updates isWhiteToPlay and the board so that the move has been played
 		// Accounts for castling, en-passant and promotion
-		char piece = atSqr(move / 100);
-		updateSqr('-', move / 100);
+		char pieceToPut = atSqr(move / 100);
 
-		if (isCastling(piece, move)) {
+		if (isCastling(pieceToPut, move)) {
 
 			if ((move / 100) == ((move % 100) + W2)) {
 				// Kingside castling
@@ -78,30 +111,46 @@ public class Position {
 				updateSqr(atSqr(move % 100 + W2), move % 100 + E1);
 				updateSqr('-', move % 100 + W2);
 			}
-			updateSqr(piece, move % 100);
 
-		} else if (isEnPassant(piece, move)) {
+		} else if (isEnPassant(pieceToPut, move)) {
 
-			if (piece == 'P')
+			if (whiteToPlay)
 				updateSqr('-', move % 100 + S1);
 			else
 				updateSqr('-', move % 100 + N1);
-			updateSqr(piece, move % 100);
 
-		} else if (isPromotion(piece, move)) {
+		} else if (isAllowsEnPassant(pieceToPut, move)) {
 
-			if (piece == 'P')
-				updateSqr('Q', move % 100);
+			if (whiteToPlay)
+				pieceToPut = 'E';
 			else
-				updateSqr('q', move % 100);
+				pieceToPut = 'e';
+			
+		} else if (isPromotion(pieceToPut, move)) {
 
-		} else {
-			updateSqr(piece, move % 100);
+			if (whiteToPlay)
+				pieceToPut = 'Q';
+			else
+				pieceToPut = 'q';
 		}
-
+		
+		if ((atSqr(move / 100) == '5') || (atSqr(move / 100) == '4') || (atSqr(move / 100) == '3')) {
+			// Updating white king for castling ability for king moves
+			pieceToPut = 'K';
+		} else if ((atSqr(move / 100) == '2') || (atSqr(move / 100) == '1') || (atSqr(move / 100) == '0')) {
+			// Updating black king for castling ability for king moves
+			pieceToPut = 'k';
+		} else {
+			// Updating king castling ability for non-king moves
+			updateKingCastlingAbility(move);
+		}
+		removeEnPassant();
+		
+		updateSqr('-', move / 100);
+		updateSqr(pieceToPut, move % 100);
 		whiteToPlay = !whiteToPlay;
 	}
-
+	
 	public int findTopMove() {
 		// Returns an integer which is the top move for a position
 		// **If no possible legal moves are found, 0 will be returned**
@@ -216,18 +265,15 @@ public class Position {
 			tempMoves[6] = -1;
 			tempMoves[1] = -1;
 			tempMoves[0] = -1;
-		}
-		if (isRank7Sqr(knightSquare)) {
+		} else if (isRank7Sqr(knightSquare)) {
 			tempMoves[7] = -1;
 			tempMoves[0] = -1;
-		}
-		if (isRank1Sqr(knightSquare)) {
+		} else if (isRank1Sqr(knightSquare)) {
 			tempMoves[5] = -1;
 			tempMoves[4] = -1;
 			tempMoves[3] = -1;
 			tempMoves[2] = -1;
-		}
-		if (isRank2Sqr(knightSquare)) {
+		} else if (isRank2Sqr(knightSquare)) {
 			tempMoves[4] = -1;
 			tempMoves[3] = -1;
 		}
@@ -238,18 +284,15 @@ public class Position {
 			tempMoves[2] = -1;
 			tempMoves[1] = -1;
 			tempMoves[0] = -1;
-		}
-		if (isFileGSqr(knightSquare)) {
+		} else if (isFileGSqr(knightSquare)) {
 			tempMoves[2] = -1;
 			tempMoves[1] = -1;
-		}
-		if (isFileASqr(knightSquare)) {
+		} else if (isFileASqr(knightSquare)) {
 			tempMoves[7] = -1;
 			tempMoves[6] = -1;
 			tempMoves[5] = -1;
 			tempMoves[4] = -1;
-		}
-		if (isFileBSqr(knightSquare)) {
+		} else if (isFileBSqr(knightSquare)) {
 			tempMoves[6] = -1;
 			tempMoves[5] = -1;
 		}
@@ -348,16 +391,15 @@ public class Position {
 	public int[] findQueenMoves(int queenSquare) {
 		// Returns an array of moves that the queen can make (includes
 		// capturing)
-		int[] tempMoves = findStraightMoves(queenSquare);
-		int numOfStrMoves = tempMoves.length;
-		int[] queenMoves = new int[numOfStrMoves + findDiagonalMoves(queenSquare).length];
+		int[] tempStraightMoves = findStraightMoves(queenSquare);
+		int[] tempDiagonalMoves = findDiagonalMoves(queenSquare);
+		int[] queenMoves = new int[tempStraightMoves.length + tempDiagonalMoves.length];
 
-		for (int i = 0; i < tempMoves.length; i++) {
-			queenMoves[i] = tempMoves[i];
+		for (int i = 0; i < tempStraightMoves.length; i++) {
+			queenMoves[i] = tempStraightMoves[i];
 		}
-		tempMoves = findDiagonalMoves(queenSquare);
-		for (int i = 0; i < tempMoves.length; i++) {
-			queenMoves[i + numOfStrMoves] = tempMoves[i];
+		for (int i = 0; i < tempDiagonalMoves.length; i++) {
+			queenMoves[i + tempStraightMoves.length] = tempDiagonalMoves[i];
 		}
 		return queenMoves;
 	}
@@ -606,88 +648,120 @@ public class Position {
 			return false;
 	}
 
+	public boolean isAllowsEnPassant(char piece, int move) {
+		// Returns true if the move puts a pawn into a position where it can be captured en-passant 
+		if (piece == 'P')
+			return (((move / 100) + N2) == (move % 100)) && ((atSqr((move % 100) + E1) == 'p') || (atSqr((move % 100) + W1) == 'p'));
+		else if (piece == 'p')
+			return (((move / 100) + S2) == (move % 100)) && ((atSqr((move % 100) + E1) == 'P') || (atSqr((move % 100) + W1) == 'P'));
+		else
+			return false;
+	}
+	
 	public boolean isCheck() {
 		// Returns true if the color to move is in check
-		return isAttackedSqr(findKingSqr(whiteToPlay));
+		return isAttackedSqr(findKingSqr(whiteToPlay), !whiteToPlay);
 	}
-
+	
 	public boolean isSelfCheckMove(int move) {
 		// Returns true if the move puts the king (of the color who makes that move)
-		// into check
-		// or castles that king through check
+		// into check or castles that king through check
 		// **Only works for possible moves**
 		Position tempPosition = new Position(this);
 		tempPosition.makeMove(move);
-		return tempPosition.isAttackedSqr(tempPosition.findKingSqr(this.whiteToPlay))
+		return tempPosition.isAttackedSqr(tempPosition.findKingSqr(!tempPosition.whiteToPlay), tempPosition.whiteToPlay)
 				|| (isCastling(atSqr(move / 100), move)
-						&& tempPosition.isAttackedSqr(((move / 100) + (move % 100)) / 2));
+						&& tempPosition.isAttackedSqr(((move / 100) + (move % 100)) / 2, tempPosition.whiteToPlay));
 	}
 
-	public boolean isAttackedSqr(int square) {
+	public boolean isAttackedSqr(int square, boolean attackingColourIsWhite) {
 		// Returns true if the square is attacked by a piece of the opposing color
 		int[] tempMoves = new int[0];
 		tempMoves = findKnightMoves(square);
 		for (int i = 0; i < tempMoves.length; i++) {
-			if (whiteToPlay) {
+			if (attackingColourIsWhite) {
 				if (atSqr(tempMoves[i] % 100) == 'N')
-					return false;
+					return true;
 			} else {
 				if (atSqr(tempMoves[i] % 100) == 'n')
-					return false;
+					return true;
 			}
 		}
 		tempMoves = findStraightMoves(square);
 		for (int i = 0; i < tempMoves.length; i++) {
-			if (whiteToPlay) {
+			if (attackingColourIsWhite) {
 				if ((atSqr(tempMoves[i] % 100) == 'R') || (atSqr(tempMoves[i] % 100) == 'Q'))
-					return false;
+					return true;
 			} else {
 				if ((atSqr(tempMoves[i] % 100) == 'r') || (atSqr(tempMoves[i] % 100) == 'q'))
-					return false;
+					return true;
 			}
 		}
 		tempMoves = findDiagonalMoves(square);
 		for (int i = 0; i < tempMoves.length; i++) {
-			if (whiteToPlay) {
+			if (attackingColourIsWhite) {
 				if ((atSqr(tempMoves[i] % 100) == 'B') || (atSqr(tempMoves[i] % 100) == 'Q'))
-					return false;
+					return true;
 			} else {
 				if ((atSqr(tempMoves[i] % 100) == 'b') || (atSqr(tempMoves[i] % 100) == 'q'))
-					return false;
+					return true;
+			}
+		}
+		tempMoves = findKingMoves(square);
+		for (int i = 0; i < tempMoves.length; i++) {
+			if (attackingColourIsWhite) {
+				if ((atSqr(tempMoves[i] % 100) == 'K') || (atSqr(tempMoves[i] % 100) == '5') 
+						|| (atSqr(tempMoves[i] % 100) == '4') || (atSqr(tempMoves[i] % 100) == '3'))
+					return true;
+			} else {
+				if ((atSqr(tempMoves[i] % 100) == 'k') || (atSqr(tempMoves[i] % 100) == '2') 
+						|| (atSqr(tempMoves[i] % 100) == '1') || (atSqr(tempMoves[i] % 100) == '0'))
+					return true;
 			}
 		}
 		// Assessing possible pawn attacks
-		if (whiteToPlay && !isRank1Sqr(square)) {
+		if (attackingColourIsWhite && !isRank1Sqr(square)) {
 			if (!isFileASqr(square) && ((atSqr(square + S1E1) == 'P') || (atSqr(square + S1E1) == 'E')))
-				return false;
+				return true;
 			else if (!isFileHSqr(square) && ((atSqr(square + S1W1) == 'P') || (atSqr(square + S1W1) == 'E')))
-				return false;
-		} else if (!isRank8Sqr(square)) {
+				return true;
+		} else if (!attackingColourIsWhite && !isRank8Sqr(square)) {
 			if (!isFileASqr(square) && ((atSqr(square + N1W1) == 'p') || (atSqr(square + N1W1) == 'e')))
-				return false;
+				return true;
 			else if (!isFileHSqr(square) && ((atSqr(square + N1E1) == 'p') || (atSqr(square + N1E1) == 'e')))
-				return false;
+				return true;
 		}
 		return ((atSqr(square) == 'e') || (atSqr(square) == 'E'));
 	}
 
-	public int findKingSqr(boolean kingColor) {
-		// Returns the king square of the color passed (white is true)
-		int kingSquare = 0;
+	public int findKingSqr(boolean kingColorIsWhite) {
+		// Returns the king square of the color passed
+		// **Returns -1 if the piece isn't found**
 		for (int i = 0; i < board.length(); i++) {
-			if (kingColor) {
+			if (kingColorIsWhite) {
 				if ((atSqr(i) == 'K') || (atSqr(i) == '5') || (atSqr(i) == '4') || (atSqr(i) == '3')) {
-					kingSquare = i;
-					break;
+					return i;
 				}
 			} else {
 				if ((atSqr(i) == 'k') || (atSqr(i) == '2') || (atSqr(i) == '1') || (atSqr(i) == '0')) {
-					kingSquare = i;
-					break;
+					return i;
 				}
 			}
 		}
-		return kingSquare;
+		return -1;
+	}
+	
+	public int findPieceSqr(char piece) {
+		// Returns the square that the first instance of the piece is found at
+		// **Returns -1 if the piece isn't found**
+		int pieceSquare = -1;
+		for (int i = 0; i < board.length(); i++) {
+			if (atSqr(i) == piece) {
+				pieceSquare = i;
+				break;
+			}	
+		}
+		return pieceSquare;
 	}
 
 	public boolean isOuterEdgeSqr(int square) {
@@ -747,11 +821,6 @@ public class Position {
 		return (square + E1) % 8 == 0;
 	}
 
-	public void updateSqr(char charToPut, int square) {
-		// Updates the square either to empty or to the piece that is passed
-		board = board.substring(0, square) + charToPut + board.substring(square + 1);
-	}
-
 	public boolean isOtherColAtSqr(int square) {
 		// Returns true if the piece at the square is the opposite color
 		// of the color who is to play
@@ -766,6 +835,44 @@ public class Position {
 		return atSqr(square) == '-';
 	}
 
+	public void updateSqr(char charToPut, int square) {
+		// Updates the square either to empty or to the piece that is passed
+		board = board.substring(0, square) + charToPut + board.substring(square + 1);
+	}
+
+	public void updateKingCastlingAbility(int move) {
+		// Updates the king's castling ability based on a move
+		// **Only updates for non-king moves**
+		
+		// Updating white king for castling ability
+		if ((atSqr(INITIAL_WHITE_KING_SQR) == '5') && (((move / 100) == INITIAL_WHITE_EAST_ROOK_SQR) || ((move % 100) == INITIAL_WHITE_EAST_ROOK_SQR)))
+			updateSqr('3', INITIAL_WHITE_KING_SQR);
+		else if ((atSqr(INITIAL_WHITE_KING_SQR) == '5') && (((move / 100) == INITIAL_WHITE_WEST_ROOK_SQR) || ((move % 100) == INITIAL_WHITE_WEST_ROOK_SQR)))
+			updateSqr('4', INITIAL_WHITE_KING_SQR);
+		else if (((atSqr(INITIAL_WHITE_KING_SQR) == '4') && (((move / 100) == INITIAL_WHITE_EAST_ROOK_SQR) || ((move % 100) == INITIAL_WHITE_EAST_ROOK_SQR))) 
+				|| ((atSqr(INITIAL_WHITE_KING_SQR) == '3') && (((move / 100) == INITIAL_WHITE_WEST_ROOK_SQR) || ((move % 100) == INITIAL_WHITE_WEST_ROOK_SQR))))
+			updateSqr('K', INITIAL_WHITE_KING_SQR);
+		// Updating black king for castling ability
+		else if ((atSqr(INITIAL_BLACK_KING_SQR) == '2') && (((move / 100) == INITIAL_BLACK_EAST_ROOK_SQR) || ((move % 100) == INITIAL_BLACK_EAST_ROOK_SQR)))
+			updateSqr('0', INITIAL_BLACK_KING_SQR);
+		else if ((atSqr(INITIAL_BLACK_KING_SQR) == '2') && (((move / 100) == INITIAL_BLACK_WEST_ROOK_SQR) || ((move % 100) == INITIAL_BLACK_WEST_ROOK_SQR)))
+			updateSqr('1', INITIAL_BLACK_KING_SQR);
+		else if (((atSqr(INITIAL_BLACK_KING_SQR) == '1') && (((move / 100) == INITIAL_BLACK_EAST_ROOK_SQR) || ((move % 100) == INITIAL_BLACK_EAST_ROOK_SQR)))
+				|| ((atSqr(INITIAL_BLACK_KING_SQR) == '0') && (((move / 100) == INITIAL_BLACK_WEST_ROOK_SQR) || ((move % 100) == INITIAL_BLACK_WEST_ROOK_SQR))))
+			updateSqr('k', INITIAL_BLACK_KING_SQR);
+	}
+	
+	public void removeEnPassant() {
+		// Updates the board so that pawns that could be captured en-passant
+		// become regular pawns
+		for (int i = 0; i < board.length(); i++) {
+			if (atSqr(i) == 'E')
+				updateSqr('P', i);
+			else if (atSqr(i) == 'e')
+				updateSqr('p', i);
+		}
+	}
+	
 	public char atSqr(int square) {
 		// Returns the contents of a square
 		return board.charAt(square);

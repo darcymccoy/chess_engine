@@ -17,15 +17,18 @@ public class testMain {
 		Scanner userInput = new Scanner(System.in);
 		Position currentPosition = new Position(true,
 				"rnbq2bnr" + "pppppppp" + "--------" + "--------" + "--------" + "--------" + "PPPPPPPP" + "RNBQ5BNR");
-
-		// Line testLine = new Line(51789, currentPosition.findPossibleMoves('P', 51));
-
+		boolean insideLoop = true;
+		
+		while(insideLoop) {
 		System.out.println(currentPosition);
 		System.out.println(currentPosition.evaluatePosition());
 		System.out.println(currentPosition.calculate(2));
-		// System.out.println(testLine);
-
-		// Closing the scanner
+		System.out.print("Enter a move: ");
+		int userMove = userInput.nextInt();
+		System.out.println(currentPosition.isLegalMove(userMove));
+		currentPosition.makeMove(userMove);
+		}
+		
 		userInput.close();
 
 		// Termination confirmation
