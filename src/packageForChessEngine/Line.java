@@ -1,4 +1,4 @@
-package PackageForChessEngine;
+package packageForChessEngine;
 
 //Written by Darcy McCoy
 //Starting November 27, 2023
