@@ -210,32 +210,26 @@ public class Position {
 	public int[] findPossibleMoves(char piece, int pieceSquare) {
 		// Returns an array of moves that the piece can make
 		// **Doesn't assess move legality**
-		int[] possibleMoves = new int[0];
 		switch (piece) {
 		case 'P':
 		case 'p':
-			possibleMoves = findPawnMoves(pieceSquare);
-			break;
+			return findPawnMoves(pieceSquare);
 
 		case 'R':
 		case 'r':
-			possibleMoves = findStraightMoves(pieceSquare);
-			break;
+			return findStraightMoves(pieceSquare);
 
 		case 'N':
 		case 'n':
-			possibleMoves = findKnightMoves(pieceSquare);
-			break;
+			return findKnightMoves(pieceSquare);
 
 		case 'B':
 		case 'b':
-			possibleMoves = findDiagonalMoves(pieceSquare);
-			break;
+			return findDiagonalMoves(pieceSquare);
 
 		case 'Q':
 		case 'q':
-			possibleMoves = findQueenMoves(pieceSquare);
-			break;
+			return findQueenMoves(pieceSquare);
 
 		case '0':
 		case '1':
@@ -245,11 +239,11 @@ public class Position {
 		case '5':
 		case 'k':
 		case 'K':
-			possibleMoves = findKingMoves(pieceSquare);
-			break;
+			return findKingMoves(pieceSquare);
+			
+		default:
+			return null;
 		}
-		return possibleMoves;
-
 	}
 
 	public int[] findKnightMoves(int knightSquare) {
