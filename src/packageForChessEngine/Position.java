@@ -31,7 +31,9 @@ public class Position {
 	static final int N1W2 = N1 + W2;
 	static final int N2W1 = N2 + W1;
 	
-	// Initial squares
+	// specific squares
+	static final int START_OF_BOARD = 0;
+	static final int END_OF_BOARD = 63;
 	static final int INITIAL_WHITE_KING_SQR = 60;
 	static final int INITIAL_BLACK_KING_SQR = 4;
 	static final int INITIAL_WHITE_EAST_ROOK_SQR = 63;
@@ -484,7 +486,7 @@ public class Position {
 		int numberOfMoves = 0;
 
 		// Direction north
-		for (int i = 0, inspectSquare = (pieceSquare + N1); inspectSquare >= 0; inspectSquare += N1, i++) {
+		for (int i = 0, inspectSquare = (pieceSquare + N1); inspectSquare >= START_OF_BOARD; inspectSquare += N1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
@@ -497,7 +499,7 @@ public class Position {
 		}
 
 		// Direction south
-		for (int i = 7, inspectSquare = (pieceSquare + S1); inspectSquare <= 63; inspectSquare += S1, i++) {
+		for (int i = 7, inspectSquare = (pieceSquare + S1); inspectSquare <= END_OF_BOARD; inspectSquare += S1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
@@ -551,7 +553,7 @@ public class Position {
 		int numberOfMoves = 0;
 
 		// Direction north-east
-		for (int i = 0, inspectSquare = (pieceSquare + N1E1); (inspectSquare >= 0)
+		for (int i = 0, inspectSquare = (pieceSquare + N1E1); (inspectSquare >= START_OF_BOARD)
 				&& (!isFileHSqr(inspectSquare + S1W1)); inspectSquare += N1E1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
@@ -565,7 +567,7 @@ public class Position {
 		}
 
 		// Direction south-east
-		for (int i = 7, inspectSquare = (pieceSquare + S1E1); (inspectSquare <= 63)
+		for (int i = 7, inspectSquare = (pieceSquare + S1E1); (inspectSquare <= END_OF_BOARD)
 				&& (!isFileHSqr(inspectSquare + N1W1)); inspectSquare += S1E1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
@@ -579,7 +581,7 @@ public class Position {
 		}
 
 		// Direction south-west
-		for (int i = 14, inspectSquare = (pieceSquare + S1W1); (inspectSquare <= 63)
+		for (int i = 14, inspectSquare = (pieceSquare + S1W1); (inspectSquare <= END_OF_BOARD)
 				&& (!isFileASqr(inspectSquare + N1E1)); inspectSquare += S1W1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
@@ -593,7 +595,7 @@ public class Position {
 		}
 
 		// Direction north-west
-		for (int i = 21, inspectSquare = (pieceSquare + N1W1); (inspectSquare >= 0)
+		for (int i = 21, inspectSquare = (pieceSquare + N1W1); (inspectSquare >= START_OF_BOARD)
 				&& (!isFileASqr(inspectSquare + S1E1)); inspectSquare += N1W1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
@@ -777,7 +779,7 @@ public class Position {
 
 	public boolean isRank1Sqr(int square) {
 		// Returns true if the square is on the 1st rank of the board
-		return (square >= 56) && (square <= 63);
+		return (square >= 56) && (square <= END_OF_BOARD);
 	}
 
 	public boolean isRank2Sqr(int square) {
@@ -792,7 +794,7 @@ public class Position {
 
 	public boolean isRank8Sqr(int square) {
 		// Returns true if the square is on the 8th rank of the board
-		return (square >= 0) && (square <= 7);
+		return (square >= START_OF_BOARD) && (square <= 7);
 	}
 
 	public boolean isFileASqr(int square) {

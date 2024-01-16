@@ -100,14 +100,25 @@ public class Engine {
 		return topMove;
 	}
 	
-	public int evaluatePosition(Position currentPosition) {
+	public int moveBonusesAndPenalties(Position position, int move) {
+		// Returns an integer which represents the bonuses and penalties for 
+		// a move (that has been played on the position)
+		int bonusesAndPenalties = 0;
+		
+		if (position.isCheck())
+			bonusesAndPenalties += 20;
+		
+		return bonusesAndPenalties;
+	}
+	
+	public int evaluatePosition(Position position) {
 		// Returns an integer (in centipawns) which is an evaluation of the position
 		// from the perspective of the color who is to play
 		int positionEvaluation = 0;
-		for (int i = 0; i < currentPosition.getBoard().length(); i++) {
-			positionEvaluation += getPieceValue(currentPosition.atSqr(i), i);
+		for (int i = 0; i < position.getBoard().length(); i++) {
+			positionEvaluation += getPieceValue(position.atSqr(i), i);
 		}
-		if (currentPosition.isWhiteToPlay())
+		if (position.isWhiteToPlay())
 			return positionEvaluation;
 		else
 			return positionEvaluation * -1;
