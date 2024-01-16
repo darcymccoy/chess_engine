@@ -635,9 +635,9 @@ public class Position {
 	public boolean isEnPassant(char piece, int move) {
 		// Returns true if the move is en-passant
 		if (piece == 'P')
-			return (move % 100) + S1 == 'e';
+			return atSqr((move % 100) + S1) == 'e';
 		else if (piece == 'p')
-			return (move % 100) + N1 == 'E';
+			return atSqr((move % 100) + N1) == 'E';
 		else
 			return false;
 	}
