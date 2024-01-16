@@ -50,16 +50,16 @@ public class Engine {
 		// Default constructor
 	}
 	
-	public int findTopMove(Position currentPosition) {
+	public int findTopMoveDepth2(Position currentPosition) {
 		// Returns an integer which is the top move for a position
 		// **If no legal moves are found, -1 will be returned**
 		int topMove = -1;
 		int topMoveMaxReply = -10000;
-		int maxReply = -10000;
+		int maxReply = 10000;
 		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
 		
 		for (int i = 0; i < legalMovesDepth1.length; i++) {
-			maxReply = -10000;
+			maxReply = 10000;
 			Position tempPositionDepth1 = new Position(currentPosition);
 			tempPositionDepth1.makeMove(legalMovesDepth1[i]);
 			
@@ -68,7 +68,7 @@ public class Engine {
 				Position tempPositionDepth2 = new Position(tempPositionDepth1);
 				tempPositionDepth2.makeMove(legalMovesDepth2[j]);
 			
-				if (evaluatePosition(tempPositionDepth2) > maxReply)
+				if (evaluatePosition(tempPositionDepth2) < maxReply)
 					maxReply = evaluatePosition(tempPositionDepth2);
 			}
 			
@@ -77,6 +77,26 @@ public class Engine {
 				topMoveMaxReply = maxReply;
 			}
 		}
+		return topMove;
+	}
+	
+	public int findTopMoveDepth1(Position currentPosition) {
+		// Returns an integer which is the top move for a position
+		// **If no legal moves are found, -1 will be returned**
+		int topMove = -1;
+		int topMoveEvaluation = 10000;
+		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
+		
+		for (int i = 0; i < legalMovesDepth1.length; i++) {
+			Position tempPositionDepth1 = new Position(currentPosition);
+			tempPositionDepth1.makeMove(legalMovesDepth1[i]);
+			
+			if (evaluatePosition(tempPositionDepth1) < topMoveEvaluation) {
+				topMove = legalMovesDepth1[i];
+				topMoveEvaluation = evaluatePosition(tempPositionDepth1);
+			}
+		}
+		
 		return topMove;
 	}
 	
