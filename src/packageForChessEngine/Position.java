@@ -8,38 +8,28 @@ public class Position {
 	private String board = "";
 
 	// Cardinal and ordinal directions
-	static final int N1 = -8;
-	static final int N2 = 2 * N1;
-	static final int N1E1 = -7;
-	static final int E1 = 1;
-	static final int E2 = 2 * E1;
-	static final int S1E1 = 9;
-	static final int S1 = 8;
-	static final int S2 = 2 * S1;
-	static final int S1W1 = 7;
-	static final int W1 = -1;
-	static final int W2 = 2 * W1;
-	static final int N1W1 = -9;
+	private static final int NORTH_1 = -8;
+	private static final int NORTH_2 = 2 * NORTH_1;
+	private static final int NORTH_1_EAST_1 = -7;
+	private static final int EAST_1 = 1;
+	private static final int EAST_2 = 2 * EAST_1;
+	private static final int SOUTH_1_EAST_1 = 9;
+	private static final int SOUTH_1 = 8;
+	private static final int SOUTH_2 = 2 * SOUTH_1;
+	private static final int SOUTH_1_WEST_1 = 7;
+	private static final int WEST_1 = -1;
+	private static final int WEST_2 = 2 * WEST_1;
+	private static final int NORTH_1_WEST_1 = -9;
 
-	// For knight moves
-	static final int N2E1 = N2 + E1;
-	static final int N1E2 = N1 + E2;
-	static final int S1E2 = S1 + E2;
-	static final int S2E1 = S2 + E1;
-	static final int S2W1 = S2 + W1;
-	static final int S1W2 = S1 + W2;
-	static final int N1W2 = N1 + W2;
-	static final int N2W1 = N2 + W1;
-	
 	// specific squares
-	static final int START_OF_BOARD = 0;
-	static final int END_OF_BOARD = 63;
-	static final int INITIAL_WHITE_KING_SQR = 60;
-	static final int INITIAL_BLACK_KING_SQR = 4;
-	static final int INITIAL_WHITE_EAST_ROOK_SQR = 63;
-	static final int INITIAL_BLACK_EAST_ROOK_SQR = 7;
-	static final int INITIAL_WHITE_WEST_ROOK_SQR = 56;
-	static final int INITIAL_BLACK_WEST_ROOK_SQR = 0;
+	private static final int START_OF_BOARD = 0;
+	private static final int END_OF_BOARD = 63;
+	private static final int INITIAL_WHITE_KING_SQR = 60;
+	private static final int INITIAL_BLACK_KING_SQR = 4;
+	private static final int INITIAL_WHITE_EAST_ROOK_SQR = 63;
+	private static final int INITIAL_BLACK_EAST_ROOK_SQR = 7;
+	private static final int INITIAL_WHITE_WEST_ROOK_SQR = 56;
+	private static final int INITIAL_BLACK_WEST_ROOK_SQR = 0;
 
 	public Position() {
 		// Default constructor
@@ -104,22 +94,22 @@ public class Position {
 
 		if (isCastling(pieceToPut, move)) {
 
-			if ((move / 100) == ((move % 100) + W2)) {
+			if ((move / 100) == ((move % 100) + WEST_2)) {
 				// Kingside castling
-				updateSqr(atSqr(move % 100 + E1), move % 100 + W1);
-				updateSqr('-', move % 100 + E1);
+				updateSqr(atSqr(move % 100 + EAST_1), move % 100 + WEST_1);
+				updateSqr('-', move % 100 + EAST_1);
 			} else {
 				// Queenside castling
-				updateSqr(atSqr(move % 100 + W2), move % 100 + E1);
-				updateSqr('-', move % 100 + W2);
+				updateSqr(atSqr(move % 100 + WEST_2), move % 100 + EAST_1);
+				updateSqr('-', move % 100 + WEST_2);
 			}
 
 		} else if (isEnPassant(pieceToPut, move)) {
 
 			if (whiteToPlay)
-				updateSqr('-', move % 100 + S1);
+				updateSqr('-', move % 100 + SOUTH_1);
 			else
-				updateSqr('-', move % 100 + N1);
+				updateSqr('-', move % 100 + NORTH_1);
 
 		} else if (isAllowsEnPassant(pieceToPut, move)) {
 
@@ -253,7 +243,8 @@ public class Position {
 		// capturing)
 		int[] tempMoves = new int[8];
 		int numberOfMoves = 0;
-		int[] inspectSquares = { N2E1, N1E2, S1E2, S2E1, S2W1, S1W2, N1W2, N2W1 };
+		int[] inspectSquares = { NORTH_2 + EAST_1, NORTH_1 + EAST_2, SOUTH_1 + EAST_2, SOUTH_2 + EAST_1, 
+				SOUTH_2 + WEST_1, SOUTH_1 + WEST_2, NORTH_1 + WEST_2, NORTH_2 + WEST_1 };
 
 		// Assessing rank square
 		if (isRank8Sqr(knightSquare)) {
@@ -317,7 +308,7 @@ public class Position {
 		char piece = atSqr(kingSquare);
 		int[] tempMoves = new int[10];
 		int numberOfMoves = 0;
-		int[] inspectSquares = { N1, N1E1, E1, S1E1, S1, S1W1, W1, N1W1 };
+		int[] inspectSquares = { NORTH_1, NORTH_1_EAST_1, EAST_1, SOUTH_1_EAST_1, SOUTH_1, SOUTH_1_WEST_1, WEST_1, NORTH_1_WEST_1 };
 
 		if (isFileHSqr(kingSquare)) {
 			tempMoves[1] = -1;
@@ -348,28 +339,28 @@ public class Position {
 
 		// White king castling
 		if ((piece == '5') || (piece == '4')) {
-			if ((isEmptySqr(kingSquare + E1)) && (isEmptySqr(kingSquare + E2))) {
-				tempMoves[8] = kingSquare * 100 + kingSquare + E2;
+			if ((isEmptySqr(kingSquare + EAST_1)) && (isEmptySqr(kingSquare + EAST_2))) {
+				tempMoves[8] = kingSquare * 100 + kingSquare + EAST_2;
 				numberOfMoves++;
 			}
 		}
 		if ((piece == '5') || (piece == '3')) {
-			if ((isEmptySqr(kingSquare + W1)) && (isEmptySqr(kingSquare + W2)) && (isEmptySqr(kingSquare + 3 * W1))) {
-				tempMoves[9] = kingSquare * 100 + kingSquare + W2;
+			if ((isEmptySqr(kingSquare + WEST_1)) && (isEmptySqr(kingSquare + WEST_2)) && (isEmptySqr(kingSquare + 3 * WEST_1))) {
+				tempMoves[9] = kingSquare * 100 + kingSquare + WEST_2;
 				numberOfMoves++;
 			}
 		}
 
 		// Black king castling
 		if ((piece == '2') || (piece == '1')) {
-			if ((isEmptySqr(kingSquare + E1)) && (isEmptySqr(kingSquare + E2))) {
-				tempMoves[8] = kingSquare * 100 + kingSquare + E2;
+			if ((isEmptySqr(kingSquare + EAST_1)) && (isEmptySqr(kingSquare + EAST_2))) {
+				tempMoves[8] = kingSquare * 100 + kingSquare + EAST_2;
 				numberOfMoves++;
 			}
 		}
 		if ((piece == '2') || (piece == '0')) {
-			if ((isEmptySqr(kingSquare + W1)) && (isEmptySqr(kingSquare + W2)) && (isEmptySqr(kingSquare + 3 * W1))) {
-				tempMoves[9] = kingSquare * 100 + kingSquare + W2;
+			if ((isEmptySqr(kingSquare + WEST_1)) && (isEmptySqr(kingSquare + WEST_2)) && (isEmptySqr(kingSquare + 3 * WEST_1))) {
+				tempMoves[9] = kingSquare * 100 + kingSquare + WEST_2;
 				numberOfMoves++;
 			}
 		}
@@ -410,61 +401,61 @@ public class Position {
 
 		if (whiteToPlay) {
 			// White pawns
-			if (isEmptySqr(pawnSquare + N1)) {
-				tempMoves[0] = (pawnSquare * 100) + (pawnSquare + N1);
+			if (isEmptySqr(pawnSquare + NORTH_1)) {
+				tempMoves[0] = (pawnSquare * 100) + (pawnSquare + NORTH_1);
 				numberOfMoves++;
-				if ((isRank2Sqr(pawnSquare)) && (isEmptySqr(pawnSquare + N2))) {
-					tempMoves[1] = (pawnSquare * 100) + (pawnSquare + N2);
+				if ((isRank2Sqr(pawnSquare)) && (isEmptySqr(pawnSquare + NORTH_2))) {
+					tempMoves[1] = (pawnSquare * 100) + (pawnSquare + NORTH_2);
 					numberOfMoves++;
 				}
 			}
 			if (isFileASqr(pawnSquare)) {
-				if ((isOtherColAtSqr(pawnSquare + N1E1)) || (atSqr(pawnSquare + E1) == 'e')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + N1E1);
+				if ((isOtherColAtSqr(pawnSquare + NORTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'e')) {
+					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
 					numberOfMoves++;
 				}
-			} else if (isFileHSqr(pawnSquare + E1)) {
-				if ((isOtherColAtSqr(pawnSquare + N1W1)) || (atSqr(pawnSquare + W1) == 'e')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + N1W1);
+			} else if (isFileHSqr(pawnSquare + EAST_1)) {
+				if ((isOtherColAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
+					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
 					numberOfMoves++;
 				}
 			} else {
-				if ((isOtherColAtSqr(pawnSquare + N1E1)) || (atSqr(pawnSquare + E1) == 'e')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + N1E1);
+				if ((isOtherColAtSqr(pawnSquare + NORTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'e')) {
+					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
 					numberOfMoves++;
 				}
-				if ((isOtherColAtSqr(pawnSquare + N1W1)) || (atSqr(pawnSquare + W1) == 'e')) {
-					tempMoves[3] = (pawnSquare * 100) + (pawnSquare + N1W1);
+				if ((isOtherColAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
+					tempMoves[3] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
 					numberOfMoves++;
 				}
 			}
 		} else {
 			// Black pawns
-			if (isEmptySqr(pawnSquare + S1)) {
-				tempMoves[0] = (pawnSquare * 100) + (pawnSquare + S1);
+			if (isEmptySqr(pawnSquare + SOUTH_1)) {
+				tempMoves[0] = (pawnSquare * 100) + (pawnSquare + SOUTH_1);
 				numberOfMoves++;
-				if ((isRank7Sqr(pawnSquare)) && (isEmptySqr(pawnSquare + S2))) {
-					tempMoves[1] = (pawnSquare * 100) + (pawnSquare + S2);
+				if ((isRank7Sqr(pawnSquare)) && (isEmptySqr(pawnSquare + SOUTH_2))) {
+					tempMoves[1] = (pawnSquare * 100) + (pawnSquare + SOUTH_2);
 					numberOfMoves++;
 				}
 			}
 			if (isFileASqr(pawnSquare)) {
-				if ((isOtherColAtSqr(pawnSquare + S1E1)) || (atSqr(pawnSquare + E1) == 'E')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + S1E1);
+				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'E')) {
+					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_EAST_1);
 					numberOfMoves++;
 				}
 			} else if (isFileHSqr(pawnSquare)) {
-				if ((isOtherColAtSqr(pawnSquare + S1W1)) || (atSqr(pawnSquare + W1) == 'E')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + S1W1);
+				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'E')) {
+					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_WEST_1);
 					numberOfMoves++;
 				}
 			} else {
-				if ((isOtherColAtSqr(pawnSquare + S1E1)) || (atSqr(pawnSquare + E1) == 'E')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + S1E1);
+				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'E')) {
+					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_EAST_1);
 					numberOfMoves++;
 				}
-				if ((isOtherColAtSqr(pawnSquare + S1W1)) || (atSqr(pawnSquare + W1) == 'E')) {
-					tempMoves[3] = (pawnSquare * 100) + (pawnSquare + S1W1);
+				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'E')) {
+					tempMoves[3] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_WEST_1);
 					numberOfMoves++;
 				}
 			}
@@ -486,7 +477,7 @@ public class Position {
 		int numberOfMoves = 0;
 
 		// Direction north
-		for (int i = 0, inspectSquare = (pieceSquare + N1); inspectSquare >= START_OF_BOARD; inspectSquare += N1, i++) {
+		for (int i = 0, inspectSquare = (pieceSquare + NORTH_1); inspectSquare >= START_OF_BOARD; inspectSquare += NORTH_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
@@ -499,7 +490,7 @@ public class Position {
 		}
 
 		// Direction south
-		for (int i = 7, inspectSquare = (pieceSquare + S1); inspectSquare <= END_OF_BOARD; inspectSquare += S1, i++) {
+		for (int i = 7, inspectSquare = (pieceSquare + SOUTH_1); inspectSquare <= END_OF_BOARD; inspectSquare += SOUTH_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
@@ -553,8 +544,8 @@ public class Position {
 		int numberOfMoves = 0;
 
 		// Direction north-east
-		for (int i = 0, inspectSquare = (pieceSquare + N1E1); (inspectSquare >= START_OF_BOARD)
-				&& (!isFileHSqr(inspectSquare + S1W1)); inspectSquare += N1E1, i++) {
+		for (int i = 0, inspectSquare = (pieceSquare + NORTH_1_EAST_1); (inspectSquare >= START_OF_BOARD)
+				&& (!isFileHSqr(inspectSquare + SOUTH_1_WEST_1)); inspectSquare += NORTH_1_EAST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
@@ -567,8 +558,8 @@ public class Position {
 		}
 
 		// Direction south-east
-		for (int i = 7, inspectSquare = (pieceSquare + S1E1); (inspectSquare <= END_OF_BOARD)
-				&& (!isFileHSqr(inspectSquare + N1W1)); inspectSquare += S1E1, i++) {
+		for (int i = 7, inspectSquare = (pieceSquare + SOUTH_1_EAST_1); (inspectSquare <= END_OF_BOARD)
+				&& (!isFileHSqr(inspectSquare + NORTH_1_WEST_1)); inspectSquare += SOUTH_1_EAST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
@@ -581,8 +572,8 @@ public class Position {
 		}
 
 		// Direction south-west
-		for (int i = 14, inspectSquare = (pieceSquare + S1W1); (inspectSquare <= END_OF_BOARD)
-				&& (!isFileASqr(inspectSquare + N1E1)); inspectSquare += S1W1, i++) {
+		for (int i = 14, inspectSquare = (pieceSquare + SOUTH_1_WEST_1); (inspectSquare <= END_OF_BOARD)
+				&& (!isFileASqr(inspectSquare + NORTH_1_EAST_1)); inspectSquare += SOUTH_1_WEST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
@@ -595,8 +586,8 @@ public class Position {
 		}
 
 		// Direction north-west
-		for (int i = 21, inspectSquare = (pieceSquare + N1W1); (inspectSquare >= START_OF_BOARD)
-				&& (!isFileASqr(inspectSquare + S1E1)); inspectSquare += N1W1, i++) {
+		for (int i = 21, inspectSquare = (pieceSquare + NORTH_1_WEST_1); (inspectSquare >= START_OF_BOARD)
+				&& (!isFileASqr(inspectSquare + SOUTH_1_EAST_1)); inspectSquare += NORTH_1_WEST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
@@ -631,15 +622,15 @@ public class Position {
 		// Returns true if the move is castling
 		return ((piece == 'K') || (piece == '5') || (piece == '4') || (piece == '3') || (piece == 'k') || (piece == '2')
 				|| (piece == '1') || (piece == '0'))
-				&& (((move / 100) == ((move % 100) + E2)) || ((move / 100) == ((move % 100) + W2)));
+				&& (((move / 100) == ((move % 100) + EAST_2)) || ((move / 100) == ((move % 100) + WEST_2)));
 	}
 
 	public boolean isEnPassant(char piece, int move) {
 		// Returns true if the move is en-passant
 		if (piece == 'P')
-			return atSqr((move % 100) + S1) == 'e';
+			return atSqr((move % 100) + SOUTH_1) == 'e';
 		else if (piece == 'p')
-			return atSqr((move % 100) + N1) == 'E';
+			return atSqr((move % 100) + NORTH_1) == 'E';
 		else
 			return false;
 	}
@@ -647,9 +638,9 @@ public class Position {
 	public boolean isAllowsEnPassant(char piece, int move) {
 		// Returns true if the move puts a pawn into a position where it can be captured en-passant 
 		if (piece == 'P')
-			return (((move / 100) + N2) == (move % 100)) && ((atSqr((move % 100) + E1) == 'p') || (atSqr((move % 100) + W1) == 'p'));
+			return (((move / 100) + NORTH_2) == (move % 100)) && ((atSqr((move % 100) + EAST_1) == 'p') || (atSqr((move % 100) + WEST_1) == 'p'));
 		else if (piece == 'p')
-			return (((move / 100) + S2) == (move % 100)) && ((atSqr((move % 100) + E1) == 'P') || (atSqr((move % 100) + W1) == 'P'));
+			return (((move / 100) + SOUTH_2) == (move % 100)) && ((atSqr((move % 100) + EAST_1) == 'P') || (atSqr((move % 100) + WEST_1) == 'P'));
 		else
 			return false;
 	}
@@ -717,14 +708,14 @@ public class Position {
 		}
 		// Assessing possible pawn attacks
 		if (attackingColourIsWhite && !isRank1Sqr(square)) {
-			if (!isFileASqr(square) && ((atSqr(square + S1E1) == 'P') || (atSqr(square + S1E1) == 'E')))
+			if (!isFileASqr(square) && ((atSqr(square + SOUTH_1_EAST_1) == 'P') || (atSqr(square + SOUTH_1_EAST_1) == 'E')))
 				return true;
-			else if (!isFileHSqr(square) && ((atSqr(square + S1W1) == 'P') || (atSqr(square + S1W1) == 'E')))
+			else if (!isFileHSqr(square) && ((atSqr(square + SOUTH_1_WEST_1) == 'P') || (atSqr(square + SOUTH_1_WEST_1) == 'E')))
 				return true;
 		} else if (!attackingColourIsWhite && !isRank8Sqr(square)) {
-			if (!isFileASqr(square) && ((atSqr(square + N1W1) == 'p') || (atSqr(square + N1W1) == 'e')))
+			if (!isFileASqr(square) && ((atSqr(square + NORTH_1_WEST_1) == 'p') || (atSqr(square + NORTH_1_WEST_1) == 'e')))
 				return true;
-			else if (!isFileHSqr(square) && ((atSqr(square + N1E1) == 'p') || (atSqr(square + N1E1) == 'e')))
+			else if (!isFileHSqr(square) && ((atSqr(square + NORTH_1_EAST_1) == 'p') || (atSqr(square + NORTH_1_EAST_1) == 'e')))
 				return true;
 		}
 		return ((atSqr(square) == 'e') || (atSqr(square) == 'E'));
@@ -804,17 +795,17 @@ public class Position {
 
 	public boolean isFileBSqr(int square) {
 		// Returns true if the square is on file B of the board
-		return (square + W1) % 8 == 0;
+		return (square + WEST_1) % 8 == 0;
 	}
 
 	public boolean isFileGSqr(int square) {
 		// Returns true if the square is on file G of the board
-		return (square + E2) % 8 == 0;
+		return (square + EAST_2) % 8 == 0;
 	}
 
 	public boolean isFileHSqr(int square) {
 		// Returns true if the square is on file H of the board
-		return (square + E1) % 8 == 0;
+		return (square + EAST_1) % 8 == 0;
 	}
 
 	public boolean isOtherColAtSqr(int square) {
