@@ -51,7 +51,7 @@ public class Position {
 	}
 
 	public int[] findLegalMoves() {
-		int[] tempMoves = new int[218];
+		int[] legalMoves = new int[218];
 		int[] possiblePieceMoves = new int[0];
 		int numberOfLegalMoves = 0;
 		
@@ -64,16 +64,12 @@ public class Position {
 
 				if (!isSelfCheckMove(possiblePieceMoves[j])
 						&& (!isCastling(atSqr(possiblePieceMoves[j] / 100), possiblePieceMoves[j]) || !isCheck())) {
-					tempMoves[numberOfLegalMoves] = possiblePieceMoves[j];
+					legalMoves[numberOfLegalMoves] = possiblePieceMoves[j];
 					numberOfLegalMoves++;
 				}
 			}
 		}
-		int[] legalMoves = new int[numberOfLegalMoves];
-		for (int i = 0; i < legalMoves.length; i++) {
-			legalMoves[i] = tempMoves[i];
-		}
-		return legalMoves;
+		return removeZeroElements(legalMoves, numberOfLegalMoves);
 	}
 	
 	public void makeMove(int move) {
@@ -185,112 +181,104 @@ public class Position {
 	public int[] findKnightMoves(int knightSquare) {
 		// Returns an array of moves that the knight can make (includes
 		// capturing)
-		int[] tempMoves = new int[8];
+		int[] knightMoves = new int[8];
 		int numberOfMoves = 0;
 		int[] inspectSquares = { NORTH_2 + EAST_1, NORTH_1 + EAST_2, SOUTH_1 + EAST_2, SOUTH_2 + EAST_1, 
 				SOUTH_2 + WEST_1, SOUTH_1 + WEST_2, NORTH_1 + WEST_2, NORTH_2 + WEST_1 };
 
 		// Assessing rank square
 		if (isRank8Sqr(knightSquare)) {
-			tempMoves[7] = -1;
-			tempMoves[6] = -1;
-			tempMoves[1] = -1;
-			tempMoves[0] = -1;
+			knightMoves[7] = -1;
+			knightMoves[6] = -1;
+			knightMoves[1] = -1;
+			knightMoves[0] = -1;
 		} else if (isRank7Sqr(knightSquare)) {
-			tempMoves[7] = -1;
-			tempMoves[0] = -1;
+			knightMoves[7] = -1;
+			knightMoves[0] = -1;
 		} else if (isRank1Sqr(knightSquare)) {
-			tempMoves[5] = -1;
-			tempMoves[4] = -1;
-			tempMoves[3] = -1;
-			tempMoves[2] = -1;
+			knightMoves[5] = -1;
+			knightMoves[4] = -1;
+			knightMoves[3] = -1;
+			knightMoves[2] = -1;
 		} else if (isRank2Sqr(knightSquare)) {
-			tempMoves[4] = -1;
-			tempMoves[3] = -1;
+			knightMoves[4] = -1;
+			knightMoves[3] = -1;
 		}
 
 		// Assessing file square
 		if (isFileHSqr(knightSquare)) {
-			tempMoves[3] = -1;
-			tempMoves[2] = -1;
-			tempMoves[1] = -1;
-			tempMoves[0] = -1;
+			knightMoves[3] = -1;
+			knightMoves[2] = -1;
+			knightMoves[1] = -1;
+			knightMoves[0] = -1;
 		} else if (isFileGSqr(knightSquare)) {
-			tempMoves[2] = -1;
-			tempMoves[1] = -1;
+			knightMoves[2] = -1;
+			knightMoves[1] = -1;
 		} else if (isFileASqr(knightSquare)) {
-			tempMoves[7] = -1;
-			tempMoves[6] = -1;
-			tempMoves[5] = -1;
-			tempMoves[4] = -1;
+			knightMoves[7] = -1;
+			knightMoves[6] = -1;
+			knightMoves[5] = -1;
+			knightMoves[4] = -1;
 		} else if (isFileBSqr(knightSquare)) {
-			tempMoves[6] = -1;
-			tempMoves[5] = -1;
+			knightMoves[6] = -1;
+			knightMoves[5] = -1;
 		}
 		for (int i = 0; i < inspectSquares.length; i++) {
-			if ((tempMoves[i] != -1) && (isOtherColAtSqr(knightSquare + inspectSquares[i])
+			if ((knightMoves[i] != -1) && (isOtherColAtSqr(knightSquare + inspectSquares[i])
 					|| isEmptySqr(knightSquare + inspectSquares[i]))) {
-				tempMoves[i] = knightSquare * 100 + knightSquare + inspectSquares[i];
+				knightMoves[i] = knightSquare * 100 + knightSquare + inspectSquares[i];
 				numberOfMoves++;
 			} else
-				tempMoves[i] = 0;
+				knightMoves[i] = 0;
 		}
-
-		int[] knightMoves = new int[numberOfMoves];
-		for (int i = 0, j = 0; j < numberOfMoves; i++, j++) {
-			if (tempMoves[i] != 0)
-				knightMoves[j] = tempMoves[i];
-			else
-				j--;
-		}
-		return knightMoves;
+		return removeZeroElements(knightMoves, numberOfMoves);
 	}
 
 	public int[] findKingMoves(int kingSquare) {
 		// Returns an array of moves that the king can make (includes
 		// capturing and castling)
 		char piece = atSqr(kingSquare);
-		int[] tempMoves = new int[10];
+		int[] kingMoves = new int[10];
 		int numberOfMoves = 0;
 		int[] inspectSquares = { NORTH_1, NORTH_1_EAST_1, EAST_1, SOUTH_1_EAST_1, SOUTH_1, SOUTH_1_WEST_1, WEST_1, NORTH_1_WEST_1 };
 
 		if (isFileHSqr(kingSquare)) {
-			tempMoves[1] = -1;
-			tempMoves[2] = -1;
-			tempMoves[3] = -1;
+			kingMoves[1] = -1;
+			kingMoves[2] = -1;
+			kingMoves[3] = -1;
 		} else if (isFileASqr(kingSquare)) {
-			tempMoves[5] = -1;
-			tempMoves[6] = -1;
-			tempMoves[7] = -1;
+			kingMoves[5] = -1;
+			kingMoves[6] = -1;
+			kingMoves[7] = -1;
 		}
 		if (isRank1Sqr(kingSquare)) {
-			tempMoves[3] = -1;
-			tempMoves[4] = -1;
-			tempMoves[5] = -1;
+			kingMoves[3] = -1;
+			kingMoves[4] = -1;
+			kingMoves[5] = -1;
 		} else if (isRank8Sqr(kingSquare)) {
-			tempMoves[0] = -1;
-			tempMoves[1] = -1;
-			tempMoves[7] = -1;
+			kingMoves[0] = -1;
+			kingMoves[1] = -1;
+			kingMoves[7] = -1;
 		}
 		for (int i = 0; i < inspectSquares.length; i++) {
-			if ((tempMoves[i] != -1) && (isOtherColAtSqr(kingSquare + inspectSquares[i])
+			if ((kingMoves[i] != -1) && (isOtherColAtSqr(kingSquare + inspectSquares[i])
 					|| isEmptySqr(kingSquare + inspectSquares[i]))) {
-				tempMoves[i] = kingSquare * 100 + kingSquare + inspectSquares[i];
+				kingMoves[i] = kingSquare * 100 + kingSquare + inspectSquares[i];
 				numberOfMoves++;
 			} else
-				tempMoves[i] = 0;
+				kingMoves[i] = 0;
 		}
 
 		// White king castling
 		if ((piece == '5') || (piece == '4')) {
 			if ((isEmptySqr(kingSquare + EAST_1)) && (isEmptySqr(kingSquare + EAST_2))) {
-				tempMoves[8] = kingSquare * 100 + kingSquare + EAST_2;
+				kingMoves[8] = kingSquare * 100 + kingSquare + EAST_2;
 				numberOfMoves++;
 			}
 		}
 		if ((piece == '5') || (piece == '3')) {
 			if ((isEmptySqr(kingSquare + WEST_1)) && (isEmptySqr(kingSquare + WEST_2)) && (isEmptySqr(kingSquare + 3 * WEST_1))) {
-				tempMoves[9] = kingSquare * 100 + kingSquare + WEST_2;
+				kingMoves[9] = kingSquare * 100 + kingSquare + WEST_2;
 				numberOfMoves++;
 			}
 		}
@@ -298,25 +286,17 @@ public class Position {
 		// Black king castling
 		if ((piece == '2') || (piece == '1')) {
 			if ((isEmptySqr(kingSquare + EAST_1)) && (isEmptySqr(kingSquare + EAST_2))) {
-				tempMoves[8] = kingSquare * 100 + kingSquare + EAST_2;
+				kingMoves[8] = kingSquare * 100 + kingSquare + EAST_2;
 				numberOfMoves++;
 			}
 		}
 		if ((piece == '2') || (piece == '0')) {
 			if ((isEmptySqr(kingSquare + WEST_1)) && (isEmptySqr(kingSquare + WEST_2)) && (isEmptySqr(kingSquare + 3 * WEST_1))) {
-				tempMoves[9] = kingSquare * 100 + kingSquare + WEST_2;
+				kingMoves[9] = kingSquare * 100 + kingSquare + WEST_2;
 				numberOfMoves++;
 			}
 		}
-
-		int[] kingMoves = new int[numberOfMoves];
-		for (int i = 0, j = 0; j < numberOfMoves; i++, j++) {
-			if (tempMoves[i] != 0)
-				kingMoves[j] = tempMoves[i];
-			else
-				j--;
-		}
-		return kingMoves;
+		return removeZeroElements(kingMoves, numberOfMoves);
 	}
 
 	public int[] findQueenMoves(int queenSquare) {
@@ -340,93 +320,86 @@ public class Position {
 		// capturing)
 		// **Doesn't include promotion**
 		// **Only works for pawns**
-		int[] tempMoves = new int[4];
+		int[] pawnMoves = new int[4];
 		int numberOfMoves = 0;
 
 		if (whiteToPlay) {
 			// White pawns
 			if (isEmptySqr(pawnSquare + NORTH_1)) {
-				tempMoves[0] = (pawnSquare * 100) + (pawnSquare + NORTH_1);
+				pawnMoves[0] = (pawnSquare * 100) + (pawnSquare + NORTH_1);
 				numberOfMoves++;
 				if ((isRank2Sqr(pawnSquare)) && (isEmptySqr(pawnSquare + NORTH_2))) {
-					tempMoves[1] = (pawnSquare * 100) + (pawnSquare + NORTH_2);
+					pawnMoves[1] = (pawnSquare * 100) + (pawnSquare + NORTH_2);
 					numberOfMoves++;
 				}
 			}
 			if (isFileASqr(pawnSquare)) {
 				if ((isOtherColAtSqr(pawnSquare + NORTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'e')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
+					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
 					numberOfMoves++;
 				}
 			} else if (isFileHSqr(pawnSquare + EAST_1)) {
 				if ((isOtherColAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
+					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
 					numberOfMoves++;
 				}
 			} else {
 				if ((isOtherColAtSqr(pawnSquare + NORTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'e')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
+					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
 					numberOfMoves++;
 				}
 				if ((isOtherColAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
-					tempMoves[3] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
+					pawnMoves[3] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
 					numberOfMoves++;
 				}
 			}
 		} else {
 			// Black pawns
 			if (isEmptySqr(pawnSquare + SOUTH_1)) {
-				tempMoves[0] = (pawnSquare * 100) + (pawnSquare + SOUTH_1);
+				pawnMoves[0] = (pawnSquare * 100) + (pawnSquare + SOUTH_1);
 				numberOfMoves++;
 				if ((isRank7Sqr(pawnSquare)) && (isEmptySqr(pawnSquare + SOUTH_2))) {
-					tempMoves[1] = (pawnSquare * 100) + (pawnSquare + SOUTH_2);
+					pawnMoves[1] = (pawnSquare * 100) + (pawnSquare + SOUTH_2);
 					numberOfMoves++;
 				}
 			}
 			if (isFileASqr(pawnSquare)) {
 				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'E')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_EAST_1);
+					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_EAST_1);
 					numberOfMoves++;
 				}
 			} else if (isFileHSqr(pawnSquare)) {
 				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'E')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_WEST_1);
+					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_WEST_1);
 					numberOfMoves++;
 				}
 			} else {
 				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'E')) {
-					tempMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_EAST_1);
+					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_EAST_1);
 					numberOfMoves++;
 				}
 				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'E')) {
-					tempMoves[3] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_WEST_1);
+					pawnMoves[3] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_WEST_1);
 					numberOfMoves++;
 				}
 			}
 		}
-		int[] pawnMoves = new int[numberOfMoves];
-		for (int i = 0, j = 0; j < numberOfMoves; i++, j++) {
-			if (tempMoves[i] != 0)
-				pawnMoves[j] = tempMoves[i];
-			else
-				j--;
-		}
-		return pawnMoves;
+		return removeZeroElements(pawnMoves, numberOfMoves);
 	}
 
 	public int[] findStraightMoves(int pieceSquare) {
 		// Returns an array of moves along straight directions (includes
 		// capturing)
-		int[] tempMoves = new int[28];
+		int[] straightMoves = new int[28];
 		int numberOfMoves = 0;
 
 		// Direction north
 		for (int i = 0, inspectSquare = (pieceSquare + NORTH_1); inspectSquare >= A8_SQR; inspectSquare += NORTH_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 			} else if (isOtherColAtSqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
 			} else
@@ -436,10 +409,10 @@ public class Position {
 		// Direction south
 		for (int i = 7, inspectSquare = (pieceSquare + SOUTH_1); inspectSquare <= H1_SQR; inspectSquare += SOUTH_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 			} else if (isOtherColAtSqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
 			} else
@@ -449,10 +422,10 @@ public class Position {
 		// Direction east
 		for (int i = 14, inspectSquare = pieceSquare; !isFileHSqr(inspectSquare++); i++) {
 			if (isEmptySqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 			} else if (isOtherColAtSqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
 			} else
@@ -462,39 +435,32 @@ public class Position {
 		// Direction west
 		for (int i = 21, inspectSquare = pieceSquare; !isFileASqr(inspectSquare--); i++) {
 			if (isEmptySqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 			} else if (isOtherColAtSqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
 			} else
 				break;
 		}
-		int[] straightMoves = new int[numberOfMoves];
-		for (int i = 0, j = 0; j < numberOfMoves; i++, j++) {
-			if (tempMoves[i] != 0)
-				straightMoves[j] = tempMoves[i];
-			else
-				j--;
-		}
-		return straightMoves;
+		return removeZeroElements(straightMoves, numberOfMoves);
 	}
 
 	public int[] findDiagonalMoves(int pieceSquare) {
 		// Returns an array of moves along diagonal directions (includes
 		// capturing)
-		int[] tempMoves = new int[28];
+		int[] diagonalMoves = new int[28];
 		int numberOfMoves = 0;
 
 		// Direction north-east
 		for (int i = 0, inspectSquare = (pieceSquare + NORTH_1_EAST_1); (inspectSquare >= A8_SQR)
 				&& (!isFileHSqr(inspectSquare + SOUTH_1_WEST_1)); inspectSquare += NORTH_1_EAST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 			} else if (isOtherColAtSqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
 			} else
@@ -505,10 +471,10 @@ public class Position {
 		for (int i = 7, inspectSquare = (pieceSquare + SOUTH_1_EAST_1); (inspectSquare <= H1_SQR)
 				&& (!isFileHSqr(inspectSquare + NORTH_1_WEST_1)); inspectSquare += SOUTH_1_EAST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 			} else if (isOtherColAtSqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
 			} else
@@ -519,10 +485,10 @@ public class Position {
 		for (int i = 14, inspectSquare = (pieceSquare + SOUTH_1_WEST_1); (inspectSquare <= H1_SQR)
 				&& (!isFileASqr(inspectSquare + NORTH_1_EAST_1)); inspectSquare += SOUTH_1_WEST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 			} else if (isOtherColAtSqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
 			} else
@@ -533,23 +499,29 @@ public class Position {
 		for (int i = 21, inspectSquare = (pieceSquare + NORTH_1_WEST_1); (inspectSquare >= A8_SQR)
 				&& (!isFileASqr(inspectSquare + SOUTH_1_EAST_1)); inspectSquare += NORTH_1_WEST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 			} else if (isOtherColAtSqr(inspectSquare)) {
-				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
+				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
 			} else
 				break;
 		}
-		int[] diagonalMoves = new int[numberOfMoves];
-		for (int i = 0, j = 0; j < numberOfMoves; i++, j++) {
-			if (tempMoves[i] != 0)
-				diagonalMoves[j] = tempMoves[i];
+		return removeZeroElements(diagonalMoves, numberOfMoves);
+	}
+
+	public int[] removeZeroElements(int[] otherArray, int numberOfNonZeroElements) {
+		// Returns a new array without the elements which are zeroes
+		// **the numberOfNonZeroElements must match the number of non zero elements in the other array**
+		int[] newArray = new int[numberOfNonZeroElements];
+		for (int i = 0, j = 0; j < newArray.length; i++, j++) {
+			if (otherArray[i] != 0)
+				newArray[j] = otherArray[i];
 			else
 				j--;
 		}
-		return diagonalMoves;
+		return newArray;
 	}
 
 	public boolean isPromotion(char piece, int move) {
