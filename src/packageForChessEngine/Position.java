@@ -7,7 +7,7 @@ public class Position {
 	private boolean whiteToPlay = true;
 	private String board = "";
 
-	// Cardinal and ordinal directions
+	// Cardinal and ordinal direction moves
 	private static final int NORTH_1 = -8;
 	private static final int NORTH_2 = 2 * NORTH_1;
 	private static final int NORTH_1_EAST_1 = -7;
@@ -22,14 +22,16 @@ public class Position {
 	private static final int NORTH_1_WEST_1 = -9;
 
 	// specific squares
-	private static final int START_OF_BOARD = 0;
-	private static final int END_OF_BOARD = 63;
-	private static final int INITIAL_WHITE_KING_SQR = 60;
-	private static final int INITIAL_BLACK_KING_SQR = 4;
-	private static final int INITIAL_WHITE_EAST_ROOK_SQR = 63;
-	private static final int INITIAL_BLACK_EAST_ROOK_SQR = 7;
-	private static final int INITIAL_WHITE_WEST_ROOK_SQR = 56;
-	private static final int INITIAL_BLACK_WEST_ROOK_SQR = 0;
+	private static final int A8_SQR = 0;
+	private static final int E8_SQR = 4;
+	private static final int H8_SQR = 7;
+	private static final int A7_SQR = 8;
+	private static final int H7_SQR = 15;
+	private static final int A2_SQR = 48;
+	private static final int H2_SQR = 55;
+	private static final int A1_SQR = 56;
+	private static final int E1_SQR = 60;
+	private static final int H1_SQR = 63;
 
 	public Position() {
 		// Default constructor
@@ -477,7 +479,7 @@ public class Position {
 		int numberOfMoves = 0;
 
 		// Direction north
-		for (int i = 0, inspectSquare = (pieceSquare + NORTH_1); inspectSquare >= START_OF_BOARD; inspectSquare += NORTH_1, i++) {
+		for (int i = 0, inspectSquare = (pieceSquare + NORTH_1); inspectSquare >= A8_SQR; inspectSquare += NORTH_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
@@ -490,7 +492,7 @@ public class Position {
 		}
 
 		// Direction south
-		for (int i = 7, inspectSquare = (pieceSquare + SOUTH_1); inspectSquare <= END_OF_BOARD; inspectSquare += SOUTH_1, i++) {
+		for (int i = 7, inspectSquare = (pieceSquare + SOUTH_1); inspectSquare <= H1_SQR; inspectSquare += SOUTH_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
@@ -544,7 +546,7 @@ public class Position {
 		int numberOfMoves = 0;
 
 		// Direction north-east
-		for (int i = 0, inspectSquare = (pieceSquare + NORTH_1_EAST_1); (inspectSquare >= START_OF_BOARD)
+		for (int i = 0, inspectSquare = (pieceSquare + NORTH_1_EAST_1); (inspectSquare >= A8_SQR)
 				&& (!isFileHSqr(inspectSquare + SOUTH_1_WEST_1)); inspectSquare += NORTH_1_EAST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
@@ -558,7 +560,7 @@ public class Position {
 		}
 
 		// Direction south-east
-		for (int i = 7, inspectSquare = (pieceSquare + SOUTH_1_EAST_1); (inspectSquare <= END_OF_BOARD)
+		for (int i = 7, inspectSquare = (pieceSquare + SOUTH_1_EAST_1); (inspectSquare <= H1_SQR)
 				&& (!isFileHSqr(inspectSquare + NORTH_1_WEST_1)); inspectSquare += SOUTH_1_EAST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
@@ -572,7 +574,7 @@ public class Position {
 		}
 
 		// Direction south-west
-		for (int i = 14, inspectSquare = (pieceSquare + SOUTH_1_WEST_1); (inspectSquare <= END_OF_BOARD)
+		for (int i = 14, inspectSquare = (pieceSquare + SOUTH_1_WEST_1); (inspectSquare <= H1_SQR)
 				&& (!isFileASqr(inspectSquare + NORTH_1_EAST_1)); inspectSquare += SOUTH_1_WEST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
@@ -586,7 +588,7 @@ public class Position {
 		}
 
 		// Direction north-west
-		for (int i = 21, inspectSquare = (pieceSquare + NORTH_1_WEST_1); (inspectSquare >= START_OF_BOARD)
+		for (int i = 21, inspectSquare = (pieceSquare + NORTH_1_WEST_1); (inspectSquare >= A8_SQR)
 				&& (!isFileASqr(inspectSquare + SOUTH_1_EAST_1)); inspectSquare += NORTH_1_WEST_1, i++) {
 			if (isEmptySqr(inspectSquare)) {
 				tempMoves[i] = (pieceSquare * 100) + inspectSquare;
@@ -770,22 +772,22 @@ public class Position {
 
 	public boolean isRank1Sqr(int square) {
 		// Returns true if the square is on the 1st rank of the board
-		return (square >= 56) && (square <= END_OF_BOARD);
+		return (square >= A1_SQR) && (square <= H1_SQR);
 	}
 
 	public boolean isRank2Sqr(int square) {
 		// Returns true if the square is on the 2nd rank of the board
-		return (square >= 48) && (square <= 55);
+		return (square >= A2_SQR) && (square <= H2_SQR);
 	}
 
 	public boolean isRank7Sqr(int square) {
 		// Returns true if the square is on the 7th rank of the board
-		return (square >= 8) && (square <= 15);
+		return (square >= A7_SQR) && (square <= H7_SQR);
 	}
 
 	public boolean isRank8Sqr(int square) {
 		// Returns true if the square is on the 8th rank of the board
-		return (square >= START_OF_BOARD) && (square <= 7);
+		return (square >= A8_SQR) && (square <= H8_SQR);
 	}
 
 	public boolean isFileASqr(int square) {
@@ -832,21 +834,21 @@ public class Position {
 		// **Only updates for non-king moves**
 		
 		// Updating white king for castling ability
-		if ((atSqr(INITIAL_WHITE_KING_SQR) == '5') && (((move / 100) == INITIAL_WHITE_EAST_ROOK_SQR) || ((move % 100) == INITIAL_WHITE_EAST_ROOK_SQR)))
-			updateSqr('3', INITIAL_WHITE_KING_SQR);
-		else if ((atSqr(INITIAL_WHITE_KING_SQR) == '5') && (((move / 100) == INITIAL_WHITE_WEST_ROOK_SQR) || ((move % 100) == INITIAL_WHITE_WEST_ROOK_SQR)))
-			updateSqr('4', INITIAL_WHITE_KING_SQR);
-		else if (((atSqr(INITIAL_WHITE_KING_SQR) == '4') && (((move / 100) == INITIAL_WHITE_EAST_ROOK_SQR) || ((move % 100) == INITIAL_WHITE_EAST_ROOK_SQR))) 
-				|| ((atSqr(INITIAL_WHITE_KING_SQR) == '3') && (((move / 100) == INITIAL_WHITE_WEST_ROOK_SQR) || ((move % 100) == INITIAL_WHITE_WEST_ROOK_SQR))))
-			updateSqr('K', INITIAL_WHITE_KING_SQR);
+		if ((atSqr(E1_SQR) == '5') && (((move / 100) == H1_SQR) || ((move % 100) == H1_SQR)))
+			updateSqr('3', E1_SQR);
+		else if ((atSqr(E1_SQR) == '5') && (((move / 100) == A1_SQR) || ((move % 100) == A1_SQR)))
+			updateSqr('4', E1_SQR);
+		else if (((atSqr(E1_SQR) == '4') && (((move / 100) == H1_SQR) || ((move % 100) == H1_SQR))) 
+				|| ((atSqr(E1_SQR) == '3') && (((move / 100) == A1_SQR) || ((move % 100) == A1_SQR))))
+			updateSqr('K', E1_SQR);
 		// Updating black king for castling ability
-		else if ((atSqr(INITIAL_BLACK_KING_SQR) == '2') && (((move / 100) == INITIAL_BLACK_EAST_ROOK_SQR) || ((move % 100) == INITIAL_BLACK_EAST_ROOK_SQR)))
-			updateSqr('0', INITIAL_BLACK_KING_SQR);
-		else if ((atSqr(INITIAL_BLACK_KING_SQR) == '2') && (((move / 100) == INITIAL_BLACK_WEST_ROOK_SQR) || ((move % 100) == INITIAL_BLACK_WEST_ROOK_SQR)))
-			updateSqr('1', INITIAL_BLACK_KING_SQR);
-		else if (((atSqr(INITIAL_BLACK_KING_SQR) == '1') && (((move / 100) == INITIAL_BLACK_EAST_ROOK_SQR) || ((move % 100) == INITIAL_BLACK_EAST_ROOK_SQR)))
-				|| ((atSqr(INITIAL_BLACK_KING_SQR) == '0') && (((move / 100) == INITIAL_BLACK_WEST_ROOK_SQR) || ((move % 100) == INITIAL_BLACK_WEST_ROOK_SQR))))
-			updateSqr('k', INITIAL_BLACK_KING_SQR);
+		else if ((atSqr(E8_SQR) == '2') && (((move / 100) == H8_SQR) || ((move % 100) == H8_SQR)))
+			updateSqr('0', E8_SQR);
+		else if ((atSqr(E8_SQR) == '2') && (((move / 100) == A8_SQR) || ((move % 100) == A8_SQR)))
+			updateSqr('1', E8_SQR);
+		else if (((atSqr(E8_SQR) == '1') && (((move / 100) == H8_SQR) || ((move % 100) == H8_SQR)))
+				|| ((atSqr(E8_SQR) == '0') && (((move / 100) == A8_SQR) || ((move % 100) == A8_SQR))))
+			updateSqr('k', E8_SQR);
 	}
 	
 	public void removeEnPassant() {
