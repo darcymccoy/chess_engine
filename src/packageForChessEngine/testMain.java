@@ -25,7 +25,7 @@ public class testMain {
 		System.out.println(engine.evaluatePosition(currentPosition));
 		System.out.println(engine.findTopMoveDepth1(currentPosition));
 		System.out.println(engine.findTopMoveDepth2(currentPosition));
-		System.out.println(currentPosition.calculate(2));
+		
 		System.out.print("Enter a move: ");
 		int userMove = userInput.nextInt();
 		System.out.println(currentPosition.isLegalMove(userMove));

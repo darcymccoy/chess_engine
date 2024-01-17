@@ -50,19 +50,6 @@ public class Position {
 		this(otherPosition.whiteToPlay, otherPosition.board);
 	}
 
-	public int evaluatePosition() {
-		// Returns an integer (in centipawns) which is an evaluation of the position
-		// from the perspective of the color who is to play
-		int evaluationOfPosition = 0;
-		for (int i = 0; i < board.length(); i++) {
-			evaluationOfPosition += getPieceValue(atSqr(i), i);
-		}
-		if (whiteToPlay)
-			return evaluationOfPosition;
-		else
-			return evaluationOfPosition * -1;
-	}
-
 	public int[] findLegalMoves() {
 		int[] tempMoves = new int[218];
 		int[] possiblePieceMoves = new int[0];
@@ -144,55 +131,10 @@ public class Position {
 		updateSqr(pieceToPut, move % 100);
 		whiteToPlay = !whiteToPlay;
 	}
-	
-	public int findTopMove() {
-		// Returns an integer which is the top move for a position
-		// **If no possible legal moves are found, 0 will be returned**
-		int[] possiblePieceMoves = new int[0];
-		int topMove = 0;
-		int topMoveEval = 100000;
-		int tempPositionEval;
-
-		for (int i = 0; i < board.length(); i++) {
-			if ((isEmptySqr(i)) || (isOtherColAtSqr(i)))
-				continue;
-
-			possiblePieceMoves = findPossibleMoves(atSqr(i), i);
-			for (int j = 0; j < possiblePieceMoves.length; j++) {
-
-				if (!isSelfCheckMove(possiblePieceMoves[j])
-						&& (!isCastling(atSqr(possiblePieceMoves[j] / 100), possiblePieceMoves[j]) || !isCheck())) {
-
-					Position tempPosition = new Position(this);
-					tempPosition.makeMove(possiblePieceMoves[j]);
-					tempPositionEval = tempPosition.evaluatePosition();
-					if (tempPositionEval < topMoveEval) {
-						topMove = possiblePieceMoves[j];
-						topMoveEval = tempPositionEval;
-					}
-				}
-			}
-		}
-		return topMove;
-	}
-
-	public int calculate(int currentDepth) {
-		// Returns an integer which is the top moves concatenated
-		int topMove = findTopMove();
-
-		if (currentDepth <= 1) {
-			return topMove;
-		} else {
-			Position tempPositionCalc = new Position(this);
-			tempPositionCalc.makeMove(topMove);
-			return topMove * 10000 + tempPositionCalc.calculate(--currentDepth);
-		}
-
-	}
 
 	public boolean isLegalMove(int move) {
 		// Returns true when the move is legal
-		// (Can be passed impossible moves)
+		// **Works for both impossible and possible moves**
 		int[] tempMoves = findPossibleMoves(atSqr(move / 100), move / 100);
 		for (int i = 0; i < tempMoves.length; i++) {
 			if (move == tempMoves[i])
@@ -759,11 +701,6 @@ public class Position {
 		return (isRank1Sqr(square)) || (isRank8Sqr(square)) || (isFileASqr(square)) || (isFileHSqr(square));
 	}
 
-	public boolean isInner4Sqr(int square) {
-		// Returns true if the square is one of the 4 center squares
-		return (square == 27) || (square == 28) || (square == 35) || (square == 36);
-	}
-
 	public boolean isInner16Sqr(int square) {
 		// Returns true if the square is one of the 16 center squares
 		return ((square >= 18) && (square <= 21)) || ((square >= 26) && (square <= 29))
@@ -877,102 +814,6 @@ public class Position {
 		// Returns true if the piece is black
 		return ((piece == 'r') || (piece == 'n') || (piece == 'b') || (piece == 'q') || (piece == '2') || (piece == '1')
 				|| (piece == '0') || (piece == 'k') || (piece == 'p') || (piece == 'e'));
-	}
-
-	public int getPieceValue(char piece, int pieceSquare) {
-		// Returns a int based on the value of any piece (normal value and square
-		// on the board)
-		// This int is positive if the piece is white and negative if black
-		int value = 0;
-		switch (piece) {
-		case '-':
-			break;
-
-		case 'P':
-		case 'E':
-		case 'p':
-		case 'e':
-			value = getPawnValue(pieceSquare);
-			break;
-
-		case 'R':
-		case 'r':
-			value = getRookValue(pieceSquare);
-			break;
-
-		case 'N':
-		case 'n':
-			value = getKnightValue(pieceSquare);
-			break;
-
-		case 'B':
-		case 'b':
-			value = getBishopValue(pieceSquare);
-			break;
-
-		case 'Q':
-		case 'q':
-			value = getQueenValue(pieceSquare);
-			break;
-
-		case '3':
-		case '4':
-		case '5':
-		case 'K':
-		case '0':
-		case '1':
-		case '2':
-		case 'k':
-			value = getKingValue(pieceSquare);
-			break;
-		}
-		if (isBlackPiece(piece))
-			value *= -1;
-		return value;
-	}
-
-	public int getPawnValue(int pawnSquare) {
-		int value = 100;
-		if ((isFileASqr(pawnSquare)) || (isFileHSqr(pawnSquare)))
-			value -= 25;
-		else if (isInner4Sqr(pawnSquare))
-			value += 60;
-		return value;
-	}
-
-	public int getRookValue(int rookSquare) {
-		int value = 500;
-
-		return value;
-	}
-
-	public int getKnightValue(int knightSquare) {
-		int value = 275;
-		if (isOuterEdgeSqr(knightSquare))
-			value -= 35;
-		else if (isInner16Sqr(knightSquare))
-			value += 20;
-		return value;
-	}
-
-	public int getBishopValue(int bishopSquare) {
-		int value = 300;
-		if (isInner16Sqr(bishopSquare))
-			value += 15;
-		return value;
-	}
-
-	public int getQueenValue(int queenSquare) {
-		int value = 900;
-
-		return value;
-	}
-
-	public int getKingValue(int kingSquare) {
-		int value = 1000000;
-		if ((kingSquare == 62) || (kingSquare == 58) || (kingSquare == 2) || (kingSquare == 7))
-			value += 20;
-		return value;
 	}
 
 	public String toString() {
