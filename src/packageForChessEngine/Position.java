@@ -51,25 +51,19 @@ public class Position {
 	}
 
 	public int[] findLegalMoves() {
+		// Returns an array of all legal moves that the color to move can make
 		int[] legalMoves = new int[218];
-		int[] possiblePieceMoves = new int[0];
+		int[] possibleMoves = findPossibleMoves();
 		int numberOfLegalMoves = 0;
-		
-		for (int i = 0; i < board.length(); i++) {
-			if ((isEmptySqr(i)) || (isOtherColAtSqr(i)))
-				continue;
-			
-			possiblePieceMoves = findPossibleMoves(atSqr(i), i);
-			for (int j = 0; j < possiblePieceMoves.length; j++) {
 
-				if (!isSelfCheckMove(possiblePieceMoves[j])
-						&& (!isCastling(atSqr(possiblePieceMoves[j] / 100), possiblePieceMoves[j]) || !isCheck())) {
-					legalMoves[numberOfLegalMoves] = possiblePieceMoves[j];
-					numberOfLegalMoves++;
-				}
+		for (int j = 0; j < possibleMoves.length; j++) {
+
+			if (!isSelfCheckMove(possibleMoves[j])
+					&& (!isCastling(atSqr(possibleMoves[j] / 100), possibleMoves[j]) || !isCheck())) {
+				legalMoves[numberOfLegalMoves++] = possibleMoves[j];
 			}
 		}
-		return removeZeroElements(legalMoves, numberOfLegalMoves);
+		return removeElementsThatAreZero(legalMoves, numberOfLegalMoves);
 	}
 	
 	public void makeMove(int move) {
@@ -131,7 +125,7 @@ public class Position {
 	public boolean isLegalMove(int move) {
 		// Returns true when the move is legal
 		// **Works for both impossible and possible moves**
-		int[] tempMoves = findPossibleMoves(atSqr(move / 100), move / 100);
+		int[] tempMoves = findPossiblePiecesMoves(atSqr(move / 100), move / 100);
 		for (int i = 0; i < tempMoves.length; i++) {
 			if (move == tempMoves[i])
 				return !isSelfCheckMove(move) && (!isCastling(atSqr(move / 100), move) || !isCheck());
@@ -139,7 +133,27 @@ public class Position {
 		return false;
 	}
 
-	public int[] findPossibleMoves(char piece, int pieceSquare) {
+	public int[] findPossibleMoves() {
+		// Returns an array of all possible moves that the color to move can make
+		// **This can include illegal moves**
+		// **(such as self check moves, castling out of check)**
+		int[] possibleMoves = new int[218];
+		int[] possiblePieceMoves = new int[0];
+		int numberOfPossibleMoves = 0;
+		
+		for (int i = 0; i < board.length(); i++) {
+			if ((isEmptySqr(i)) || (isOtherColAtSqr(i)))
+				continue;
+			
+			possiblePieceMoves = findPossiblePiecesMoves(atSqr(i), i);
+			for (int j = 0; j < possiblePieceMoves.length; j++) {
+				possibleMoves[numberOfPossibleMoves++] = possiblePieceMoves[j];
+			}
+		}
+		return removeElementsThatAreZero(possibleMoves, numberOfPossibleMoves);
+	}
+	
+	public int[] findPossiblePiecesMoves(char piece, int pieceSquare) {
 		// Returns an array of moves that the piece can make
 		// **Doesn't assess move legality**
 		switch (piece) {
@@ -174,7 +188,7 @@ public class Position {
 			return findKingMoves(pieceSquare);
 			
 		default:
-			return null;
+			return new int[0];
 		}
 	}
 
@@ -231,7 +245,7 @@ public class Position {
 			} else
 				knightMoves[i] = 0;
 		}
-		return removeZeroElements(knightMoves, numberOfMoves);
+		return removeElementsThatAreZero(knightMoves, numberOfMoves);
 	}
 
 	public int[] findKingMoves(int kingSquare) {
@@ -296,7 +310,7 @@ public class Position {
 				numberOfMoves++;
 			}
 		}
-		return removeZeroElements(kingMoves, numberOfMoves);
+		return removeElementsThatAreZero(kingMoves, numberOfMoves);
 	}
 
 	public int[] findQueenMoves(int queenSquare) {
@@ -384,7 +398,7 @@ public class Position {
 				}
 			}
 		}
-		return removeZeroElements(pawnMoves, numberOfMoves);
+		return removeElementsThatAreZero(pawnMoves, numberOfMoves);
 	}
 
 	public int[] findStraightMoves(int pieceSquare) {
@@ -444,7 +458,7 @@ public class Position {
 			} else
 				break;
 		}
-		return removeZeroElements(straightMoves, numberOfMoves);
+		return removeElementsThatAreZero(straightMoves, numberOfMoves);
 	}
 
 	public int[] findDiagonalMoves(int pieceSquare) {
@@ -508,10 +522,10 @@ public class Position {
 			} else
 				break;
 		}
-		return removeZeroElements(diagonalMoves, numberOfMoves);
+		return removeElementsThatAreZero(diagonalMoves, numberOfMoves);
 	}
 
-	public int[] removeZeroElements(int[] otherArray, int numberOfNonZeroElements) {
+	public int[] removeElementsThatAreZero(int[] otherArray, int numberOfNonZeroElements) {
 		// Returns a new array without the elements which are zeroes
 		// **the numberOfNonZeroElements must match the number of non zero elements in the other array**
 		int[] newArray = new int[numberOfNonZeroElements];
@@ -578,62 +592,9 @@ public class Position {
 	}
 
 	public boolean isAttackedSqr(int square, boolean attackingColourIsWhite) {
-		// Returns true if the square is attacked by a piece of the opposing color
-		int[] tempMoves = new int[0];
-		tempMoves = findKnightMoves(square);
-		for (int i = 0; i < tempMoves.length; i++) {
-			if (attackingColourIsWhite) {
-				if (atSqr(tempMoves[i] % 100) == 'N')
-					return true;
-			} else {
-				if (atSqr(tempMoves[i] % 100) == 'n')
-					return true;
-			}
-		}
-		tempMoves = findStraightMoves(square);
-		for (int i = 0; i < tempMoves.length; i++) {
-			if (attackingColourIsWhite) {
-				if ((atSqr(tempMoves[i] % 100) == 'R') || (atSqr(tempMoves[i] % 100) == 'Q'))
-					return true;
-			} else {
-				if ((atSqr(tempMoves[i] % 100) == 'r') || (atSqr(tempMoves[i] % 100) == 'q'))
-					return true;
-			}
-		}
-		tempMoves = findDiagonalMoves(square);
-		for (int i = 0; i < tempMoves.length; i++) {
-			if (attackingColourIsWhite) {
-				if ((atSqr(tempMoves[i] % 100) == 'B') || (atSqr(tempMoves[i] % 100) == 'Q'))
-					return true;
-			} else {
-				if ((atSqr(tempMoves[i] % 100) == 'b') || (atSqr(tempMoves[i] % 100) == 'q'))
-					return true;
-			}
-		}
-		tempMoves = findKingMoves(square);
-		for (int i = 0; i < tempMoves.length; i++) {
-			if (attackingColourIsWhite) {
-				if ((atSqr(tempMoves[i] % 100) == 'K') || (atSqr(tempMoves[i] % 100) == '5') 
-						|| (atSqr(tempMoves[i] % 100) == '4') || (atSqr(tempMoves[i] % 100) == '3'))
-					return true;
-			} else {
-				if ((atSqr(tempMoves[i] % 100) == 'k') || (atSqr(tempMoves[i] % 100) == '2') 
-						|| (atSqr(tempMoves[i] % 100) == '1') || (atSqr(tempMoves[i] % 100) == '0'))
-					return true;
-			}
-		}
-		// Assessing possible pawn attacks
-		if (attackingColourIsWhite && !isRank1Sqr(square)) {
-			if (!isFileASqr(square) && ((atSqr(square + SOUTH_1_EAST_1) == 'P') || (atSqr(square + SOUTH_1_EAST_1) == 'E')))
-				return true;
-			else if (!isFileHSqr(square) && ((atSqr(square + SOUTH_1_WEST_1) == 'P') || (atSqr(square + SOUTH_1_WEST_1) == 'E')))
-				return true;
-		} else if (!attackingColourIsWhite && !isRank8Sqr(square)) {
-			if (!isFileASqr(square) && ((atSqr(square + NORTH_1_WEST_1) == 'p') || (atSqr(square + NORTH_1_WEST_1) == 'e')))
-				return true;
-			else if (!isFileHSqr(square) && ((atSqr(square + NORTH_1_EAST_1) == 'p') || (atSqr(square + NORTH_1_EAST_1) == 'e')))
-				return true;
-		}
+		// Returns true if the square is attacked by a piece of the corresponding color
+		int[] tempMoves = null;
+		
 		return ((atSqr(square) == 'e') || (atSqr(square) == 'E'));
 	}
 
