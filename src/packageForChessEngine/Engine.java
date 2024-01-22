@@ -68,8 +68,10 @@ public class Engine {
 				Position tempPositionDepth2 = new Position(tempPositionDepth1);
 				tempPositionDepth2.makeMove(legalMovesDepth2[j]);
 			
-				if (evaluatePosition(tempPositionDepth2) < maxReply)
-					maxReply = evaluatePosition(tempPositionDepth2);
+				int evaluationDepth2 = evaluatePosition(tempPositionDepth2) 
+						+ moveBonusesAndPenalties(tempPositionDepth2, legalMovesDepth2[j]);
+				if (evaluationDepth2 < maxReply)
+					maxReply = evaluationDepth2;
 			}
 			
 			if (maxReply > topMoveMaxReply) {

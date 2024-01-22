@@ -52,15 +52,14 @@ public class Position {
 
 	public int[] findLegalMoves() {
 		// Returns an array of all legal moves that the color to move can make
-		int[] legalMoves = new int[218];
 		int[] possibleMoves = findPossibleMoves();
+		int[] legalMoves = new int[possibleMoves.length];
 		int numberOfLegalMoves = 0;
 
-		for (int j = 0; j < possibleMoves.length; j++) {
-
-			if (!isSelfCheckMove(possibleMoves[j])
-					&& (!isCastling(atSqr(possibleMoves[j] / 100), possibleMoves[j]) || !isCheck())) {
-				legalMoves[numberOfLegalMoves++] = possibleMoves[j];
+		for (int i = 0; i < possibleMoves.length; i++) {
+			if (!isSelfCheckMove(possibleMoves[i])
+					&& (!isCastling(atSqr(possibleMoves[i] / 100), possibleMoves[i]) || !isCheck())) {
+				legalMoves[numberOfLegalMoves++] = possibleMoves[i];
 			}
 		}
 		return removeElementsThatAreZero(legalMoves, numberOfLegalMoves);
@@ -125,7 +124,7 @@ public class Position {
 	public boolean isLegalMove(int move) {
 		// Returns true when the move is legal
 		// **Works for both impossible and possible moves**
-		int[] tempMoves = findPossiblePiecesMoves(atSqr(move / 100), move / 100);
+		int[] tempMoves = findPossiblePieceMoves(atSqr(move / 100), move / 100);
 		for (int i = 0; i < tempMoves.length; i++) {
 			if (move == tempMoves[i])
 				return !isSelfCheckMove(move) && (!isCastling(atSqr(move / 100), move) || !isCheck());
@@ -142,10 +141,10 @@ public class Position {
 		int numberOfPossibleMoves = 0;
 		
 		for (int i = 0; i < board.length(); i++) {
-			if ((isEmptySqr(i)) || (isOtherColAtSqr(i)))
+			if ((isEmptySqr(i)) || (isOtherColorAtSqr(i)))
 				continue;
 			
-			possiblePieceMoves = findPossiblePiecesMoves(atSqr(i), i);
+			possiblePieceMoves = findPossiblePieceMoves(atSqr(i), i);
 			for (int j = 0; j < possiblePieceMoves.length; j++) {
 				possibleMoves[numberOfPossibleMoves++] = possiblePieceMoves[j];
 			}
@@ -153,7 +152,7 @@ public class Position {
 		return removeElementsThatAreZero(possibleMoves, numberOfPossibleMoves);
 	}
 	
-	public int[] findPossiblePiecesMoves(char piece, int pieceSquare) {
+	public int[] findPossiblePieceMoves(char piece, int pieceSquare) {
 		// Returns an array of moves that the piece can make
 		// **Doesn't assess move legality**
 		switch (piece) {
@@ -238,7 +237,7 @@ public class Position {
 			knightMoves[5] = -1;
 		}
 		for (int i = 0; i < inspectSquares.length; i++) {
-			if ((knightMoves[i] != -1) && (isOtherColAtSqr(knightSquare + inspectSquares[i])
+			if ((knightMoves[i] != -1) && (isOtherColorAtSqr(knightSquare + inspectSquares[i])
 					|| isEmptySqr(knightSquare + inspectSquares[i]))) {
 				knightMoves[i] = knightSquare * 100 + knightSquare + inspectSquares[i];
 				numberOfMoves++;
@@ -275,7 +274,7 @@ public class Position {
 			kingMoves[7] = -1;
 		}
 		for (int i = 0; i < inspectSquares.length; i++) {
-			if ((kingMoves[i] != -1) && (isOtherColAtSqr(kingSquare + inspectSquares[i])
+			if ((kingMoves[i] != -1) && (isOtherColorAtSqr(kingSquare + inspectSquares[i])
 					|| isEmptySqr(kingSquare + inspectSquares[i]))) {
 				kingMoves[i] = kingSquare * 100 + kingSquare + inspectSquares[i];
 				numberOfMoves++;
@@ -283,33 +282,21 @@ public class Position {
 				kingMoves[i] = 0;
 		}
 
-		// White king castling
-		if ((piece == '5') || (piece == '4')) {
-			if ((isEmptySqr(kingSquare + EAST_1)) && (isEmptySqr(kingSquare + EAST_2))) {
-				kingMoves[8] = kingSquare * 100 + kingSquare + EAST_2;
-				numberOfMoves++;
-			}
+		// Kingside castling
+		if (((((piece == '5') || (piece == '4')) && (atSqr(kingSquare + 3 * EAST_1) == 'R')) 
+				|| (((piece == '2') || (piece == '1')) && (atSqr(kingSquare + 3 * EAST_1) == 'r')))
+				&& (isEmptySqr(kingSquare + EAST_1)) && (isEmptySqr(kingSquare + EAST_2))) {
+			kingMoves[8] = kingSquare * 100 + kingSquare + EAST_2;
+			numberOfMoves++;
 		}
-		if ((piece == '5') || (piece == '3')) {
-			if ((isEmptySqr(kingSquare + WEST_1)) && (isEmptySqr(kingSquare + WEST_2)) && (isEmptySqr(kingSquare + 3 * WEST_1))) {
-				kingMoves[9] = kingSquare * 100 + kingSquare + WEST_2;
-				numberOfMoves++;
-			}
+		// Queenside castling
+		if (((((piece == '5') || (piece == '3')) && (atSqr(kingSquare + 4 * WEST_1) == 'R')) 
+				|| (((piece == '2') || (piece == '0')) && (atSqr(kingSquare + 4 * WEST_1) == 'r')))
+				&& (isEmptySqr(kingSquare + WEST_1)) && (isEmptySqr(kingSquare + WEST_2)) && (isEmptySqr(kingSquare + 3 * WEST_1))) {
+			kingMoves[9] = kingSquare * 100 + kingSquare + WEST_2;
+			numberOfMoves++;
 		}
-
-		// Black king castling
-		if ((piece == '2') || (piece == '1')) {
-			if ((isEmptySqr(kingSquare + EAST_1)) && (isEmptySqr(kingSquare + EAST_2))) {
-				kingMoves[8] = kingSquare * 100 + kingSquare + EAST_2;
-				numberOfMoves++;
-			}
-		}
-		if ((piece == '2') || (piece == '0')) {
-			if ((isEmptySqr(kingSquare + WEST_1)) && (isEmptySqr(kingSquare + WEST_2)) && (isEmptySqr(kingSquare + 3 * WEST_1))) {
-				kingMoves[9] = kingSquare * 100 + kingSquare + WEST_2;
-				numberOfMoves++;
-			}
-		}
+		
 		return removeElementsThatAreZero(kingMoves, numberOfMoves);
 	}
 
@@ -348,21 +335,21 @@ public class Position {
 				}
 			}
 			if (isFileASqr(pawnSquare)) {
-				if ((isOtherColAtSqr(pawnSquare + NORTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'e')) {
+				if ((isOtherColorAtSqr(pawnSquare + NORTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'e')) {
 					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
 					numberOfMoves++;
 				}
 			} else if (isFileHSqr(pawnSquare + EAST_1)) {
-				if ((isOtherColAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
+				if ((isOtherColorAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
 					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
 					numberOfMoves++;
 				}
 			} else {
-				if ((isOtherColAtSqr(pawnSquare + NORTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'e')) {
+				if ((isOtherColorAtSqr(pawnSquare + NORTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'e')) {
 					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
 					numberOfMoves++;
 				}
-				if ((isOtherColAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
+				if ((isOtherColorAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
 					pawnMoves[3] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
 					numberOfMoves++;
 				}
@@ -378,21 +365,21 @@ public class Position {
 				}
 			}
 			if (isFileASqr(pawnSquare)) {
-				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'E')) {
+				if ((isOtherColorAtSqr(pawnSquare + SOUTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'E')) {
 					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_EAST_1);
 					numberOfMoves++;
 				}
 			} else if (isFileHSqr(pawnSquare)) {
-				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'E')) {
+				if ((isOtherColorAtSqr(pawnSquare + SOUTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'E')) {
 					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_WEST_1);
 					numberOfMoves++;
 				}
 			} else {
-				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'E')) {
+				if ((isOtherColorAtSqr(pawnSquare + SOUTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'E')) {
 					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_EAST_1);
 					numberOfMoves++;
 				}
-				if ((isOtherColAtSqr(pawnSquare + SOUTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'E')) {
+				if ((isOtherColorAtSqr(pawnSquare + SOUTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'E')) {
 					pawnMoves[3] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_WEST_1);
 					numberOfMoves++;
 				}
@@ -412,7 +399,7 @@ public class Position {
 			if (isEmptySqr(inspectSquare)) {
 				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
-			} else if (isOtherColAtSqr(inspectSquare)) {
+			} else if (isOtherColorAtSqr(inspectSquare)) {
 				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
@@ -425,7 +412,7 @@ public class Position {
 			if (isEmptySqr(inspectSquare)) {
 				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
-			} else if (isOtherColAtSqr(inspectSquare)) {
+			} else if (isOtherColorAtSqr(inspectSquare)) {
 				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
@@ -438,7 +425,7 @@ public class Position {
 			if (isEmptySqr(inspectSquare)) {
 				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
-			} else if (isOtherColAtSqr(inspectSquare)) {
+			} else if (isOtherColorAtSqr(inspectSquare)) {
 				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
@@ -451,7 +438,7 @@ public class Position {
 			if (isEmptySqr(inspectSquare)) {
 				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
-			} else if (isOtherColAtSqr(inspectSquare)) {
+			} else if (isOtherColorAtSqr(inspectSquare)) {
 				straightMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
@@ -473,7 +460,7 @@ public class Position {
 			if (isEmptySqr(inspectSquare)) {
 				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
-			} else if (isOtherColAtSqr(inspectSquare)) {
+			} else if (isOtherColorAtSqr(inspectSquare)) {
 				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
@@ -487,7 +474,7 @@ public class Position {
 			if (isEmptySqr(inspectSquare)) {
 				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
-			} else if (isOtherColAtSqr(inspectSquare)) {
+			} else if (isOtherColorAtSqr(inspectSquare)) {
 				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
@@ -501,7 +488,7 @@ public class Position {
 			if (isEmptySqr(inspectSquare)) {
 				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
-			} else if (isOtherColAtSqr(inspectSquare)) {
+			} else if (isOtherColorAtSqr(inspectSquare)) {
 				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
@@ -515,7 +502,7 @@ public class Position {
 			if (isEmptySqr(inspectSquare)) {
 				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
-			} else if (isOtherColAtSqr(inspectSquare)) {
+			} else if (isOtherColorAtSqr(inspectSquare)) {
 				diagonalMoves[i] = (pieceSquare * 100) + inspectSquare;
 				numberOfMoves++;
 				break;
@@ -591,18 +578,31 @@ public class Position {
 						&& tempPosition.isAttackedSqr(((move / 100) + (move % 100)) / 2, tempPosition.whiteToPlay));
 	}
 
-	public boolean isAttackedSqr(int square, boolean attackingColourIsWhite) {
+	public boolean isAttackedSqr(int square, boolean whiteIsAttacking) {
 		// Returns true if the square is attacked by a piece of the corresponding color
-		int[] tempMoves = null;
+		Position tempPosition = new Position(this);
+		if (isWhitePiece(atSqr(square)) && whiteIsAttacking)
+			tempPosition.updateSqr('q', square);
+		else if (isBlackPiece(atSqr(square)) && !whiteIsAttacking)
+			tempPosition.updateSqr('Q', square);
 		
-		return ((atSqr(square) == 'e') || (atSqr(square) == 'E'));
+		if (whiteToPlay != whiteIsAttacking)
+			tempPosition.setWhiteToPlay(whiteIsAttacking);
+		
+		int[] tempMoves = tempPosition.findPossibleMoves();
+		for (int i = 0; i < tempMoves.length; i++) {
+			if ((tempMoves[i] % 100) == square)
+				return true;
+		}
+		
+		return (atSqr(square) == 'E') || (atSqr(square) == 'e');
 	}
 
-	public int findKingSqr(boolean kingColorIsWhite) {
-		// Returns the king square of the color passed
-		// **Returns -1 if the piece isn't found**
+	public int findKingSqr(boolean whiteKingColor) {
+		// Returns the king square of the corresponding color
+		// **Returns -1 if the king isn't found**
 		for (int i = 0; i < board.length(); i++) {
-			if (kingColorIsWhite) {
+			if (whiteKingColor) {
 				if ((atSqr(i) == 'K') || (atSqr(i) == '5') || (atSqr(i) == '4') || (atSqr(i) == '3')) {
 					return i;
 				}
@@ -680,7 +680,7 @@ public class Position {
 		return (square + EAST_1) % 8 == 0;
 	}
 
-	public boolean isOtherColAtSqr(int square) {
+	public boolean isOtherColorAtSqr(int square) {
 		// Returns true if the piece at the square is the opposite color
 		// of the color who is to play
 		if (whiteToPlay)
