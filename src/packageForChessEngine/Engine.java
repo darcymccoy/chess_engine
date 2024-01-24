@@ -74,6 +74,7 @@ public class Engine {
 				for (int k = 0; k < legalMovesDepth3.length; k++) {
 					Position tempPositionDepth3 = new Position(tempPositionDepth1);
 					tempPositionDepth3.makeMove(legalMovesDepth3[k]);
+					
 					int evaluationDepth3 = evaluatePosition(tempPositionDepth3) 
 							+ moveBonusesAndPenalties(tempPositionDepth3, legalMovesDepth3[k]);
 					if (evaluationDepth3 > maxReplyDepth2) {

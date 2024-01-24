@@ -512,13 +512,13 @@ public class Position {
 		return removeElementsThatAreZero(diagonalMoves, numberOfMoves);
 	}
 
-	public int[] removeElementsThatAreZero(int[] otherArray, int numberOfNonZeroElements) {
+	public int[] removeElementsThatAreZero(int[] arrayToUpdate, int numberNonZeroElements) {
 		// Returns a new array without the elements which are zeroes
 		// **the numberOfNonZeroElements must match the number of non zero elements in the other array**
-		int[] newArray = new int[numberOfNonZeroElements];
+		int[] newArray = new int[numberNonZeroElements];
 		for (int i = 0, j = 0; j < newArray.length; i++, j++) {
-			if (otherArray[i] != 0)
-				newArray[j] = otherArray[i];
+			if (arrayToUpdate[i] != 0)
+				newArray[j] = arrayToUpdate[i];
 			else
 				j--;
 		}
@@ -581,9 +581,9 @@ public class Position {
 	public boolean isAttackedSqr(int square, boolean whiteIsAttacking) {
 		// Returns true if the square is attacked by a piece of the corresponding color
 		Position tempPosition = new Position(this);
-		if (isWhitePiece(atSqr(square)) && whiteIsAttacking)
+		if ((isWhitePiece(atSqr(square)) || (isEmptySqr(square))) && whiteIsAttacking)
 			tempPosition.updateSqr('q', square);
-		else if (isBlackPiece(atSqr(square)) && !whiteIsAttacking)
+		else if ((isBlackPiece(atSqr(square)) || (isEmptySqr(square))) && !whiteIsAttacking)
 			tempPosition.updateSqr('Q', square);
 		
 		if (whiteToPlay != whiteIsAttacking)
