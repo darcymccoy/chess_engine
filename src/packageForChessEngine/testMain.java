@@ -24,7 +24,7 @@ public class testMain {
 		System.out.println(currentPosition);
 		System.out.println(engine.evaluatePosition(currentPosition));
 		System.out.println(engine.findTopMoveDepth1(currentPosition));
-		System.out.println(engine.findTopMoveDepth2(currentPosition));
+		System.out.println(engine.findTopMoveDepth3(currentPosition));
 		
 		System.out.print("Enter a move: ");
 		int userMove = userInput.nextInt();

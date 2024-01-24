@@ -26,7 +26,7 @@ public class Engine {
 			200, 250, 320, 320, 320, 320, 250, 200, 
 			200, 250, 310, 340, 340, 310, 250, 200, 
 			200, 250, 310, 340, 340, 310, 250, 200, 
-			200, 250, 310, 310, 310, 310, 250, 200, 
+			200, 250, 309, 310, 310, 310, 250, 200, 
 			200, 250, 250, 250, 250, 250, 250, 200, 
 			100, 225, 215, 215, 215, 215, 225, 100};
 	private static final int[] BISHOP_VALUES = {280, 280, 280, 280, 280, 280, 280, 280, 
@@ -44,39 +44,53 @@ public class Engine {
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
-			100000, 100030, 100020, 100000, 100000, 100000, 100030, 100000};
+			100000, 100040, 100030, 100000, 100000, 100000, 100040, 100000};
 	
 	public Engine() {
 		// Default constructor
 	}
 	
-	public int findTopMoveDepth2(Position currentPosition) {
+	public int findTopMoveDepth3(Position currentPosition) {
 		// Returns an integer which is the top move for a position
 		// **If no legal moves are found, -1 will be returned**
 		int topMove = -1;
 		int topMoveMaxReply = -10000;
-		int maxReply = 10000;
-		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
+		int maxReplyDepth1 = 10000;
+		int maxReplyDepth2 = -10000;
 		
+		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
 		for (int i = 0; i < legalMovesDepth1.length; i++) {
-			maxReply = 10000;
+			maxReplyDepth1 = 10000;
 			Position tempPositionDepth1 = new Position(currentPosition);
 			tempPositionDepth1.makeMove(legalMovesDepth1[i]);
 			
 			int[] legalMovesDepth2 = tempPositionDepth1.findLegalMoves();
 			for (int j = 0; j < legalMovesDepth2.length; j++) {
+				maxReplyDepth2 = -10000;
 				Position tempPositionDepth2 = new Position(tempPositionDepth1);
 				tempPositionDepth2.makeMove(legalMovesDepth2[j]);
 			
-				int evaluationDepth2 = evaluatePosition(tempPositionDepth2) 
-						+ moveBonusesAndPenalties(tempPositionDepth2, legalMovesDepth2[j]);
-				if (evaluationDepth2 < maxReply)
-					maxReply = evaluationDepth2;
+				int[] legalMovesDepth3 = tempPositionDepth1.findLegalMoves();
+				for (int k = 0; k < legalMovesDepth3.length; k++) {
+					Position tempPositionDepth3 = new Position(tempPositionDepth1);
+					tempPositionDepth3.makeMove(legalMovesDepth3[k]);
+					int evaluationDepth3 = evaluatePosition(tempPositionDepth3) 
+							+ moveBonusesAndPenalties(tempPositionDepth3, legalMovesDepth3[k]);
+					if (evaluationDepth3 > maxReplyDepth2) {
+						maxReplyDepth2 = evaluationDepth3;
+						System.out.println(maxReplyDepth2);
+					}
+					
+				//	System.out.println(evaluationDepth3);
+				}
+				
+				if (maxReplyDepth2 < maxReplyDepth1)
+					maxReplyDepth1 = maxReplyDepth2;
 			}
 			
-			if (maxReply > topMoveMaxReply) {
+			if (maxReplyDepth1 > topMoveMaxReply) {
 				topMove = legalMovesDepth1[i];
-				topMoveMaxReply = maxReply;
+				topMoveMaxReply = maxReplyDepth1;
 			}
 		}
 		return topMove;
