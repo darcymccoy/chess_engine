@@ -3,20 +3,25 @@ package packageForChessEngine;
 // Written by Darcy McCoy
 // Starting November 27, 2023
 
-// A game of type: engine playing engine
+// A game of type: user playing engine
 
-public class EngineVsEngine extends Game {
-	public EngineVsEngine() {
+public class UserVsEngine extends Game {
+	public UserVsEngine() {
 		// Default constructor
 		super();
 	}
 	
 	public void play() {
-		// Starts the engineVsEngine game
+		// Starts the userVsEngine game
 		startGame();
+		if (userChoosesToPlayWhite())
+			letUserMakeMove();
+		
 		while(inGame) {
 			letEngineMakeMove();
 			System.out.println(toString());
+			letUserMakeMove();
 		}
 	}
+	
 }

@@ -3,6 +3,8 @@ package packageForChessEngine;
 //Written by Darcy McCoy
 //Starting November 27, 2023
 
+// Contains the information for any type of chess game
+
 import java.util.Scanner;
 
 public class Game {
@@ -43,7 +45,7 @@ public class Game {
 		// Finds the best move according to the engine and 
 		// makes that move on the currentPosition
 		int engineMove = engine.findTopMoveDepth3(currentPosition);
-		if (foundLegalMove(engineMove)) {
+		if (didFindLegalMove(engineMove)) {
 			currentPosition.makeMove(engineMove);
 			addMoveToMovesMade(engineMove);
 		} else {
@@ -60,6 +62,7 @@ public class Game {
 			try {
 				userMove = scanner.nextInt();
 			} catch(Exception e) {
+				scanner.next();
 				System.out.println("This isn't a legal move. Moves must be a 4 digit integer. Try again.");
 				continue;
 			}
@@ -74,6 +77,24 @@ public class Game {
 		}
 	}
 	
+	public boolean userChoosesToPlayWhite() {
+		// Allows the user to choose whether to play white or black against the engine
+		boolean userToPlayWhite = true;
+		
+		while (true) {
+			System.out.print("Enter \"true\" to play as white or \"false\" to play as black: ");
+			try {
+				userToPlayWhite = scanner.nextBoolean();
+			} catch(Exception e) {
+				scanner.next();
+				System.out.println("This isn't one of the choices. Try again.");
+				continue;
+			}
+			
+			return userToPlayWhite;
+		}
+	}
+	
 	public void addMoveToMovesMade(int move) {
 		// Adds the move to the end of movesMade
 		int[] newMovesMade = new int[movesMade.length + 1];
@@ -85,7 +106,7 @@ public class Game {
 		movesMade = newMovesMade;
 	}
 	
-	public boolean foundLegalMove(int move) {
+	public boolean didFindLegalMove(int move) {
 		// Returns true as long as the move isn't -1
 		// **Can only assess engine moves**
 		return move != -1;

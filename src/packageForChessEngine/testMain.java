@@ -20,8 +20,8 @@ public class testMain {
 		Engine engine = new Engine();
 		boolean insideLoop = true;
 		
-		EngineVsEngine game1 = new EngineVsEngine();
-		game1.startGame();
+		UserVsEngine game1 = new UserVsEngine();
+		game1.play();
 		
 //		while(insideLoop) {
 //		System.out.println(currentPosition);
