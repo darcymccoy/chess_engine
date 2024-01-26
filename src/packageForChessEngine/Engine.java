@@ -56,7 +56,7 @@ public class Engine {
 		int topMove = -1;
 		int topMoveMaxReply = -10000;
 		int maxReplyDepth1 = 10000;
-		int maxReplyDepth2 = -10000;
+		int maxReplyDepth2 = 10000;
 		
 		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
 		for (int i = 0; i < legalMovesDepth1.length; i++) {
@@ -66,7 +66,7 @@ public class Engine {
 			
 			int[] legalMovesDepth2 = tempPositionDepth1.findLegalMoves();
 			for (int j = 0; j < legalMovesDepth2.length; j++) {
-				maxReplyDepth2 = -10000;
+				maxReplyDepth2 = 10000;
 				Position tempPositionDepth2 = new Position(tempPositionDepth1);
 				tempPositionDepth2.makeMove(legalMovesDepth2[j]);
 			
@@ -77,9 +77,9 @@ public class Engine {
 					
 					int evaluationDepth3 = evaluatePosition(tempPositionDepth3) 
 							+ moveBonusesAndPenalties(tempPositionDepth3, legalMovesDepth3[k]);
-					if (evaluationDepth3 > maxReplyDepth2) {
+					if (evaluationDepth3 < maxReplyDepth2) {
 						maxReplyDepth2 = evaluationDepth3;
-						System.out.println(maxReplyDepth2);
+						//System.out.println(maxReplyDepth2);
 					}
 					
 				//	System.out.println(evaluationDepth3);

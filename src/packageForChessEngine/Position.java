@@ -114,7 +114,7 @@ public class Position {
 			// Updating king castling ability for non-king moves
 			updateKingCastlingAbility(move);
 		}
-		removeEnPassant();
+		removeEnPassantAbility();
 		
 		updateSqr('-', move / 100);
 		updateSqr(pieceToPut, move % 100);
@@ -614,31 +614,6 @@ public class Position {
 		}
 		return -1;
 	}
-	
-	public int findPieceSqr(char piece) {
-		// Returns the square that the first instance of the piece is found at
-		// **Returns -1 if the piece isn't found**
-		int pieceSquare = -1;
-		for (int i = 0; i < board.length(); i++) {
-			if (atSqr(i) == piece) {
-				pieceSquare = i;
-				break;
-			}	
-		}
-		return pieceSquare;
-	}
-
-	public boolean isOuterEdgeSqr(int square) {
-		// Returns true if the square is one of the 28 squares on the outer edge of the
-		// board
-		return (isRank1Sqr(square)) || (isRank8Sqr(square)) || (isFileASqr(square)) || (isFileHSqr(square));
-	}
-
-	public boolean isInner16Sqr(int square) {
-		// Returns true if the square is one of the 16 center squares
-		return ((square >= 18) && (square <= 21)) || ((square >= 26) && (square <= 29))
-				|| ((square >= 34) && (square <= 37)) || ((square >= 42) && (square <= 45));
-	}
 
 	public boolean isRank1Sqr(int square) {
 		// Returns true if the square is on the 1st rank of the board
@@ -721,7 +696,7 @@ public class Position {
 			updateSqr('k', E8_SQR);
 	}
 	
-	public void removeEnPassant() {
+	public void removeEnPassantAbility() {
 		// Updates the board so that pawns that could be captured en-passant
 		// become regular pawns
 		for (int i = 0; i < board.length(); i++) {
