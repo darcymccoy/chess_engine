@@ -339,7 +339,7 @@ public class Position {
 					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
 					numberOfMoves++;
 				}
-			} else if (isFileHSqr(pawnSquare + EAST_1)) {
+			} else if (isFileHSqr(pawnSquare)) {
 				if ((isOtherColorAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
 					pawnMoves[2] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
 					numberOfMoves++;

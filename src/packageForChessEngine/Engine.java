@@ -7,10 +7,10 @@ public class Engine {
 	// The values for each piece (each integer corresponds to a square on the board)
 	private static final int[] PAWN_VALUES = {0, 0, 0, 0, 0, 0, 0, 0, 
 			140, 140, 140, 140, 140, 140, 140, 140, 
-			110, 110, 110, 110, 110, 110, 110, 110, 
+			110, 110, 110, 120, 120, 110, 110, 110, 
 			100, 100, 100, 120, 120, 100, 100, 100, 
 			80, 100, 100, 120, 120, 100, 100, 80, 
-			80, 100, 100, 105, 105, 100, 100, 80, 
+			100, 100, 100, 105, 105, 100, 100, 101, 
 			90, 100, 100, 90, 90, 100, 100, 90, 
 			0, 0, 0, 0, 0, 0, 0, 0};
 	private static final int[] ROOK_VALUES = {500, 500, 500, 500, 500, 500, 500, 500, 
@@ -20,7 +20,7 @@ public class Engine {
 			500, 500, 500, 500, 500, 500, 500, 500, 
 			500, 500, 500, 500, 500, 500, 500, 500, 
 			500, 500, 500, 500, 500, 500, 500, 500, 
-			500, 500, 500, 515, 520, 505, 500, 500,};
+			500, 500, 500, 519, 520, 505, 500, 500,};
 	private static final int[] KNIGHT_VALUES = {200, 220, 220, 220, 220, 220, 220, 200, 
 			200, 270, 300, 300, 300, 300, 270, 200, 
 			200, 250, 320, 320, 320, 320, 250, 200, 
@@ -37,6 +37,14 @@ public class Engine {
 			280, 320, 320, 330, 330, 320, 320, 280, 
 			280, 340, 310, 310, 310, 310, 340, 280, 
 			280, 280, 280, 280, 280, 280, 280, 280};
+	private static final int[] QUEEN_VALUES = {900, 900, 900, 900, 900, 900, 900, 900,
+			900, 900, 900, 900, 900, 900, 900, 900,
+			900, 900, 900, 900, 900, 900, 900, 900,
+			900, 900, 900, 900, 900, 900, 900, 900,
+			900, 900, 900, 900, 900, 900, 900, 900,
+			900, 900, 900, 900, 900, 900, 900, 900,
+			900, 900, 900, 906, 906, 900, 900, 900,
+			900, 900, 900, 900, 900, 900, 900, 900};
 	private static final int[] KING_VALUES = {100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
@@ -51,38 +59,34 @@ public class Engine {
 	}
 	
 	public int findTopMoveDepth3(Position currentPosition) {
-		// Returns an integer which is the top move for a position
+		// Returns the top move for a position
 		// **If no legal moves are found, -1 will be returned**
 		int topMove = -1;
-		int topMoveMaxReply = -10000;
-		int maxReplyDepth1 = 10000;
-		int maxReplyDepth2 = 10000;
+		int topMoveMaxReply = -100000;
+		int maxReplyDepth1 = 100000;
+		int maxReplyDepth2 = -100000;
 		
 		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
 		for (int i = 0; i < legalMovesDepth1.length; i++) {
-			maxReplyDepth1 = 10000;
+			maxReplyDepth1 = 100000;
 			Position tempPositionDepth1 = new Position(currentPosition);
 			tempPositionDepth1.makeMove(legalMovesDepth1[i]);
 			
 			int[] legalMovesDepth2 = tempPositionDepth1.findLegalMoves();
 			for (int j = 0; j < legalMovesDepth2.length; j++) {
-				maxReplyDepth2 = 10000;
+				maxReplyDepth2 = -100000;
 				Position tempPositionDepth2 = new Position(tempPositionDepth1);
 				tempPositionDepth2.makeMove(legalMovesDepth2[j]);
 			
-				int[] legalMovesDepth3 = tempPositionDepth1.findLegalMoves();
+				int[] legalMovesDepth3 = tempPositionDepth2.findLegalMoves();
 				for (int k = 0; k < legalMovesDepth3.length; k++) {
-					Position tempPositionDepth3 = new Position(tempPositionDepth1);
+					Position tempPositionDepth3 = new Position(tempPositionDepth2);
 					tempPositionDepth3.makeMove(legalMovesDepth3[k]);
 					
 					int evaluationDepth3 = evaluatePosition(tempPositionDepth3) 
 							+ moveBonusesAndPenalties(tempPositionDepth3, legalMovesDepth3[k]);
-					if (evaluationDepth3 < maxReplyDepth2) {
+					if (evaluationDepth3 > maxReplyDepth2)
 						maxReplyDepth2 = evaluationDepth3;
-						//System.out.println(maxReplyDepth2);
-					}
-					
-				//	System.out.println(evaluationDepth3);
 				}
 				
 				if (maxReplyDepth2 < maxReplyDepth1)
@@ -90,8 +94,8 @@ public class Engine {
 			}
 			
 			if (maxReplyDepth1 > topMoveMaxReply) {
-				topMove = legalMovesDepth1[i];
 				topMoveMaxReply = maxReplyDepth1;
+				topMove = legalMovesDepth1[i];
 			}
 		}
 		return topMove;
@@ -123,7 +127,7 @@ public class Engine {
 		int bonusesAndPenalties = 0;
 		
 		if (position.isCheck())
-			bonusesAndPenalties += 20;
+			bonusesAndPenalties += 15;
 		if (position.isAttackedSqr(move % 100, position.isWhiteToPlay()))
 			bonusesAndPenalties -= 10;
 		if (position.isAttackedSqr(move % 100, !position.isWhiteToPlay()))
@@ -150,8 +154,10 @@ public class Engine {
 		// This int is positive if the piece is white and negative if black
 		switch (piece) {
 		case 'P':
+		case 'E':
 			return PAWN_VALUES[square];
 		case 'p':
+		case 'e':
 			return PAWN_VALUES[PAWN_VALUES.length - 1 - square] * -1;
 		case 'R':
 			return ROOK_VALUES[square];
@@ -165,6 +171,10 @@ public class Engine {
 			return BISHOP_VALUES[square];
 		case 'b':
 			return BISHOP_VALUES[BISHOP_VALUES.length - 1 - square] * -1;
+		case 'Q':
+			return QUEEN_VALUES[square];
+		case 'q':
+			return QUEEN_VALUES[QUEEN_VALUES.length - 1 - square] * -1;
 		case 'K':
 		case '5':
 		case '4':
