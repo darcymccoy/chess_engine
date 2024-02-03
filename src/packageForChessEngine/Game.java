@@ -7,7 +7,7 @@ package packageForChessEngine;
 
 import java.util.Scanner;
 
-public class Game {
+public abstract class Game {
 	private Position currentPosition;
 	private int[] movesMade;
 	protected boolean inGame;
@@ -30,6 +30,8 @@ public class Game {
 		// Copy constructor
 		this(otherGame.currentPosition, otherGame.movesMade, otherGame.inGame);
 	}
+	
+	public abstract void play();
 
 	public void startGame() {
 		// Sets inGame to true
@@ -57,12 +59,12 @@ public class Game {
 		// Prompts the user for a move and makes that move on the currentPosition
 		int userMove = 0;
 		
-		while (true) {
+		while (inGame) {
 			System.out.print("Enter your move: ");
 			try {
 				userMove = scanner.nextInt();
 			} catch(Exception e) {
-				scanner.next();
+				scanner.nextLine();
 				System.out.println("This isn't a legal move. Moves must be a 4 digit integer. Try again.");
 				continue;
 			}
@@ -86,7 +88,7 @@ public class Game {
 			try {
 				userToPlayWhite = scanner.nextBoolean();
 			} catch(Exception e) {
-				scanner.next();
+				scanner.nextLine();
 				System.out.println("This isn't one of the choices. Try again.");
 				continue;
 			}
@@ -123,7 +125,7 @@ public class Game {
 
 		for (int i = 0; i < this.movesMade.length; i++) {
 			printGame += movesMade[i] + " ";
-			if ((i % 2) == 0)
+			if (((i + 1) % 2) == 0)
 				printGame += "\n";
 		}
 		return printGame;

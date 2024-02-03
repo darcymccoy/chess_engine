@@ -3,7 +3,7 @@ package packageForChessEngine;
 // Written by Darcy McCoy
 // Starting November 27, 2023
 
-// A game of type: user playing engine
+// A game of type: user playing against engine
 
 public class UserVsEngine extends Game {
 	public UserVsEngine() {
@@ -12,7 +12,7 @@ public class UserVsEngine extends Game {
 	}
 	
 	public void play() {
-		// Starts the userVsEngine game
+		// Starts and runs the userVsEngine game
 		startGame();
 		if (userChoosesToPlayWhite())
 			letUserMakeMove();
