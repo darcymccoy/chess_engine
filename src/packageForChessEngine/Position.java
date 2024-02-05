@@ -4,8 +4,8 @@ package packageForChessEngine;
 //Starting November 27, 2023
 
 public class Position {
-	private boolean whiteToPlay = true;
-	private String board = "";
+	private boolean whiteToPlay;
+	private String board;
 
 	// Cardinal and ordinal direction moves
 	private static final int NORTH_1 = -8;

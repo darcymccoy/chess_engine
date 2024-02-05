@@ -11,8 +11,8 @@ public abstract class Game {
 	private Position currentPosition;
 	private int[] movesMade;
 	protected boolean inGame;
-	static private Scanner scanner = new Scanner(System.in);
-	static private Engine engine = new Engine();
+	private static Scanner scanner = new Scanner(System.in);
+	private static Engine engine = new Engine();
 
 	public Game() {
 		// Default constructor
