@@ -144,11 +144,11 @@ public class Engine {
 		int bonusesAndPenalties = 0;
 		
 		if (position.isCheck())
-			bonusesAndPenalties += 15;
+			bonusesAndPenalties -= 15;
 		if (position.isAttackedSqr(move % 100, position.isWhiteToPlay()))
-			bonusesAndPenalties -= 10;
-		if (position.isAttackedSqr(move % 100, !position.isWhiteToPlay()))
 			bonusesAndPenalties += 10;
+		if (position.isAttackedSqr(move % 100, !position.isWhiteToPlay()))
+			bonusesAndPenalties -= 10;
 		
 		return bonusesAndPenalties;
 	}
