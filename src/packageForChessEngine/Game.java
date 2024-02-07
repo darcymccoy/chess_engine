@@ -63,7 +63,7 @@ public abstract class Game {
 			System.out.print("Enter your move: ");
 			try {
 				userMove = scanner.nextInt();
-			} catch(Exception e) {
+			} catch(RuntimeException e) {
 				scanner.nextLine();
 				System.out.println("This isn't a legal move. Moves must be a 4 digit integer. Try again.");
 				continue;
@@ -87,7 +87,7 @@ public abstract class Game {
 			System.out.print("Enter \"true\" to play as white or \"false\" to play as black: ");
 			try {
 				userToPlayWhite = scanner.nextBoolean();
-			} catch(Exception e) {
+			} catch(RuntimeException e) {
 				scanner.nextLine();
 				System.out.println("This isn't one of the choices. Try again.");
 				continue;

@@ -79,19 +79,19 @@ public class Engine {
 		// Returns the top move for a position
 		// **If no legal moves are found, -1 will be returned**
 		int topMove = -1;
-		int topMoveMaxReply = 100000;
-		int maxReplyDepth1 = -100000;
-		int maxReplyDepth2 = 100000;
+		int topMoveMaxReply = 1000000;
+		int maxReplyDepth1 = -1000000;
+		int maxReplyDepth2 = 1000000;
 		
 		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
 		for (int i = 0; i < legalMovesDepth1.length; i++) {
-			maxReplyDepth1 = -100000;
+			maxReplyDepth1 = -1000000;
 			Position tempPositionDepth1 = new Position(currentPosition);
 			tempPositionDepth1.makeMove(legalMovesDepth1[i]);
 			
 			int[] legalMovesDepth2 = tempPositionDepth1.findLegalMoves();
 			for (int j = 0; j < legalMovesDepth2.length; j++) {
-				maxReplyDepth2 = 100000;
+				maxReplyDepth2 = 1000000;
 				Position tempPositionDepth2 = new Position(tempPositionDepth1);
 				tempPositionDepth2.makeMove(legalMovesDepth2[j]);
 			

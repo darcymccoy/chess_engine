@@ -124,10 +124,12 @@ public class Position {
 	public boolean isLegalMove(int move) {
 		// Returns true when the move is legal
 		// **Works for both impossible and possible moves**
-		int[] tempMoves = findPossiblePieceMoves(atSqr(move / 100), move / 100);
-		for (int i = 0; i < tempMoves.length; i++) {
-			if (move == tempMoves[i])
-				return !isSelfCheckMove(move) && (!isCastling(atSqr(move / 100), move) || !isCheck());
+		if(((move / 100) <= H1_SQR) && ((move % 100) <= H1_SQR) && ((move / 100) >= A8_SQR) && ((move % 100) >= A8_SQR)) {
+			int[] tempMoves = findPossiblePieceMoves(atSqr(move / 100), move / 100);
+			for (int i = 0; i < tempMoves.length; i++) {
+				if (move == tempMoves[i])
+					return !isSelfCheckMove(move) && (!isCastling(atSqr(move / 100), move) || !isCheck());
+			}
 		}
 		return false;
 	}

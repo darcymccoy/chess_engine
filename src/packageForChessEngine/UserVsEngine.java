@@ -12,7 +12,7 @@ public class UserVsEngine extends Game {
 	}
 	
 	public void play() {
-		// Starts and runs the userVsEngine game
+		// Starts the userVsEngine game
 		startGame();
 		if (userChoosesToPlayWhite())
 			letUserMakeMove();
