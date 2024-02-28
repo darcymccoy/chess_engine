@@ -86,18 +86,18 @@ public class Engine {
 		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
 		for (int i = 0; i < legalMovesDepth1.length; i++) {
 			maxReplyDepth1 = -1000000;
-			Position tempPositionDepth1 = new Position(currentPosition);
+			Position tempPositionDepth1 = currentPosition.clone();
 			tempPositionDepth1.makeMove(legalMovesDepth1[i]);
 			
 			int[] legalMovesDepth2 = tempPositionDepth1.findLegalMoves();
 			for (int j = 0; j < legalMovesDepth2.length; j++) {
 				maxReplyDepth2 = 1000000;
-				Position tempPositionDepth2 = new Position(tempPositionDepth1);
+				Position tempPositionDepth2 = tempPositionDepth1.clone();
 				tempPositionDepth2.makeMove(legalMovesDepth2[j]);
 			
 				int[] legalMovesDepth3 = tempPositionDepth2.findLegalMoves();
 				for (int k = 0; k < legalMovesDepth3.length; k++) {
-					Position tempPositionDepth3 = new Position(tempPositionDepth2);
+					Position tempPositionDepth3 = tempPositionDepth2.clone();
 					tempPositionDepth3.makeMove(legalMovesDepth3[k]);
 					
 					int evaluationDepth3 = evaluatePosition(tempPositionDepth3) 
@@ -126,7 +126,7 @@ public class Engine {
 		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
 		
 		for (int i = 0; i < legalMovesDepth1.length; i++) {
-			Position tempPositionDepth1 = new Position(currentPosition);
+			Position tempPositionDepth1 = currentPosition.clone();
 			tempPositionDepth1.makeMove(legalMovesDepth1[i]);
 			
 			if (evaluatePosition(tempPositionDepth1) < topMoveEvaluation) {

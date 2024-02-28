@@ -20,8 +20,15 @@ public class testMain {
 		Engine engine = new Engine();
 		boolean insideLoop = true;
 		
-		UserVsEngine game1 = new UserVsEngine();
-		game1.play();
+		System.out.println(currentPosition);
+		int[] straightMoves = currentPosition.findStraightMoves(56);
+		for (int move: straightMoves) {
+			System.out.println(move);
+		}
+		
+//		EngineVsEngine game1 = new EngineVsEngine();
+//		game1.play();
+//		game1.closeScanner();
 		
 //		while(insideLoop) {
 //		System.out.println(currentPosition);
@@ -35,7 +42,6 @@ public class testMain {
 //		currentPosition.makeMove(userMove);
 //		}
 		
-		game1.closeScanner();
 		userInput.close();
 
 		// Termination confirmation
