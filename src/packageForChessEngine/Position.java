@@ -208,53 +208,51 @@ public class Position {
 		// capturing)
 		int[] knightMoves = new int[8];
 		int numberOfMoves = 0;
-		int[] inspectSquares = { NORTH_2 + EAST_1, NORTH_1 + EAST_2, SOUTH_1 + EAST_2, SOUTH_2 + EAST_1, 
+		int[] inspectMoves = { NORTH_2 + EAST_1, NORTH_1 + EAST_2, SOUTH_1 + EAST_2, SOUTH_2 + EAST_1, 
 				SOUTH_2 + WEST_1, SOUTH_1 + WEST_2, NORTH_1 + WEST_2, NORTH_2 + WEST_1 };
 
 		// Assessing rank square
 		if (isRank8Sqr(knightSquare)) {
-			knightMoves[7] = -1;
-			knightMoves[6] = -1;
-			knightMoves[1] = -1;
-			knightMoves[0] = -1;
+			inspectMoves[7] = 0;
+			inspectMoves[6] = 0;
+			inspectMoves[1] = 0;
+			inspectMoves[0] = 0;
 		} else if (isRank7Sqr(knightSquare)) {
-			knightMoves[7] = -1;
-			knightMoves[0] = -1;
+			inspectMoves[7] = 0;
+			inspectMoves[0] = 0;
 		} else if (isRank1Sqr(knightSquare)) {
-			knightMoves[5] = -1;
-			knightMoves[4] = -1;
-			knightMoves[3] = -1;
-			knightMoves[2] = -1;
+			inspectMoves[5] = 0;
+			inspectMoves[4] = 0;
+			inspectMoves[3] = 0;
+			inspectMoves[2] = 0;
 		} else if (isRank2Sqr(knightSquare)) {
-			knightMoves[4] = -1;
-			knightMoves[3] = -1;
+			inspectMoves[4] = 0;
+			inspectMoves[3] = 0;
 		}
 
 		// Assessing file square
 		if (isFileHSqr(knightSquare)) {
-			knightMoves[3] = -1;
-			knightMoves[2] = -1;
-			knightMoves[1] = -1;
-			knightMoves[0] = -1;
+			inspectMoves[3] = 0;
+			inspectMoves[2] = 0;
+			inspectMoves[1] = 0;
+			inspectMoves[0] = 0;
 		} else if (isFileGSqr(knightSquare)) {
-			knightMoves[2] = -1;
-			knightMoves[1] = -1;
+			inspectMoves[2] = 0;
+			inspectMoves[1] = 0;
 		} else if (isFileASqr(knightSquare)) {
-			knightMoves[7] = -1;
-			knightMoves[6] = -1;
-			knightMoves[5] = -1;
-			knightMoves[4] = -1;
+			inspectMoves[7] = 0;
+			inspectMoves[6] = 0;
+			inspectMoves[5] = 0;
+			inspectMoves[4] = 0;
 		} else if (isFileBSqr(knightSquare)) {
-			knightMoves[6] = -1;
-			knightMoves[5] = -1;
+			inspectMoves[6] = 0;
+			inspectMoves[5] = 0;
 		}
-		for (int i = 0; i < inspectSquares.length; i++) {
-			if ((knightMoves[i] != -1) && (isOtherColorAtSqr(knightSquare + inspectSquares[i])
-					|| isEmptySqr(knightSquare + inspectSquares[i]))) {
-				knightMoves[i] = knightSquare * 100 + knightSquare + inspectSquares[i];
-				numberOfMoves++;
-			} else
-				knightMoves[i] = 0;
+		for (int inspectMove : inspectMoves) {
+			if ((inspectMove != 0) && (isOtherColorAtSqr(knightSquare + inspectMove)
+					|| isEmptySqr(knightSquare + inspectMove))) {
+				knightMoves[numberOfMoves++] = knightSquare * 100 + knightSquare + inspectMove;
+			}
 		}
 		return removeElementsThatAreZero(knightMoves, numberOfMoves);
 	}
