@@ -19,7 +19,7 @@ public class UserVsEngine extends Game {
 		
 		while(inGame) {
 			letEngineMakeMove();
-			System.out.println(toString());
+			System.out.println(this);
 			letUserMakeMove();
 		}
 	}

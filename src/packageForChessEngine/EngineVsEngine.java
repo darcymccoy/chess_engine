@@ -3,7 +3,7 @@ package packageForChessEngine;
 // Written by Darcy McCoy
 // Starting November 27, 2023
 
-// A game of type: engine playing engine
+// A game of type: engine playing against engine
 
 public class EngineVsEngine extends Game {
 	public EngineVsEngine() {
@@ -16,7 +16,7 @@ public class EngineVsEngine extends Game {
 		startGame();
 		while(inGame) {
 			letEngineMakeMove();
-			System.out.println(toString());
+			System.out.println(this);
 		}
 	}
 }

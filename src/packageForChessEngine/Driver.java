@@ -9,7 +9,7 @@ package packageForChessEngine;
 import java.util.Scanner;
 
 //Driver class
-public class testMain {
+public class Driver {
 
 	public static void main(String[] args) {
 
@@ -20,15 +20,10 @@ public class testMain {
 		Engine engine = new Engine();
 		boolean insideLoop = true;
 		
-		System.out.println(currentPosition);
-		int[] straightMoves = currentPosition.findStraightMoves(56);
-		for (int move: straightMoves) {
-			System.out.println(move);
-		}
 		
-//		EngineVsEngine game1 = new EngineVsEngine();
-//		game1.play();
-//		game1.closeScanner();
+		EngineVsEngine game1 = new EngineVsEngine();
+		game1.play();
+		game1.closeScanner();
 		
 //		while(insideLoop) {
 //		System.out.println(currentPosition);

@@ -9,16 +9,19 @@ public class Position {
 
 	// Cardinal and ordinal direction moves
 	private static final int NORTH_1 = -8;
-	private static final int NORTH_2 = 2 * NORTH_1;
+	private static final int NORTH_2 = NORTH_1 + NORTH_1;
 	private static final int NORTH_1_EAST_1 = -7;
 	private static final int EAST_1 = 1;
-	private static final int EAST_2 = 2 * EAST_1;
+	private static final int EAST_2 = EAST_1 + EAST_1;
+	private static final int EAST_3 = EAST_1 + EAST_1 + EAST_1;
 	private static final int SOUTH_1_EAST_1 = 9;
 	private static final int SOUTH_1 = 8;
-	private static final int SOUTH_2 = 2 * SOUTH_1;
+	private static final int SOUTH_2 = SOUTH_1 + SOUTH_1;
 	private static final int SOUTH_1_WEST_1 = 7;
 	private static final int WEST_1 = -1;
-	private static final int WEST_2 = 2 * WEST_1;
+	private static final int WEST_2 = WEST_1 + WEST_1;
+	private static final int WEST_3 = WEST_1 + WEST_1 + WEST_1;
+	private static final int WEST_4 = WEST_1 + WEST_1 + WEST_1 + WEST_1;
 	private static final int NORTH_1_WEST_1 = -9;
 
 	// specific squares
@@ -262,48 +265,45 @@ public class Position {
 		char piece = atSqr(kingSquare);
 		int[] kingMoves = new int[10];
 		int numberOfMoves = 0;
-		int[] inspectSquares = { NORTH_1, NORTH_1_EAST_1, EAST_1, SOUTH_1_EAST_1, SOUTH_1, SOUTH_1_WEST_1, WEST_1, NORTH_1_WEST_1 };
+		int[] inspectMoves = { NORTH_1, NORTH_1_EAST_1, EAST_1, SOUTH_1_EAST_1, SOUTH_1, SOUTH_1_WEST_1, WEST_1, NORTH_1_WEST_1 };
 
 		if (isFileHSqr(kingSquare)) {
-			kingMoves[1] = -1;
-			kingMoves[2] = -1;
-			kingMoves[3] = -1;
+			inspectMoves[1] = 0;
+			inspectMoves[2] = 0;
+			inspectMoves[3] = 0;
 		} else if (isFileASqr(kingSquare)) {
-			kingMoves[5] = -1;
-			kingMoves[6] = -1;
-			kingMoves[7] = -1;
+			inspectMoves[5] = 0;
+			inspectMoves[6] = 0;
+			inspectMoves[7] = 0;
 		}
 		if (isRank1Sqr(kingSquare)) {
-			kingMoves[3] = -1;
-			kingMoves[4] = -1;
-			kingMoves[5] = -1;
+			inspectMoves[3] = 0;
+			inspectMoves[4] = 0;
+			inspectMoves[5] = 0;
 		} else if (isRank8Sqr(kingSquare)) {
-			kingMoves[0] = -1;
-			kingMoves[1] = -1;
-			kingMoves[7] = -1;
+			inspectMoves[0] = 0;
+			inspectMoves[1] = 0;
+			inspectMoves[7] = 0;
 		}
-		for (int i = 0; i < inspectSquares.length; i++) {
-			if ((kingMoves[i] != -1) && (isOtherColorAtSqr(kingSquare + inspectSquares[i])
-					|| isEmptySqr(kingSquare + inspectSquares[i]))) {
-				kingMoves[i] = kingSquare * 100 + kingSquare + inspectSquares[i];
-				numberOfMoves++;
-			} else
-				kingMoves[i] = 0;
+		for (int inspectMove : inspectMoves) {
+			if ((inspectMove != 0) && (isOtherColorAtSqr(kingSquare + inspectMove)
+					|| isEmptySqr(kingSquare + inspectMove))) {
+				kingMoves[numberOfMoves++] = kingSquare * 100 + kingSquare + inspectMove;
+			}
 		}
 
 		// Kingside castling
-		if (((((piece == '5') || (piece == '4')) && (atSqr(kingSquare + 3 * EAST_1) == 'R')) 
-				|| (((piece == '2') || (piece == '1')) && (atSqr(kingSquare + 3 * EAST_1) == 'r')))
+		if (((((piece == '5') || (piece == '4')) && (atSqr(kingSquare + EAST_3) == 'R')) 
+				|| (((piece == '2') || (piece == '1')) && (atSqr(kingSquare + EAST_3) == 'r')))
 				&& (isEmptySqr(kingSquare + EAST_1)) && (isEmptySqr(kingSquare + EAST_2))) {
 			kingMoves[numberOfMoves++] = kingSquare * 100 + kingSquare + EAST_2;
 		}
 		// Queenside castling
-		if (((((piece == '5') || (piece == '3')) && (atSqr(kingSquare + 4 * WEST_1) == 'R')) 
-				|| (((piece == '2') || (piece == '0')) && (atSqr(kingSquare + 4 * WEST_1) == 'r')))
-				&& (isEmptySqr(kingSquare + WEST_1)) && (isEmptySqr(kingSquare + WEST_2)) && (isEmptySqr(kingSquare + 3 * WEST_1))) {
+		if (((((piece == '5') || (piece == '3')) && (atSqr(kingSquare + WEST_4) == 'R')) 
+				|| (((piece == '2') || (piece == '0')) && (atSqr(kingSquare + WEST_4) == 'r')))
+				&& (isEmptySqr(kingSquare + WEST_1)) && (isEmptySqr(kingSquare + WEST_2)) && (isEmptySqr(kingSquare + WEST_3))) {
 			kingMoves[numberOfMoves++] = kingSquare * 100 + kingSquare + WEST_2;
 		}
-		
 		return removeElementsThatAreZero(kingMoves, numberOfMoves);
 	}
 
