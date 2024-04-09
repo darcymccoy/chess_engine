@@ -1,7 +1,7 @@
 package packageForChessEngine;
 
-//Written by Darcy McCoy
-//Starting November 27, 2023
+// Written by Darcy McCoy
+// Starting November 27, 2023
 
 public class Position {
 	private boolean whiteToPlay;

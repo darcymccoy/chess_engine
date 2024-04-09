@@ -1,7 +1,7 @@
 package packageForChessEngine;
 
-//Written by Darcy McCoy
-//Starting November 27, 2023
+// Written by Darcy McCoy
+// Starting November 27, 2023
 
 // Contains the information for any type of chess game
 

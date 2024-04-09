@@ -1,7 +1,7 @@
 package packageForChessEngine;
 
-//Written by Darcy McCoy
-//Starting November 27, 2023
+// Written by Darcy McCoy
+// Starting November 27, 2023
 
 public class Engine {
 	// Piece values (each integer corresponds to a square on the board)
