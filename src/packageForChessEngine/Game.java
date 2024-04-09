@@ -46,11 +46,11 @@ public abstract class Game {
 	public void letEngineMakeMove() {
 		// Finds the best move according to the engine and 
 		// makes that move on the currentPosition
-		int engineMove = engine.findTopMoveDepth3(currentPosition);
-		if (didFindLegalMove(engineMove)) {
+		try {
+			int engineMove = engine.findTopMoveDepth3(currentPosition);
 			currentPosition.makeMove(engineMove);
 			addMoveToMovesMade(engineMove);
-		} else {
+		} catch (NoLegalMovesException e) {
 			stopGame();
 		}
 	}
@@ -106,12 +106,6 @@ public abstract class Game {
 		}
 		newMovesMade[newMovesMade.length - 1] = move;
 		movesMade = newMovesMade;
-	}
-	
-	public boolean didFindLegalMove(int move) {
-		// Returns true as long as the move isn't -1
-		// **Can only assess engine moves**
-		return move != -1;
 	}
 	
 	public void closeScanner() {

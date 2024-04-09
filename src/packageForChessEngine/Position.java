@@ -58,7 +58,7 @@ public class Position {
 		return new Position(this);
 	}
 	
-	public int[] findLegalMoves() {
+	public int[] findLegalMoves() throws NoLegalMovesException {
 		// Returns an array of all legal moves that the color to move can make
 		int[] possibleMoves = findPossibleMoves();
 		int[] legalMoves = new int[possibleMoves.length];
@@ -70,7 +70,12 @@ public class Position {
 				legalMoves[numberOfLegalMoves++] = possibleMoves[i];
 			}
 		}
-		return removeElementsThatAreZero(legalMoves, numberOfLegalMoves);
+		legalMoves = removeElementsThatAreZero(legalMoves, numberOfLegalMoves);
+		if (!(legalMoves.length == 0)) {
+			return legalMoves;
+		} else {
+			throw new NoLegalMovesException("There are no legal moves for the current player in this position");
+		}
 	}
 	
 	public void makeMove(int move) {

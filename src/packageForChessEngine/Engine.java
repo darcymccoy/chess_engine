@@ -75,7 +75,7 @@ public class Engine {
 		// Default constructor
 	}
 	
-	public int findTopMoveDepth3(Position currentPosition) {
+	public int findTopMoveDepth3(Position currentPosition) throws NoLegalMovesException {
 		// Returns the top move for a position
 		// **If no legal moves are found, -1 will be returned**
 		int topMove = -1;
@@ -118,7 +118,7 @@ public class Engine {
 		return topMove;
 	}
 	
-	public int findTopMoveDepth1(Position currentPosition) {
+	public int findTopMoveDepth1(Position currentPosition) throws NoLegalMovesException {
 		// Returns an integer which is the top move for a position
 		// **If no legal moves are found, -1 will be returned**
 		int topMove = -1;
