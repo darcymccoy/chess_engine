@@ -711,7 +711,7 @@ public class Position {
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean isAttackedSqr(int square, boolean whiteIsAttacking) {
-		Position tempPosition = new Position(this);
+		Position tempPosition = clone();
 		if ((isWhitePiece(atSqr(square)) || (isEmptySqr(square))) && whiteIsAttacking)
 			tempPosition.updateSqr('q', square);
 		else if ((isBlackPiece(atSqr(square)) || (isEmptySqr(square))) && !whiteIsAttacking)
