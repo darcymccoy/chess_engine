@@ -1,4 +1,4 @@
-package packageForChessEngine;
+package chessengine.system;
 
 /**
  * A game of type: user playing against engine.

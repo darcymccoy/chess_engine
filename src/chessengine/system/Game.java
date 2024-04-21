@@ -1,4 +1,4 @@
-package packageForChessEngine;
+package chessengine.system;
 
 import java.util.Scanner;
 

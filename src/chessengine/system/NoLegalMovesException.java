@@ -1,4 +1,4 @@
-package packageForChessEngine;
+package chessengine.system;
 
 /**
  * Custom exception that is thrown whenever an attempt

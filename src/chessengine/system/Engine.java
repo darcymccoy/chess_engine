@@ -1,4 +1,4 @@
-package packageForChessEngine;
+package chessengine.system;
 
 /**
  * Calculation and evaluation engine for a chess position.

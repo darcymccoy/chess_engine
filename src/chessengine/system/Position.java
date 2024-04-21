@@ -1,4 +1,4 @@
-package packageForChessEngine;
+package chessengine.system;
 
 /**
  * Stores the information for a single chess position
