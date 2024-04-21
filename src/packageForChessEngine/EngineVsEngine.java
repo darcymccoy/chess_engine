@@ -1,18 +1,25 @@
 package packageForChessEngine;
 
-// Written by Darcy McCoy
-// Starting November 27, 2023
-
-// A game of type: engine playing against engine
-
+/**
+ * A game of type: engine playing against engine.
+ * 
+ * @author Darcy McCoy
+ * @version %I%
+ * @since 1.0
+ */
 public class EngineVsEngine extends Game {
+	/**
+	 * Default constructor.
+	 */
 	public EngineVsEngine() {
-		// Default constructor
 		super();
 	}
 	
+	/**
+	 * Starts the engineVsEngine game. This game will end automatically when a game ending 
+	 * situation is reached.
+	 */
 	public void play() {
-		// Starts the engineVsEngine game
 		startGame();
 		while(inGame) {
 			letEngineMakeMove();

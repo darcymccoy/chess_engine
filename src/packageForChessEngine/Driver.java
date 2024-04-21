@@ -1,19 +1,23 @@
 package packageForChessEngine;
 
-// Written by Darcy McCoy
-// Starting November 27, 2023
-
-// This is a chess engine designed to be able to play 
-// an entire game of chess against a human
-
 import java.util.Scanner;
 
-//Driver class
+/**
+ * Driver class for a chess engine designed to be able to play 
+ * an entire game of chess against a human
+ * 
+ * @author Darcy McCoy
+ * @version "%I%"
+ * @since 1.0
+ */
 public class Driver {
-
+	/**
+	 * Runs the games or tests specified in args.
+	 * 
+	 * @param args arguments to be ran when the program is ran
+	 */
 	public static void main(String[] args) {
 
-		// Initializing variables
 		Scanner userInput = new Scanner(System.in);
 		Position currentPosition = new Position(true,
 				"rnbq2bnr" + "pppppppp" + "--------" + "--------" + "--------" + "--------" + "PPPPPPPP" + "RNBQ5BNR");

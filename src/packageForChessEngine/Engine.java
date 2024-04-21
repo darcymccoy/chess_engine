@@ -1,10 +1,16 @@
 package packageForChessEngine;
 
-// Written by Darcy McCoy
-// Starting November 27, 2023
-
+/**
+ * Calculation and evaluation engine for a chess position.
+ * This class does not contain or store a chess position, and must 
+ * be passed a legal chess position to return accurate results.
+ * 
+ * @author Darcy McCoy
+ * @version %I%
+ * @since 1.0
+ */
 public class Engine {
-	// Piece values (each integer corresponds to a square on the board)
+	/** Pawn values based on location (each integer corresponds to a square on the board). */
 	private static final int[] PAWN_VALUES = {0, 0, 0, 0, 0, 0, 0, 0, 
 			140, 140, 140, 140, 140, 140, 140, 140, 
 			110, 110, 110, 120, 120, 110, 110, 110, 
@@ -13,6 +19,8 @@ public class Engine {
 			95, 100, 100, 110, 110, 100, 100, 96, 
 			90, 100, 100, 90, 90, 100, 100, 90, 
 			0, 0, 0, 0, 0, 0, 0, 0};
+	
+	/** Rook values based on location (each integer corresponds to a square on the board). */
 	private static final int[] ROOK_VALUES = {500, 500, 500, 500, 500, 500, 500, 500, 
 			500, 500, 500, 500, 500, 500, 500, 500, 
 			500, 500, 500, 500, 500, 500, 500, 500, 
@@ -21,6 +29,8 @@ public class Engine {
 			500, 500, 500, 500, 500, 500, 500, 500, 
 			500, 500, 500, 500, 500, 500, 500, 500, 
 			500, 500, 500, 519, 520, 505, 500, 500,};
+	
+	/** Knight values based on location (each integer corresponds to a square on the board). */
 	private static final int[] KNIGHT_VALUES = {200, 220, 220, 220, 220, 220, 220, 200, 
 			200, 270, 300, 300, 300, 300, 270, 200, 
 			200, 250, 320, 320, 320, 320, 250, 200, 
@@ -29,6 +39,8 @@ public class Engine {
 			200, 250, 309, 310, 310, 310, 250, 200, 
 			200, 250, 250, 250, 250, 250, 250, 200, 
 			100, 225, 215, 215, 215, 215, 225, 100};
+	
+	/** Bishop values based on location (each integer corresponds to a square on the board). */
 	private static final int[] BISHOP_VALUES = {280, 280, 280, 280, 280, 280, 280, 280, 
 			280, 310, 310, 310, 310, 310, 310, 280, 
 			280, 315, 315, 315, 315, 315, 315, 280, 
@@ -37,6 +49,8 @@ public class Engine {
 			280, 320, 320, 330, 330, 320, 320, 280, 
 			280, 340, 310, 310, 310, 310, 340, 280, 
 			280, 280, 280, 280, 280, 280, 280, 280};
+	
+	/** Queen values based on location (each integer corresponds to a square on the board). */
 	private static final int[] QUEEN_VALUES = {900, 900, 900, 900, 900, 900, 900, 900,
 			900, 900, 900, 900, 900, 900, 900, 900,
 			900, 900, 900, 900, 900, 900, 900, 900,
@@ -45,6 +59,8 @@ public class Engine {
 			900, 900, 900, 900, 900, 900, 900, 900,
 			900, 900, 900, 906, 906, 900, 900, 900,
 			900, 900, 900, 900, 900, 900, 900, 900};
+	
+	/** King values based on location (each integer corresponds to a square on the board). */
 	private static final int[] KING_VALUES = {100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
@@ -53,7 +69,8 @@ public class Engine {
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100040, 100030, 100000, 100000, 100000, 100040, 100000};
-	// Piece values for endgames
+	
+	/** Pawn endgame values based on location (each integer corresponds to a square on the board). */
 	private static final int[] PAWN_ENDGAME_VALUES = {0, 0, 0, 0, 0, 0, 0, 0, 
 			160, 160, 160, 160, 160, 160, 160, 160, 
 			140, 135, 130, 130, 130, 130, 135, 140, 
@@ -62,6 +79,8 @@ public class Engine {
 			100, 105, 105, 110, 110, 105, 105, 100, 
 			90, 100, 100, 90, 90, 100, 100, 90, 
 			0, 0, 0, 0, 0, 0, 0, 0};
+	
+	/** King endgame values based on location (each integer corresponds to a square on the board). */
 	private static final int[] KING_ENDGAME_VALUES = {100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100010, 100010, 100010, 100010, 100010, 100010, 100000, 
 			100000, 100010, 100030, 100030, 100030, 100030, 100010, 100000, 
@@ -71,13 +90,22 @@ public class Engine {
 			100000, 100010, 100010, 100010, 100010, 100010, 100010, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000};
 	
+	/**
+	 * Default constructor.
+	 */
 	public Engine() {
-		// Default constructor
 	}
 	
+	/**
+	 * Returns the top move (as decided by the engine) for a position. 
+	 * The engine searches to a hard coded depth of 3. 
+	 * If no legal moves are found, a {@code NoLegalMovesException} will be thrown.
+	 * 
+	 * @param currentPosition the <code>Position</code> to be searched for the top move
+	 * @return an int, the top move
+	 * @throws NoLegalMovesException if there are no legal moves in the position
+	 */
 	public int findTopMoveDepth3(Position currentPosition) throws NoLegalMovesException {
-		// Returns the top move for a position
-		// **If no legal moves are found, -1 will be returned**
 		int topMove = -1;
 		int topMoveMaxReply = 1000000;
 		int maxReplyDepth1 = -1000000;
@@ -118,9 +146,16 @@ public class Engine {
 		return topMove;
 	}
 	
+	/**
+	 * Returns the top move (as decided by the engine) for a position. 
+	 * The engine searches to a hard coded depth of 1. 
+	 * If no legal moves are found, a {@code NoLegalMovesException} will be thrown.
+	 * 
+	 * @param currentPosition the <code>Position</code> to be searched for the top move
+	 * @return an int, the top move
+	 * @throws NoLegalMovesException if there are no legal moves in the position
+	 */
 	public int findTopMoveDepth1(Position currentPosition) throws NoLegalMovesException {
-		// Returns an integer which is the top move for a position
-		// **If no legal moves are found, -1 will be returned**
 		int topMove = -1;
 		int topMoveEvaluation = 10000;
 		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
@@ -138,9 +173,41 @@ public class Engine {
 		return topMove;
 	}
 	
+	/**
+	 * Returns an integer which is an evaluation of the position
+	 * from the perspective of the color who is to play (in centipawns). A centipawn is one one-hundredth
+	 * of a pawns value. For example, conventionally a bishop is worth 3 points, but in a centipawn 
+	 * system a bishop is worth 300.
+	 * 
+	 * @param position the <code>Position</code> to be evaluated from the perspective of the color who is to play
+	 * @return <code>int</code> that will be positive if the position is better for the color who is to play; 
+	 * 			negative otherwise
+	 */
+	public int evaluatePosition(Position position) {
+		int positionEvaluation = 0;
+		for (int i = 0; i < position.getBoard().length(); i++) {
+			positionEvaluation += getPieceValue(position.atSqr(i), i);
+		}
+		if (position.isWhiteToPlay())
+			return positionEvaluation;
+		else
+			return positionEvaluation * -1;
+	}
+	
+	/**
+	 * Returns an integer which represents the bonuses and penalties for
+	 * a move (that has been played on the position). This integer is from the 
+	 * perspective of the color who is to play after the move has been made.
+	 * For example, a move which puts the opposing king into check is (generally) bad for the 
+	 * checked color so, for this move, some negative integer would be added to the bonus and penalty total.
+	 * This negative integer represents that the move aided the color making it and put the opposing 
+	 * color into a worse position.
+	 * 
+	 * @param position the <code>Position</code> after the move has been made on it
+	 * @param move an int value of the move that has been made
+	 * @return an <code>int</code> total of the bonuses and penalties that the move incurred
+	 */
 	public int moveBonusesAndPenalties(Position position, int move) {
-		// Returns an integer which represents the bonuses and penalties for 
-		// a move (that has been played on the position)
 		int bonusesAndPenalties = 0;
 		
 		if (position.isCheck())
@@ -153,22 +220,16 @@ public class Engine {
 		return bonusesAndPenalties;
 	}
 	
-	public int evaluatePosition(Position position) {
-		// Returns an integer (in centipawns) which is an evaluation of the position
-		// from the perspective of the color who is to play
-		int positionEvaluation = 0;
-		for (int i = 0; i < position.getBoard().length(); i++) {
-			positionEvaluation += getPieceValue(position.atSqr(i), i);
-		}
-		if (position.isWhiteToPlay())
-			return positionEvaluation;
-		else
-			return positionEvaluation * -1;
-	}
-	
+	/**
+	 * Returns an integer based on the type and location of a piece (in centipawns).
+	 * This integer is positive if the piece is white and negative if black.
+	 * 
+	 * 
+	 * @param piece a character representing the piece of the piece value to be returned
+	 * @param square int value of the square the piece is on in the current position
+	 * @return an integer which is the value of the piece based on type and location
+	 */
 	public int getPieceValue(char piece, int square) {
-		// Returns a int based on the value of any piece
-		// This int is positive if the piece is white and negative if black
 		switch (piece) {
 		case 'P':
 		case 'E':

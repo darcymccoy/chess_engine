@@ -1,51 +1,83 @@
 package packageForChessEngine;
 
-// Written by Darcy McCoy
-// Starting November 27, 2023
-
-// Contains the information for any type of chess game
-
 import java.util.Scanner;
 
+/**
+ * <code>abstract</code> class for any type of chess game. 
+ * To play a game, this class must be extended and the <code>play()</code> method be implemented.
+ * 
+ * @author Darcy McCoy
+ * @version %I%
+ * @since 1.0
+ */
 public abstract class Game {
+	/** The current position in this game. */
 	private Position currentPosition;
+	/** The moves that have previously been made in this game. */
 	private int[] movesMade;
+	/** Whether this game is currently being played. */
 	protected boolean inGame;
+	/** <code>Scanner</code> to get user input. */
 	private static Scanner scanner = new Scanner(System.in);
+	/** The chess engine which can play against a user or against itself. */
 	private static Engine engine = new Engine();
 
+	/**
+	 * Default constructor (Standard starting position, 
+	 * no moves have been made and the game hasn't been started.
+	 */
 	public Game() {
-		// Default constructor
 		this(new Position(), new int[0], false);
 	}
 
+	/**
+	 * Parameterized constructor to set the current position, the moves that have been made and whether 
+	 * the game is currently.
+	 * 
+	 * @param currentPosition the <code>Position</code> that the game will start from
+	 * @param movesMade integer array for the moves that have already been made
+	 * @param inGame <code>boolean</code> whether the game is currently being played
+	 */
 	public Game(Position currentPosition, int[] movesMade, boolean inGame) {
-		// Parameterized constructor
 		this.currentPosition = currentPosition;
 		this.movesMade = movesMade;
 		this.inGame = inGame;
 	}
 	
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param otherGame the <code>Game</code> to be copied.
+	 */
 	public Game(Game otherGame) {
-		// Copy constructor
 		this(otherGame.currentPosition, otherGame.movesMade, otherGame.inGame);
 	}
 	
+	/**
+	 * Starts and plays whichever game is extending this class.
+	 */
 	public abstract void play();
 
+	/**
+	 * Sets inGame to true.
+	 */
 	public void startGame() {
-		// Sets inGame to true
 		inGame = true;
 	}
 
+	/**
+	 * Sets inGame to false.
+	 */
 	public void stopGame() {
-		// Sets inGame to false
 		inGame = false;
 	}
 	
+	/**
+	 * Finds the best move according to the engine and 
+	 * makes that move on the current position.
+	 * If there are no legal moves then the game is ended.
+	 */
 	public void letEngineMakeMove() {
-		// Finds the best move according to the engine and 
-		// makes that move on the currentPosition
 		try {
 			int engineMove = engine.findTopMoveDepth3(currentPosition);
 			currentPosition.makeMove(engineMove);
@@ -54,9 +86,11 @@ public abstract class Game {
 			stopGame();
 		}
 	}
-
+	
+	/**
+	 * Prompts the user for a move and makes that move on the currentPosition.
+	 */
 	public void letUserMakeMove() {
-		// Prompts the user for a move and makes that move on the currentPosition
 		int userMove = 0;
 		
 		while (inGame) {
@@ -79,8 +113,12 @@ public abstract class Game {
 		}
 	}
 	
+	/**
+	 * Allows the user to choose whether to play white or black against the engine.
+	 * 
+	 * @return <code>true</code> if the user chooses to play white; <code>false</code> otherwise
+	 */
 	public boolean userChoosesToPlayWhite() {
-		// Allows the user to choose whether to play white or black against the engine
 		boolean userToPlayWhite = true;
 		
 		while (true) {
@@ -92,13 +130,16 @@ public abstract class Game {
 				System.out.println("This isn't one of the choices. Try again.");
 				continue;
 			}
-			
 			return userToPlayWhite;
 		}
 	}
 	
+	/**
+	 * Adds a move to the end of movesMade.
+	 * 
+	 * @param move the <code>int</code> move to be added to the moves that have been made
+	 */
 	public void addMoveToMovesMade(int move) {
-		// Adds the move to the end of movesMade
 		int[] newMovesMade = new int[movesMade.length + 1];
 		
 		for (int i = 0; i < movesMade.length; i++) {
@@ -108,51 +149,27 @@ public abstract class Game {
 		movesMade = newMovesMade;
 	}
 	
+	/**
+	 * Closes the scanner object.
+	 */
 	public void closeScanner() {
-		// Closes the scanner object
 		scanner.close();
 	}
 	
+	/**
+	 * Returns a string with the current position and the moves made.
+	 * 
+	 * @return String representation of the current position and the moves made
+	 */
 	public String toString() {
-		// Returns a string with the current position and the moves made
 		String printGame = currentPosition.toString() + "\n";
 
-		for (int i = 0; i < this.movesMade.length; i++) {
+		for (int i = 0; i < movesMade.length; i++) {
 			printGame += movesMade[i] + " ";
 			if (((i + 1) % 2) == 0)
 				printGame += "\n";
 		}
 		return printGame;
-	}
-
-	public Position getCurrentPosition() {
-		// Getter for currentPosition
-		return currentPosition;
-	}
-
-	public void setCurrentPosition(Position currentPosition) {
-		// Setter for currentPosition
-		this.currentPosition = currentPosition;
-	}
-
-	public int[] getMovesMade() {
-		// Getter for movesMade
-		return movesMade;
-	}
-
-	public void setMovesMade(int[] movesMade) {
-		// Setter for movesMade
-		this.movesMade = movesMade;
-	}
-
-	public boolean isInGame() {
-		// Getter for inGame
-		return inGame;
-	}
-
-	public void setInGame(boolean inGame) {
-		// Setter for inGame
-		this.inGame = inGame;
 	}
 	
 }

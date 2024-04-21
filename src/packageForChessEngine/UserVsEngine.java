@@ -1,18 +1,25 @@
 package packageForChessEngine;
 
-// Written by Darcy McCoy
-// Starting November 27, 2023
-
-// A game of type: user playing against engine
-
+/**
+ * A game of type: user playing against engine.
+ * 
+ * @author Darcy McCoy
+ * @version %I%
+ * @since 1.0
+ */
 public class UserVsEngine extends Game {
+	/**
+	 * Default constructor.
+	 */
 	public UserVsEngine() {
-		// Default constructor
 		super();
 	}
 	
+	/**
+	 * Starts the userVsEngine game. This game will end automatically when a game ending 
+	 * situation is reached.
+	 */
 	public void play() {
-		// Starts the userVsEngine game
 		startGame();
 		if (userChoosesToPlayWhite())
 			letUserMakeMove();
