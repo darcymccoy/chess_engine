@@ -238,32 +238,32 @@ public class Position {
 	 * Returns an array of pseudo legal moves that the piece can make. 
 	 * 
 	 * @param piece character representing the piece
-	 * @param pieceSquare int value where the piece is on the board
+	 * @param pieceSqr int value where the piece is on the board
 	 * @return int[] each <code>int</code> is a move
 	 */
-	public int[] findPossiblePieceMoves(char piece, int pieceSquare) {
+	public int[] findPossiblePieceMoves(char piece, int pieceSqr) {
 		switch (piece) {
 		case 'P':
 		case 'p':
 		case 'e':
 		case 'E':
-			return findPawnMoves(pieceSquare);
+			return findPawnMoves(pieceSqr);
 
 		case 'R':
 		case 'r':
-			return findStraightMoves(pieceSquare);
+			return findStraightMoves(pieceSqr);
 
 		case 'N':
 		case 'n':
-			return findKnightMoves(pieceSquare);
+			return findKnightMoves(pieceSqr);
 
 		case 'B':
 		case 'b':
-			return findDiagonalMoves(pieceSquare);
+			return findDiagonalMoves(pieceSqr);
 
 		case 'Q':
 		case 'q':
-			return findQueenMoves(pieceSquare);
+			return findQueenMoves(pieceSqr);
 
 		case '0':
 		case '1':
@@ -273,7 +273,7 @@ public class Position {
 		case '5':
 		case 'k':
 		case 'K':
-			return findKingMoves(pieceSquare);
+			return findKingMoves(pieceSqr);
 			
 		default:
 			return new int[0];
@@ -283,56 +283,56 @@ public class Position {
 	/**
 	 * Returns an array of moves that the knight can make
 	 * 
-	 * @param knightSquare int value where the piece is on the board
+	 * @param knightSqr int value where the piece is on the board
 	 * @return int[] each <code>int</code> is a move
 	 */
-	public int[] findKnightMoves(int knightSquare) {
+	public int[] findKnightMoves(int knightSqr) {
 		int[] knightMoves = new int[8];
 		int numberOfMoves = 0;
 		int[] inspectMoves = { NORTH_2 + EAST_1, NORTH_1 + EAST_2, SOUTH_1 + EAST_2, SOUTH_2 + EAST_1, 
 				SOUTH_2 + WEST_1, SOUTH_1 + WEST_2, NORTH_1 + WEST_2, NORTH_2 + WEST_1 };
 
 		// Assessing rank square
-		if (isRank8Sqr(knightSquare)) {
+		if (isRank8Sqr(knightSqr)) {
 			inspectMoves[7] = 0;
 			inspectMoves[6] = 0;
 			inspectMoves[1] = 0;
 			inspectMoves[0] = 0;
-		} else if (isRank7Sqr(knightSquare)) {
+		} else if (isRank7Sqr(knightSqr)) {
 			inspectMoves[7] = 0;
 			inspectMoves[0] = 0;
-		} else if (isRank1Sqr(knightSquare)) {
+		} else if (isRank1Sqr(knightSqr)) {
 			inspectMoves[5] = 0;
 			inspectMoves[4] = 0;
 			inspectMoves[3] = 0;
 			inspectMoves[2] = 0;
-		} else if (isRank2Sqr(knightSquare)) {
+		} else if (isRank2Sqr(knightSqr)) {
 			inspectMoves[4] = 0;
 			inspectMoves[3] = 0;
 		}
 
 		// Assessing file square
-		if (isFileHSqr(knightSquare)) {
+		if (isFileHSqr(knightSqr)) {
 			inspectMoves[3] = 0;
 			inspectMoves[2] = 0;
 			inspectMoves[1] = 0;
 			inspectMoves[0] = 0;
-		} else if (isFileGSqr(knightSquare)) {
+		} else if (isFileGSqr(knightSqr)) {
 			inspectMoves[2] = 0;
 			inspectMoves[1] = 0;
-		} else if (isFileASqr(knightSquare)) {
+		} else if (isFileASqr(knightSqr)) {
 			inspectMoves[7] = 0;
 			inspectMoves[6] = 0;
 			inspectMoves[5] = 0;
 			inspectMoves[4] = 0;
-		} else if (isFileBSqr(knightSquare)) {
+		} else if (isFileBSqr(knightSqr)) {
 			inspectMoves[6] = 0;
 			inspectMoves[5] = 0;
 		}
 		for (int inspectMove : inspectMoves) {
-			if ((inspectMove != 0) && (isOtherColorAtSqr(knightSquare + inspectMove)
-					|| isEmptySqr(knightSquare + inspectMove))) {
-				knightMoves[numberOfMoves++] = knightSquare * 100 + knightSquare + inspectMove;
+			if ((inspectMove != 0) && (isOtherColorAtSqr(knightSqr + inspectMove)
+					|| isEmptySqr(knightSqr + inspectMove))) {
+				knightMoves[numberOfMoves++] = knightSqr * 100 + knightSqr + inspectMove;
 			}
 		}
 		return removeElementsThatAreZero(knightMoves, numberOfMoves);
@@ -341,51 +341,51 @@ public class Position {
 	/**
 	 * Returns an array of moves that the king can make
 	 * 
-	 * @param kingSquare int value where the piece is on the board
+	 * @param kingSqr int value where the piece is on the board
 	 * @return int[] each <code>int</code> is a move
 	 */
-	public int[] findKingMoves(int kingSquare) {
-		char piece = atSqr(kingSquare);
+	public int[] findKingMoves(int kingSqr) {
+		char piece = atSqr(kingSqr);
 		int[] kingMoves = new int[10];
 		int numberOfMoves = 0;
 		int[] inspectMoves = { NORTH_1, NORTH_1_EAST_1, EAST_1, SOUTH_1_EAST_1, SOUTH_1, SOUTH_1_WEST_1, WEST_1, NORTH_1_WEST_1 };
 
-		if (isFileHSqr(kingSquare)) {
+		if (isFileHSqr(kingSqr)) {
 			inspectMoves[1] = 0;
 			inspectMoves[2] = 0;
 			inspectMoves[3] = 0;
-		} else if (isFileASqr(kingSquare)) {
+		} else if (isFileASqr(kingSqr)) {
 			inspectMoves[5] = 0;
 			inspectMoves[6] = 0;
 			inspectMoves[7] = 0;
 		}
-		if (isRank1Sqr(kingSquare)) {
+		if (isRank1Sqr(kingSqr)) {
 			inspectMoves[3] = 0;
 			inspectMoves[4] = 0;
 			inspectMoves[5] = 0;
-		} else if (isRank8Sqr(kingSquare)) {
+		} else if (isRank8Sqr(kingSqr)) {
 			inspectMoves[0] = 0;
 			inspectMoves[1] = 0;
 			inspectMoves[7] = 0;
 		}
 		for (int inspectMove : inspectMoves) {
-			if ((inspectMove != 0) && (isOtherColorAtSqr(kingSquare + inspectMove)
-					|| isEmptySqr(kingSquare + inspectMove))) {
-				kingMoves[numberOfMoves++] = kingSquare * 100 + kingSquare + inspectMove;
+			if ((inspectMove != 0) && (isOtherColorAtSqr(kingSqr + inspectMove)
+					|| isEmptySqr(kingSqr + inspectMove))) {
+				kingMoves[numberOfMoves++] = kingSqr * 100 + kingSqr + inspectMove;
 			}
 		}
 
 		// Kingside castling
-		if (((((piece == '5') || (piece == '4')) && (atSqr(kingSquare + EAST_3) == 'R')) 
-				|| (((piece == '2') || (piece == '1')) && (atSqr(kingSquare + EAST_3) == 'r')))
-				&& (isEmptySqr(kingSquare + EAST_1)) && (isEmptySqr(kingSquare + EAST_2))) {
-			kingMoves[numberOfMoves++] = kingSquare * 100 + kingSquare + EAST_2;
+		if (((((piece == '5') || (piece == '4')) && (atSqr(kingSqr + EAST_3) == 'R')) 
+				|| (((piece == '2') || (piece == '1')) && (atSqr(kingSqr + EAST_3) == 'r')))
+				&& (isEmptySqr(kingSqr + EAST_1)) && (isEmptySqr(kingSqr + EAST_2))) {
+			kingMoves[numberOfMoves++] = kingSqr * 100 + kingSqr + EAST_2;
 		}
 		// Queenside castling
-		if (((((piece == '5') || (piece == '3')) && (atSqr(kingSquare + WEST_4) == 'R')) 
-				|| (((piece == '2') || (piece == '0')) && (atSqr(kingSquare + WEST_4) == 'r')))
-				&& (isEmptySqr(kingSquare + WEST_1)) && (isEmptySqr(kingSquare + WEST_2)) && (isEmptySqr(kingSquare + WEST_3))) {
-			kingMoves[numberOfMoves++] = kingSquare * 100 + kingSquare + WEST_2;
+		if (((((piece == '5') || (piece == '3')) && (atSqr(kingSqr + WEST_4) == 'R')) 
+				|| (((piece == '2') || (piece == '0')) && (atSqr(kingSqr + WEST_4) == 'r')))
+				&& (isEmptySqr(kingSqr + WEST_1)) && (isEmptySqr(kingSqr + WEST_2)) && (isEmptySqr(kingSqr + WEST_3))) {
+			kingMoves[numberOfMoves++] = kingSqr * 100 + kingSqr + WEST_2;
 		}
 		return removeElementsThatAreZero(kingMoves, numberOfMoves);
 	}
@@ -393,12 +393,12 @@ public class Position {
 	/**
 	 * Returns an array of moves that the queen can make
 	 * 
-	 * @param queenSquare int value where the piece is on the board
+	 * @param queenSqr int value where the piece is on the board
 	 * @return int[] each <code>int</code> is a move
 	 */
-	public int[] findQueenMoves(int queenSquare) {
-		int[] tempStraightMoves = findStraightMoves(queenSquare);
-		int[] tempDiagonalMoves = findDiagonalMoves(queenSquare);
+	public int[] findQueenMoves(int queenSqr) {
+		int[] tempStraightMoves = findStraightMoves(queenSqr);
+		int[] tempDiagonalMoves = findDiagonalMoves(queenSqr);
 		int[] queenMoves = new int[tempStraightMoves.length + tempDiagonalMoves.length];
 
 		for (int i = 0; i < tempStraightMoves.length; i++) {
@@ -413,59 +413,59 @@ public class Position {
 	/**
 	 * Returns an array of moves that the pawn can make.
 	 * 
-	 * @param pawnSquare int value where the piece is on the board
+	 * @param pawnSqr int value where the piece is on the board
 	 * @return int[] each <code>int</code> is a move
 	 */
-	public int[] findPawnMoves(int pawnSquare) {
+	public int[] findPawnMoves(int pawnSqr) {
 		int[] pawnMoves = new int[12];
 		int numberOfMoves = 0;
 
 		if (whiteToPlay) {
 			// White pawns
-			if (isEmptySqr(pawnSquare + NORTH_1)) {
-				pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + NORTH_1);
-				if ((isRank2Sqr(pawnSquare)) && (isEmptySqr(pawnSquare + NORTH_2))) {
-					pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + NORTH_2);
+			if (isEmptySqr(pawnSqr + NORTH_1)) {
+				pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_1);
+				if ((isRank2Sqr(pawnSqr)) && (isEmptySqr(pawnSqr + NORTH_2))) {
+					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_2);
 				}
 			}
-			if (isFileASqr(pawnSquare)) {
-				if ((isOtherColorAtSqr(pawnSquare + NORTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'e')) {
-					pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
+			if (isFileASqr(pawnSqr)) {
+				if ((isOtherColorAtSqr(pawnSqr + NORTH_1_EAST_1)) || (atSqr(pawnSqr + EAST_1) == 'e')) {
+					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_1_EAST_1);
 				}
-			} else if (isFileHSqr(pawnSquare)) {
-				if ((isOtherColorAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
-					pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
+			} else if (isFileHSqr(pawnSqr)) {
+				if ((isOtherColorAtSqr(pawnSqr + NORTH_1_WEST_1)) || (atSqr(pawnSqr + WEST_1) == 'e')) {
+					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_1_WEST_1);
 				}
 			} else {
-				if ((isOtherColorAtSqr(pawnSquare + NORTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'e')) {
-					pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + NORTH_1_EAST_1);
+				if ((isOtherColorAtSqr(pawnSqr + NORTH_1_EAST_1)) || (atSqr(pawnSqr + EAST_1) == 'e')) {
+					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_1_EAST_1);
 				}
-				if ((isOtherColorAtSqr(pawnSquare + NORTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'e')) {
-					pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + NORTH_1_WEST_1);
+				if ((isOtherColorAtSqr(pawnSqr + NORTH_1_WEST_1)) || (atSqr(pawnSqr + WEST_1) == 'e')) {
+					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_1_WEST_1);
 				}
 			}
 		} else {
 			// Black pawns
-			if (isEmptySqr(pawnSquare + SOUTH_1)) {
-				pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + SOUTH_1);
-				if ((isRank7Sqr(pawnSquare)) && (isEmptySqr(pawnSquare + SOUTH_2))) {
-					pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + SOUTH_2);
+			if (isEmptySqr(pawnSqr + SOUTH_1)) {
+				pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_1);
+				if ((isRank7Sqr(pawnSqr)) && (isEmptySqr(pawnSqr + SOUTH_2))) {
+					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_2);
 				}
 			}
-			if (isFileASqr(pawnSquare)) {
-				if ((isOtherColorAtSqr(pawnSquare + SOUTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'E')) {
-					pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_EAST_1);
+			if (isFileASqr(pawnSqr)) {
+				if ((isOtherColorAtSqr(pawnSqr + SOUTH_1_EAST_1)) || (atSqr(pawnSqr + EAST_1) == 'E')) {
+					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_1_EAST_1);
 				}
-			} else if (isFileHSqr(pawnSquare)) {
-				if ((isOtherColorAtSqr(pawnSquare + SOUTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'E')) {
-					pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_WEST_1);
+			} else if (isFileHSqr(pawnSqr)) {
+				if ((isOtherColorAtSqr(pawnSqr + SOUTH_1_WEST_1)) || (atSqr(pawnSqr + WEST_1) == 'E')) {
+					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_1_WEST_1);
 				}
 			} else {
-				if ((isOtherColorAtSqr(pawnSquare + SOUTH_1_EAST_1)) || (atSqr(pawnSquare + EAST_1) == 'E')) {
-					pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_EAST_1);
+				if ((isOtherColorAtSqr(pawnSqr + SOUTH_1_EAST_1)) || (atSqr(pawnSqr + EAST_1) == 'E')) {
+					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_1_EAST_1);
 				}
-				if ((isOtherColorAtSqr(pawnSquare + SOUTH_1_WEST_1)) || (atSqr(pawnSquare + WEST_1) == 'E')) {
-					pawnMoves[numberOfMoves++] = (pawnSquare * 100) + (pawnSquare + SOUTH_1_WEST_1);
+				if ((isOtherColorAtSqr(pawnSqr + SOUTH_1_WEST_1)) || (atSqr(pawnSqr + WEST_1) == 'E')) {
+					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_1_WEST_1);
 				}
 			}
 		}
@@ -475,19 +475,19 @@ public class Position {
 	/**
 	 * Returns an array of moves along straight directions.
 	 * 
-	 * @param pieceSquare int value where the piece is on the board
+	 * @param pieceSqr int value where the piece is on the board
 	 * @return int[] each <code>int</code> is a move
 	 */
-	public int[] findStraightMoves(int pieceSquare) {
+	public int[] findStraightMoves(int pieceSqr) {
 		int[] straightMoves = new int[28];
 		int numberOfMoves = 0;
 
 		// Direction north
-		for (int inspectSquare = (pieceSquare + NORTH_1); inspectSquare >= A8_SQR; inspectSquare += NORTH_1) {
-			if (isEmptySqr(inspectSquare)) {
-				straightMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
-			} else if (isOtherColorAtSqr(inspectSquare)) {
-				straightMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
+		for (int inspectSqr = (pieceSqr + NORTH_1); inspectSqr >= A8_SQR; inspectSqr += NORTH_1) {
+			if (isEmptySqr(inspectSqr)) {
+				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+			} else if (isOtherColorAtSqr(inspectSqr)) {
+				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
 				break;
 			} else {
 				break;
@@ -495,11 +495,11 @@ public class Position {
 		}
 
 		// Direction south
-		for (int inspectSquare = (pieceSquare + SOUTH_1); inspectSquare <= H1_SQR; inspectSquare += SOUTH_1) {
-			if (isEmptySqr(inspectSquare)) {
-				straightMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
-			} else if (isOtherColorAtSqr(inspectSquare)) {
-				straightMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
+		for (int inspectSqr = (pieceSqr + SOUTH_1); inspectSqr <= H1_SQR; inspectSqr += SOUTH_1) {
+			if (isEmptySqr(inspectSqr)) {
+				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+			} else if (isOtherColorAtSqr(inspectSqr)) {
+				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
 				break;
 			} else {
 				break;
@@ -507,11 +507,11 @@ public class Position {
 		}
 
 		// Direction east
-		for (int inspectSquare = (pieceSquare + EAST_1); !isFileHSqr(inspectSquare + WEST_1); inspectSquare += EAST_1) {
-			if (isEmptySqr(inspectSquare)) {
-				straightMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
-			} else if (isOtherColorAtSqr(inspectSquare)) {
-				straightMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
+		for (int inspectSqr = (pieceSqr + EAST_1); !isFileHSqr(inspectSqr + WEST_1); inspectSqr += EAST_1) {
+			if (isEmptySqr(inspectSqr)) {
+				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+			} else if (isOtherColorAtSqr(inspectSqr)) {
+				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
 				break;
 			} else {
 				break;
@@ -519,11 +519,11 @@ public class Position {
 		}
 
 		// Direction west
-		for (int inspectSquare = (pieceSquare + WEST_1); !isFileASqr(inspectSquare + EAST_1); inspectSquare += WEST_1) {
-			if (isEmptySqr(inspectSquare)) {
-				straightMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
-			} else if (isOtherColorAtSqr(inspectSquare)) {
-				straightMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
+		for (int inspectSqr = (pieceSqr + WEST_1); !isFileASqr(inspectSqr + EAST_1); inspectSqr += WEST_1) {
+			if (isEmptySqr(inspectSqr)) {
+				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+			} else if (isOtherColorAtSqr(inspectSqr)) {
+				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
 				break;
 			} else {
 				break;
@@ -535,55 +535,55 @@ public class Position {
 	/**
 	 * Returns an array of moves along diagonal directions
 	 * 
-	 * @param pieceSquare int value where the piece is on the board
+	 * @param pieceSqr int value where the piece is on the board
 	 * @return int[] each <code>int</code> is a move
 	 */
-	public int[] findDiagonalMoves(int pieceSquare) {
+	public int[] findDiagonalMoves(int pieceSqr) {
 		int[] diagonalMoves = new int[28];
 		int numberOfMoves = 0;
 		// Direction north-east
-		for (int inspectSquare = (pieceSquare + NORTH_1_EAST_1); (inspectSquare >= A8_SQR)
-				&& (!isFileHSqr(inspectSquare + SOUTH_1_WEST_1)); inspectSquare += NORTH_1_EAST_1) {
-			if (isEmptySqr(inspectSquare)) {
-				diagonalMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
-			} else if (isOtherColorAtSqr(inspectSquare)) {
-				diagonalMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
+		for (int inspectSqr = (pieceSqr + NORTH_1_EAST_1); (inspectSqr >= A8_SQR)
+				&& (!isFileHSqr(inspectSqr + SOUTH_1_WEST_1)); inspectSqr += NORTH_1_EAST_1) {
+			if (isEmptySqr(inspectSqr)) {
+				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+			} else if (isOtherColorAtSqr(inspectSqr)) {
+				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
 				break;
 			} else {
 				break;
 			}
 		}
 		// Direction south-east
-		for (int inspectSquare = (pieceSquare + SOUTH_1_EAST_1); (inspectSquare <= H1_SQR)
-				&& (!isFileHSqr(inspectSquare + NORTH_1_WEST_1)); inspectSquare += SOUTH_1_EAST_1) {
-			if (isEmptySqr(inspectSquare)) {
-				diagonalMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
-			} else if (isOtherColorAtSqr(inspectSquare)) {
-				diagonalMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
+		for (int inspectSqr = (pieceSqr + SOUTH_1_EAST_1); (inspectSqr <= H1_SQR)
+				&& (!isFileHSqr(inspectSqr + NORTH_1_WEST_1)); inspectSqr += SOUTH_1_EAST_1) {
+			if (isEmptySqr(inspectSqr)) {
+				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+			} else if (isOtherColorAtSqr(inspectSqr)) {
+				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
 				break;
 			} else {
 				break;
 			}
 		}
 		// Direction south-west
-		for (int inspectSquare = (pieceSquare + SOUTH_1_WEST_1); (inspectSquare <= H1_SQR)
-				&& (!isFileASqr(inspectSquare + NORTH_1_EAST_1)); inspectSquare += SOUTH_1_WEST_1) {
-			if (isEmptySqr(inspectSquare)) {
-				diagonalMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
-			} else if (isOtherColorAtSqr(inspectSquare)) {
-				diagonalMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
+		for (int inspectSqr = (pieceSqr + SOUTH_1_WEST_1); (inspectSqr <= H1_SQR)
+				&& (!isFileASqr(inspectSqr + NORTH_1_EAST_1)); inspectSqr += SOUTH_1_WEST_1) {
+			if (isEmptySqr(inspectSqr)) {
+				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+			} else if (isOtherColorAtSqr(inspectSqr)) {
+				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
 				break;
 			} else {
 				break;
 			}
 		}
 		// Direction north-west
-		for (int inspectSquare = (pieceSquare + NORTH_1_WEST_1); (inspectSquare >= A8_SQR)
-				&& (!isFileASqr(inspectSquare + SOUTH_1_EAST_1)); inspectSquare += NORTH_1_WEST_1) {
-			if (isEmptySqr(inspectSquare)) {
-				diagonalMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
-			} else if (isOtherColorAtSqr(inspectSquare)) {
-				diagonalMoves[numberOfMoves++] = (pieceSquare * 100) + inspectSquare;
+		for (int inspectSqr = (pieceSqr + NORTH_1_WEST_1); (inspectSqr >= A8_SQR)
+				&& (!isFileASqr(inspectSqr + SOUTH_1_EAST_1)); inspectSqr += NORTH_1_WEST_1) {
+			if (isEmptySqr(inspectSqr)) {
+				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+			} else if (isOtherColorAtSqr(inspectSqr)) {
+				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
 				break;
 			} else {
 				break;
@@ -705,27 +705,27 @@ public class Position {
 	/**
 	 * Returns true if the square is attacked by a piece of the corresponding color.
 	 * 
-	 * @param square int, the square to be assessed
+	 * @param sqr int, the square to be assessed
 	 * @param whiteIsAttacking boolean whether white is the color to be assessed on it's attacking of the square
 	 * @return <code>true</code> if this square is attacked by the chosen color; 
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isAttackedSqr(int square, boolean whiteIsAttacking) {
+	public boolean isAttackedSqr(int sqr, boolean whiteIsAttacking) {
 		Position tempPosition = clone();
-		if ((isWhitePiece(atSqr(square)) || (isEmptySqr(square))) && whiteIsAttacking)
-			tempPosition.updateSqr('q', square);
-		else if ((isBlackPiece(atSqr(square)) || (isEmptySqr(square))) && !whiteIsAttacking)
-			tempPosition.updateSqr('Q', square);
+		if ((isWhitePiece(atSqr(sqr)) || (isEmptySqr(sqr))) && whiteIsAttacking)
+			tempPosition.updateSqr('q', sqr);
+		else if ((isBlackPiece(atSqr(sqr)) || (isEmptySqr(sqr))) && !whiteIsAttacking)
+			tempPosition.updateSqr('Q', sqr);
 		
 		if (whiteToPlay != whiteIsAttacking)
 			tempPosition.whiteToPlay = whiteIsAttacking;
 		
 		int[] tempMoves = tempPosition.findPossibleMoves();
 		for (int i = 0; i < tempMoves.length; i++) {
-			if ((tempMoves[i] % 100) == square)
+			if ((tempMoves[i] % 100) == sqr)
 				return true;
 		}
-		return (atSqr(square) == 'E') || (atSqr(square) == 'e');
+		return (atSqr(sqr) == 'E') || (atSqr(sqr) == 'e');
 	}
 	
 	/**
@@ -747,114 +747,114 @@ public class Position {
 	/**
 	 * Returns true if the square is on the 1st rank of the board.
 	 * 
-	 * @param square int value of the square
+	 * @param sqr int value of the square
 	 * @return <code>true</code> if this square is on the 1st rank; <code>false</code> otherwise.
 	 */
-	public boolean isRank1Sqr(int square) {
-		return (square >= A1_SQR) && (square <= H1_SQR);
+	public boolean isRank1Sqr(int sqr) {
+		return (sqr >= A1_SQR) && (sqr <= H1_SQR);
 	}
 	
 	/**
 	 * Returns true if the square is on the 2nd rank of the board.
 	 * 
-	 * @param square int value of the square
+	 * @param sqr int value of the square
 	 * @return <code>true</code> if this square is on the 2nd rank; <code>false</code> otherwise.
 	 */
-	public boolean isRank2Sqr(int square) {
-		return (square >= A2_SQR) && (square <= H2_SQR);
+	public boolean isRank2Sqr(int sqr) {
+		return (sqr >= A2_SQR) && (sqr <= H2_SQR);
 	}
 	
 	/**
 	 * Returns true if the square is on the 7th rank of the board.
 	 * 
-	 * @param square int value of the square
+	 * @param sqr int value of the square
 	 * @return <code>true</code> if this square is on the 7th rank; <code>false</code> otherwise.
 	 */
-	public boolean isRank7Sqr(int square) {
-		return (square >= A7_SQR) && (square <= H7_SQR);
+	public boolean isRank7Sqr(int sqr) {
+		return (sqr >= A7_SQR) && (sqr <= H7_SQR);
 	}
 	
 	/**
 	 * Returns true if the square is on the 8th rank of the board.
 	 * 
-	 * @param square int value of the square
+	 * @param sqr int value of the square
 	 * @return <code>true</code> if this square is on the 8th rank; <code>false</code> otherwise.
 	 */
-	public boolean isRank8Sqr(int square) {
-		return (square >= A8_SQR) && (square <= H8_SQR);
+	public boolean isRank8Sqr(int sqr) {
+		return (sqr >= A8_SQR) && (sqr <= H8_SQR);
 	}
 	
 	/**
 	 * Returns true if the square is on file A of the board.
 	 * 
-	 * @param square int value of the square
+	 * @param sqr int value of the square
 	 * @return <code>true</code> if this square is on file A; <code>false</code> otherwise.
 	 */
-	public boolean isFileASqr(int square) {
-		return square % 8 == 0;
+	public boolean isFileASqr(int sqr) {
+		return sqr % 8 == 0;
 	}
 	
 	/**
 	 * Returns true if the square is on file B of the board.
 	 * 
-	 * @param square int value of the square
+	 * @param sqr int value of the square
 	 * @return <code>true</code> if this square is on file B; <code>false</code> otherwise.
 	 */
-	public boolean isFileBSqr(int square) {
-		return (square + WEST_1) % 8 == 0;
+	public boolean isFileBSqr(int sqr) {
+		return (sqr + WEST_1) % 8 == 0;
 	}
 	
 	/**
 	 * Returns true if the square is on file G of the board.
 	 * 
-	 * @param square int value of the square
+	 * @param sqr int value of the square
 	 * @return <code>true</code> if this square is on file G; <code>false</code> otherwise.
 	 */
-	public boolean isFileGSqr(int square) {
-		return (square + EAST_2) % 8 == 0;
+	public boolean isFileGSqr(int sqr) {
+		return (sqr + EAST_2) % 8 == 0;
 	}
 	
 	/**
 	 * Returns true if the square is on file H of the board.
 	 * 
-	 * @param square int value of the square
+	 * @param sqr int value of the square
 	 * @return <code>true</code> if this square is on file H; <code>false</code> otherwise.
 	 */
-	public boolean isFileHSqr(int square) {
-		return (square + EAST_1) % 8 == 0;
+	public boolean isFileHSqr(int sqr) {
+		return (sqr + EAST_1) % 8 == 0;
 	}
 	
 	/**
 	 * Returns true if the piece at this square is the opposite color of the color who is to play.
 	 * 
-	 * @param square int value of the square
+	 * @param sqr int value of the square
 	 * @return <code>true</code> if there is a piece of the opposite color at this square; <code>false</code> otherwise.
 	 */
-	public boolean isOtherColorAtSqr(int square) {
+	public boolean isOtherColorAtSqr(int sqr) {
 		if (whiteToPlay)
-			return isBlackPiece(atSqr(square));
+			return isBlackPiece(atSqr(sqr));
 		else
-			return isWhitePiece(atSqr(square));
+			return isWhitePiece(atSqr(sqr));
 	}
 	
 	/**
 	 * Returns true if there is no piece at this square.
 	 * 
-	 * @param square int value of the square
+	 * @param sqr int value of the square
 	 * @return <code>true</code> if this square has no piece on it; <code>false</code> otherwise.
 	 */
-	public boolean isEmptySqr(int square) {
-		return atSqr(square) == '-';
+	public boolean isEmptySqr(int sqr) {
+		return atSqr(sqr) == '-';
 	}
 	
 	/**
 	 * Updates this square on the board to either empty or to the piece that is passed.
 	 * 
 	 * @param charToPut character representing the piece or '-' for an empty square
-	 * @param square int value of the square to be updated
+	 * @param sqr int value of the square to be updated
 	 */
-	public void updateSqr(char charToPut, int square) {
-		board = board.substring(A8_SQR, square) + charToPut + board.substring(square + 1);
+	public void updateSqr(char charToPut, int sqr) {
+		board = board.substring(A8_SQR, sqr) + charToPut + board.substring(sqr + 1);
 	}
 	
 	/**
@@ -926,11 +926,11 @@ public class Position {
 	/**
 	 * Returns the contents of a square.
 	 * 
-	 * @param square int value the square 
+	 * @param sqr int value the square 
 	 * @return character contents of the square
 	 */
-	public char atSqr(int square) {
-		return board.charAt(square);
+	public char atSqr(int sqr) {
+		return board.charAt(sqr);
 	}
 	
 	/**
