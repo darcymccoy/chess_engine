@@ -736,15 +736,10 @@ public class Position {
 	 */
 	public int findKingSqr(boolean whiteKingColor) {
 		for (int i = 0; i < board.length(); i++) {
-			if (whiteKingColor) {
-				if ((atSqr(i) == 'K') || (atSqr(i) == '5') || (atSqr(i) == '4') || (atSqr(i) == '3')) {
-					return i;
-				}
-			} else {
-				if ((atSqr(i) == 'k') || (atSqr(i) == '2') || (atSqr(i) == '1') || (atSqr(i) == '0')) {
-					return i;
-				}
-			}
+			if ((whiteKingColor && ((atSqr(i) == 'K') || (atSqr(i) == '5') || (atSqr(i) == '4') || (atSqr(i) == '3')))
+					|| (!whiteKingColor
+							&& ((atSqr(i) == 'k') || (atSqr(i) == '2') || (atSqr(i) == '1') || (atSqr(i) == '0'))))
+				return i;
 		}
 		return -1;
 	}

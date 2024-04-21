@@ -1,7 +1,6 @@
 package chessengine.driver;
 
 import java.util.Scanner;
-
 import chessengine.system.Engine;
 import chessengine.system.EngineVsEngine;
 import chessengine.system.Position;
