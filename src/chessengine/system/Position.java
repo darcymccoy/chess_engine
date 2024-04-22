@@ -894,36 +894,6 @@ public class Position {
 	}
 	
 	/**
-	 * Gets the starting square of a move.
-	 * 
-	 * @param move int, the move that the start square will be found from
-	 * @return int the square that the piece making this move started on
-	 */
-	public int getStartSqr(int move) {
-		return (move % 10000) / 100;
-	}
-	
-	/**
-	 * Gets the end square of a move.
-	 * 
-	 * @param move int, the move that the end square will be found from
-	 * @return int the square that the piece making this move ended on
-	 */
-	public int getEndSqr(int move) {
-		return move % 100;
-	}
-	
-	/**
-	 * Gets the corresponding promotion number of a move. If the move isn't promotion, 0 will be returned.
-	 * 
-	 * @param move int move that the pawn is making
-	 * @return int corresponding to the promotion type of the pawn
-	 */
-	public int getPromoteType(int move) {
-		return move / 1000000;
-	}
-	
-	/**
 	 * Returns the contents of a square.
 	 * 
 	 * @param sqr int value the square 
@@ -976,8 +946,6 @@ public class Position {
 	}
 	
 	/**
-	 * Getter for white to play.
-	 * 
 	 * @return <code>true</code> if white is to play; <code>false</code> otherwise.
 	 */
 	public boolean isWhiteToPlay() {
@@ -985,8 +953,6 @@ public class Position {
 	}
 	
 	/**
-	 * Setter for white to play.
-	 * 
 	 * @param whiteToPlay <code>boolean</code> whether to set white as the color to play
 	 */
 	public void setWhiteToPlay(boolean whiteToPlay) {
@@ -994,8 +960,6 @@ public class Position {
 	}
 	
 	/**
-	 * Getter for the board.
-	 * 
 	 * @return String, the board as 64 characters starting from square A8
 	 */
 	public String getBoard() {
@@ -1003,8 +967,6 @@ public class Position {
 	}
 	
 	/**
-	 * Setter for board
-	 * 
 	 * @param board <code>String</code>, the new board
 	 */
 	public void setBoard(String board) {

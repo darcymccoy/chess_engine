@@ -226,43 +226,43 @@ public class Engine {
 	 * 
 	 * 
 	 * @param piece a character representing the piece of the piece value to be returned
-	 * @param square int value of the square the piece is on in the current position
+	 * @param sqr int value of the square the piece is on in the current position
 	 * @return an integer which is the value of the piece based on type and location
 	 */
-	public int getPieceValue(char piece, int square) {
+	public int getPieceValue(char piece, int sqr) {
 		switch (piece) {
 		case 'P':
 		case 'E':
-			return PAWN_VALUES[square];
+			return PAWN_VALUES[sqr];
 		case 'p':
 		case 'e':
-			return PAWN_VALUES[PAWN_VALUES.length - 1 - square] * -1;
+			return PAWN_VALUES[PAWN_VALUES.length - 1 - sqr] * -1;
 		case 'R':
-			return ROOK_VALUES[square];
+			return ROOK_VALUES[sqr];
 		case 'r':
-			return ROOK_VALUES[ROOK_VALUES.length - 1 - square] * -1;
+			return ROOK_VALUES[ROOK_VALUES.length - 1 - sqr] * -1;
 		case 'N':
-			return KNIGHT_VALUES[square];
+			return KNIGHT_VALUES[sqr];
 		case 'n':
-			return KNIGHT_VALUES[KNIGHT_VALUES.length - 1 - square] * -1;
+			return KNIGHT_VALUES[KNIGHT_VALUES.length - 1 - sqr] * -1;
 		case 'B':
-			return BISHOP_VALUES[square];
+			return BISHOP_VALUES[sqr];
 		case 'b':
-			return BISHOP_VALUES[BISHOP_VALUES.length - 1 - square] * -1;
+			return BISHOP_VALUES[BISHOP_VALUES.length - 1 - sqr] * -1;
 		case 'Q':
-			return QUEEN_VALUES[square];
+			return QUEEN_VALUES[sqr];
 		case 'q':
-			return QUEEN_VALUES[QUEEN_VALUES.length - 1 - square] * -1;
+			return QUEEN_VALUES[QUEEN_VALUES.length - 1 - sqr] * -1;
 		case 'K':
 		case '5':
 		case '4':
 		case '3':
-			return KING_VALUES[square];
+			return KING_VALUES[sqr];
 		case 'k':
 		case '2':
 		case '1':
 		case '0':
-			return KING_VALUES[KING_VALUES.length - 1 - square] * -1;
+			return KING_VALUES[KING_VALUES.length - 1 - sqr] * -1;
 		default:
 			return 0;
 		}
