@@ -102,28 +102,28 @@ public class Engine {
 	 * If no legal moves are found, a {@code NoLegalMovesException} will be thrown.
 	 * 
 	 * @param currentPosition the <code>Position</code> to be searched for the top move
-	 * @return an int, the top move
+	 * @return <code>Move</code> the top move
 	 * @throws NoLegalMovesException if there are no legal moves in the position
 	 */
-	public int findTopMoveDepth3(Position currentPosition) throws NoLegalMovesException {
-		int topMove = -1;
+	public Move findTopMoveDepth3(Position currentPosition) throws NoLegalMovesException {
+		Move topMove = null;
 		int topMoveMaxReply = 1000000;
 		int maxReplyDepth1 = -1000000;
 		int maxReplyDepth2 = 1000000;
 		
-		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
+		Move[] legalMovesDepth1 = currentPosition.findLegalMoves();
 		for (int i = 0; i < legalMovesDepth1.length; i++) {
 			maxReplyDepth1 = -1000000;
 			Position tempPositionDepth1 = currentPosition.clone();
 			tempPositionDepth1.makeMove(legalMovesDepth1[i]);
 			
-			int[] legalMovesDepth2 = tempPositionDepth1.findLegalMoves();
+			Move[] legalMovesDepth2 = tempPositionDepth1.findLegalMoves();
 			for (int j = 0; j < legalMovesDepth2.length; j++) {
 				maxReplyDepth2 = 1000000;
 				Position tempPositionDepth2 = tempPositionDepth1.clone();
 				tempPositionDepth2.makeMove(legalMovesDepth2[j]);
 			
-				int[] legalMovesDepth3 = tempPositionDepth2.findLegalMoves();
+				Move[] legalMovesDepth3 = tempPositionDepth2.findLegalMoves();
 				for (int k = 0; k < legalMovesDepth3.length; k++) {
 					Position tempPositionDepth3 = tempPositionDepth2.clone();
 					tempPositionDepth3.makeMove(legalMovesDepth3[k]);
@@ -152,13 +152,13 @@ public class Engine {
 	 * If no legal moves are found, a {@code NoLegalMovesException} will be thrown.
 	 * 
 	 * @param currentPosition the <code>Position</code> to be searched for the top move
-	 * @return an int, the top move
+	 * @return <code>Move</code> the top move
 	 * @throws NoLegalMovesException if there are no legal moves in the position
 	 */
-	public int findTopMoveDepth1(Position currentPosition) throws NoLegalMovesException {
-		int topMove = -1;
+	public Move findTopMoveDepth1(Position currentPosition) throws NoLegalMovesException {
+		Move topMove = null;
 		int topMoveEvaluation = 10000;
-		int[] legalMovesDepth1 = currentPosition.findLegalMoves();
+		Move[] legalMovesDepth1 = currentPosition.findLegalMoves();
 		
 		for (int i = 0; i < legalMovesDepth1.length; i++) {
 			Position tempPositionDepth1 = currentPosition.clone();
@@ -169,7 +169,6 @@ public class Engine {
 				topMoveEvaluation = evaluatePosition(tempPositionDepth1);
 			}
 		}
-		
 		return topMove;
 	}
 	
@@ -204,17 +203,17 @@ public class Engine {
 	 * color into a worse position.
 	 * 
 	 * @param position the <code>Position</code> after the move has been made on it
-	 * @param move an int value of the move that has been made
+	 * @param move the <code>Move</code> that has been made
 	 * @return an <code>int</code> total of the bonuses and penalties that the move incurred
 	 */
-	public int moveBonusesAndPenalties(Position position, int move) {
+	public int moveBonusesAndPenalties(Position position, Move move) {
 		int bonusesAndPenalties = 0;
 		
 		if (position.isCheck())
 			bonusesAndPenalties -= 15;
-		if (position.isAttackedSqr(move % 100, position.isWhiteToPlay()))
+		if (position.isAttackedSqr(move.getEndSqr(), position.isWhiteToPlay()))
 			bonusesAndPenalties += 10;
-		if (position.isAttackedSqr(move % 100, !position.isWhiteToPlay()))
+		if (position.isAttackedSqr(move.getEndSqr(), !position.isWhiteToPlay()))
 			bonusesAndPenalties -= 10;
 		
 		return bonusesAndPenalties;

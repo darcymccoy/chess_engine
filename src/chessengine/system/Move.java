@@ -33,7 +33,7 @@ public class Move {
 	
 	/**
 	 * Parameterized constructor specifying the start and end squares, and the piece 
-	 * being promoted to. This should only be used to called externally when used to
+	 * being promoted to. This should only be called externally when used to
 	 * construct moves that are pawns promoting.
 	 * 
 	 * @param startSqr integer square on the board that the piece originated on
@@ -47,6 +47,14 @@ public class Move {
 		this.promoteTo = promoteTo;
 	}
 
+	public String toString() {
+		if (promoteTo == '-') {
+			return Integer.toString(startSqr + endSqr);
+		} else {
+			return startSqr + endSqr + "=" + promoteTo;
+		}
+	}
+	
 	/**
 	 * @return the startSqr
 	 */

@@ -111,21 +111,21 @@ public class Position {
 	/**
 	 * Returns an array of all legal moves that the color to move can make
 	 * 
-	 * @return int[] each <code>int</code> is a move
+	 * @return Move[] the legal moves found in this position
 	 * @throws NoLegalMovesException if the color to play has no legal moves in this <code>Position</code> 
 	 */
-	public int[] findLegalMoves() throws NoLegalMovesException {
-		int[] possibleMoves = findPossibleMoves();
-		int[] legalMoves = new int[possibleMoves.length];
+	public Move[] findLegalMoves() throws NoLegalMovesException {
+		Move[] possibleMoves = findPossibleMoves();
+		Move[] legalMoves = new Move[possibleMoves.length];
 		int numberOfLegalMoves = 0;
 
 		for (int i = 0; i < possibleMoves.length; i++) {
 			if (!isSelfCheckMove(possibleMoves[i])
-					&& (!isCastling(atSqr(possibleMoves[i] / 100), possibleMoves[i]) || !isCheck())) {
+					&& (!isCastling(atSqr(possibleMoves[i].getStartSqr()), possibleMoves[i]) || !isCheck())) {
 				legalMoves[numberOfLegalMoves++] = possibleMoves[i];
 			}
 		}
-		legalMoves = removeElementsThatAreZero(legalMoves, numberOfLegalMoves);
+		legalMoves = removeNullElements(legalMoves, numberOfLegalMoves);
 		if (!(legalMoves.length == 0)) {
 			return legalMoves;
 		} else {
@@ -137,29 +137,29 @@ public class Position {
 	 * Updates isWhiteToPlay and the board so that the move has been played.
 	 * Accounts for castling, en passant and promotion.
 	 * 
-	 * @param move int, the move to be made
+	 * @param move the move to be made
 	 */
-	public void makeMove(int move) {
-		char pieceToPut = atSqr(move / 100);
+	public void makeMove(Move move) {
+		char pieceToPut = atSqr(move.getStartSqr());
 
 		if (isCastling(pieceToPut, move)) {
 
-			if ((move / 100) == ((move % 100) + WEST_2)) {
+			if ((move.getStartSqr()) == ((move.getEndSqr()) + WEST_2)) {
 				// Kingside castling
-				updateSqr(atSqr(move % 100 + EAST_1), move % 100 + WEST_1);
-				updateSqr('-', move % 100 + EAST_1);
+				updateSqr(atSqr(move.getEndSqr() + EAST_1), move.getEndSqr() + WEST_1);
+				updateSqr('-', move.getEndSqr() + EAST_1);
 			} else {
 				// Queenside castling
-				updateSqr(atSqr(move % 100 + WEST_2), move % 100 + EAST_1);
-				updateSqr('-', move % 100 + WEST_2);
+				updateSqr(atSqr(move.getEndSqr() + WEST_2), move.getEndSqr() + EAST_1);
+				updateSqr('-', move.getEndSqr() + WEST_2);
 			}
 
 		} else if (isEnPassant(pieceToPut, move)) {
 
 			if (whiteToPlay)
-				updateSqr('-', move % 100 + SOUTH_1);
+				updateSqr('-', move.getEndSqr() + SOUTH_1);
 			else
-				updateSqr('-', move % 100 + NORTH_1);
+				updateSqr('-', move.getEndSqr() + NORTH_1);
 
 		} else if (isAllowsEnPassant(pieceToPut, move)) {
 
@@ -176,10 +176,10 @@ public class Position {
 				pieceToPut = 'q';
 		}
 		
-		if ((atSqr(move / 100) == '5') || (atSqr(move / 100) == '4') || (atSqr(move / 100) == '3')) {
+		if ((atSqr(move.getStartSqr()) == '5') || (atSqr(move.getStartSqr()) == '4') || (atSqr(move.getStartSqr()) == '3')) {
 			// Updating white king for castling ability for king moves
 			pieceToPut = 'K';
-		} else if ((atSqr(move / 100) == '2') || (atSqr(move / 100) == '1') || (atSqr(move / 100) == '0')) {
+		} else if ((atSqr(move.getStartSqr()) == '2') || (atSqr(move.getStartSqr()) == '1') || (atSqr(move.getStartSqr()) == '0')) {
 			// Updating black king for castling ability for king moves
 			pieceToPut = 'k';
 		} else {
@@ -187,25 +187,24 @@ public class Position {
 			updateKingCastlingAbility(move);
 		}
 		removeEnPassantAbility();
-		
-		updateSqr('-', move / 100);
-		updateSqr(pieceToPut, move % 100);
+		updateSqr('-', move.getStartSqr());
+		updateSqr(pieceToPut, move.getEndSqr());
 		whiteToPlay = !whiteToPlay;
 	}
 	
 	/**
-	 * Returns true when the move is legal for this position. Works for both impossible and pseudo legal moves.
+	 * Returns true when the move is legal for this position. Can test impossible and pseudo legal moves.
 	 * 
-	 * @param move int describing the move
+	 * @param move the move to be tested
 	 * @return <code>true</code> if the move is legal for this position; 
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isLegalMove(int move) {
-		if(((move / 100) <= H1_SQR) && ((move % 100) <= H1_SQR) && ((move / 100) >= A8_SQR) && ((move % 100) >= A8_SQR)) {
-			int[] tempMoves = findPossiblePieceMoves(atSqr(move / 100), move / 100);
+	public boolean isLegalMove(Move move) {
+		if(((move.getStartSqr()) <= H1_SQR) && ((move.getEndSqr()) <= H1_SQR) && ((move.getStartSqr()) >= A8_SQR) && ((move.getEndSqr()) >= A8_SQR)) {
+			Move[] tempMoves = findPossiblePieceMoves(atSqr(move.getStartSqr()), move.getStartSqr());
 			for (int i = 0; i < tempMoves.length; i++) {
 				if (move == tempMoves[i])
-					return !isSelfCheckMove(move) && (!isCastling(atSqr(move / 100), move) || !isCheck());
+					return !isSelfCheckMove(move) && (!isCastling(atSqr(move.getStartSqr()), move) || !isCheck());
 			}
 		}
 		return false;
@@ -215,11 +214,11 @@ public class Position {
 	 * Returns an array of all pseudo legal moves and legal moves that the color to move can make.
 	 * This can include illegal moves (such as self check moves, castling out of check).
 	 * 
-	 * @return int[] each <code>int</code> is a move
+	 * @return Move[] the legal and pseudo legal moves in a position
 	 */
-	public int[] findPossibleMoves() {
-		int[] possibleMoves = new int[218];
-		int[] possiblePieceMoves = new int[0];
+	public Move[] findPossibleMoves() {
+		Move[] possibleMoves = new Move[218];
+		Move[] possiblePieceMoves = new Move[0];
 		int numberOfPossibleMoves = 0;
 		
 		for (int i = 0; i < board.length(); i++) {
@@ -231,7 +230,7 @@ public class Position {
 				possibleMoves[numberOfPossibleMoves++] = possiblePieceMoves[j];
 			}
 		}
-		return removeElementsThatAreZero(possibleMoves, numberOfPossibleMoves);
+		return removeNullElements(possibleMoves, numberOfPossibleMoves);
 	}
 	
 	/**
@@ -239,9 +238,9 @@ public class Position {
 	 * 
 	 * @param piece character representing the piece
 	 * @param pieceSqr int value where the piece is on the board
-	 * @return int[] each <code>int</code> is a move
+	 * @return Move[] the legal and pseudo legal moves for a single piece
 	 */
-	public int[] findPossiblePieceMoves(char piece, int pieceSqr) {
+	public Move[] findPossiblePieceMoves(char piece, int pieceSqr) {
 		switch (piece) {
 		case 'P':
 		case 'p':
@@ -276,18 +275,18 @@ public class Position {
 			return findKingMoves(pieceSqr);
 			
 		default:
-			return new int[0];
+			return new Move[0];
 		}
 	}
 	
 	/**
-	 * Returns an array of moves that the knight can make
+	 * Returns an array of moves that the knight can make.
 	 * 
 	 * @param knightSqr int value where the piece is on the board
-	 * @return int[] each <code>int</code> is a move
+	 * @return Move[] the legal and pseudo legal moves for this knight
 	 */
-	public int[] findKnightMoves(int knightSqr) {
-		int[] knightMoves = new int[8];
+	public Move[] findKnightMoves(int knightSqr) {
+		Move[] knightMoves = new Move[8];
 		int numberOfMoves = 0;
 		int[] inspectMoves = { NORTH_2 + EAST_1, NORTH_1 + EAST_2, SOUTH_1 + EAST_2, SOUTH_2 + EAST_1, 
 				SOUTH_2 + WEST_1, SOUTH_1 + WEST_2, NORTH_1 + WEST_2, NORTH_2 + WEST_1 };
@@ -332,21 +331,21 @@ public class Position {
 		for (int inspectMove : inspectMoves) {
 			if ((inspectMove != 0) && (isOtherColorAtSqr(knightSqr + inspectMove)
 					|| isEmptySqr(knightSqr + inspectMove))) {
-				knightMoves[numberOfMoves++] = knightSqr * 100 + knightSqr + inspectMove;
+				knightMoves[numberOfMoves++] = new Move(knightSqr, knightSqr + inspectMove);
 			}
 		}
-		return removeElementsThatAreZero(knightMoves, numberOfMoves);
+		return removeNullElements(knightMoves, numberOfMoves);
 	}
 	
 	/**
 	 * Returns an array of moves that the king can make
 	 * 
 	 * @param kingSqr int value where the piece is on the board
-	 * @return int[] each <code>int</code> is a move
+	 * @return Move[] the legal and pseudo legal moves for this king
 	 */
-	public int[] findKingMoves(int kingSqr) {
+	public Move[] findKingMoves(int kingSqr) {
 		char piece = atSqr(kingSqr);
-		int[] kingMoves = new int[10];
+		Move[] kingMoves = new Move[10];
 		int numberOfMoves = 0;
 		int[] inspectMoves = { NORTH_1, NORTH_1_EAST_1, EAST_1, SOUTH_1_EAST_1, SOUTH_1, SOUTH_1_WEST_1, WEST_1, NORTH_1_WEST_1 };
 
@@ -371,7 +370,7 @@ public class Position {
 		for (int inspectMove : inspectMoves) {
 			if ((inspectMove != 0) && (isOtherColorAtSqr(kingSqr + inspectMove)
 					|| isEmptySqr(kingSqr + inspectMove))) {
-				kingMoves[numberOfMoves++] = kingSqr * 100 + kingSqr + inspectMove;
+				kingMoves[numberOfMoves++] = new Move(kingSqr, kingSqr + inspectMove);
 			}
 		}
 
@@ -379,27 +378,27 @@ public class Position {
 		if (((((piece == '5') || (piece == '4')) && (atSqr(kingSqr + EAST_3) == 'R')) 
 				|| (((piece == '2') || (piece == '1')) && (atSqr(kingSqr + EAST_3) == 'r')))
 				&& (isEmptySqr(kingSqr + EAST_1)) && (isEmptySqr(kingSqr + EAST_2))) {
-			kingMoves[numberOfMoves++] = kingSqr * 100 + kingSqr + EAST_2;
+			kingMoves[numberOfMoves++] = new Move(kingSqr, kingSqr + EAST_2);
 		}
 		// Queenside castling
 		if (((((piece == '5') || (piece == '3')) && (atSqr(kingSqr + WEST_4) == 'R')) 
 				|| (((piece == '2') || (piece == '0')) && (atSqr(kingSqr + WEST_4) == 'r')))
 				&& (isEmptySqr(kingSqr + WEST_1)) && (isEmptySqr(kingSqr + WEST_2)) && (isEmptySqr(kingSqr + WEST_3))) {
-			kingMoves[numberOfMoves++] = kingSqr * 100 + kingSqr + WEST_2;
+			kingMoves[numberOfMoves++] = new Move(kingSqr, kingSqr + WEST_2);
 		}
-		return removeElementsThatAreZero(kingMoves, numberOfMoves);
+		return removeNullElements(kingMoves, numberOfMoves);
 	}
 	
 	/**
 	 * Returns an array of moves that the queen can make
 	 * 
 	 * @param queenSqr int value where the piece is on the board
-	 * @return int[] each <code>int</code> is a move
+	 * @return Move[] the legal and pseudo legal moves for this queen
 	 */
-	public int[] findQueenMoves(int queenSqr) {
-		int[] tempStraightMoves = findStraightMoves(queenSqr);
-		int[] tempDiagonalMoves = findDiagonalMoves(queenSqr);
-		int[] queenMoves = new int[tempStraightMoves.length + tempDiagonalMoves.length];
+	public Move[] findQueenMoves(int queenSqr) {
+		Move[] tempStraightMoves = findStraightMoves(queenSqr);
+		Move[] tempDiagonalMoves = findDiagonalMoves(queenSqr);
+		Move[] queenMoves = new Move[tempStraightMoves.length + tempDiagonalMoves.length];
 
 		for (int i = 0; i < tempStraightMoves.length; i++) {
 			queenMoves[i] = tempStraightMoves[i];
@@ -414,80 +413,81 @@ public class Position {
 	 * Returns an array of moves that the pawn can make.
 	 * 
 	 * @param pawnSqr int value where the piece is on the board
-	 * @return int[] each <code>int</code> is a move
+	 * @return Move[] the legal and pseudo legal moves for this pawn
 	 */
-	public int[] findPawnMoves(int pawnSqr) {
-		int[] pawnMoves = new int[12];
+	public Move[] findPawnMoves(int pawnSqr) {
+		Move[] pawnMoves = new Move[12];
 		int numberOfMoves = 0;
 
 		if (whiteToPlay) {
 			// White pawns
 			if (isEmptySqr(pawnSqr + NORTH_1)) {
-				pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_1);
+				pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + NORTH_1);
 				if ((isRank2Sqr(pawnSqr)) && (isEmptySqr(pawnSqr + NORTH_2))) {
-					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_2);
+					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + NORTH_2);
 				}
 			}
 			if (isFileASqr(pawnSqr)) {
 				if ((isOtherColorAtSqr(pawnSqr + NORTH_1_EAST_1)) || (atSqr(pawnSqr + EAST_1) == 'e')) {
-					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_1_EAST_1);
+					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + NORTH_1_EAST_1);
 				}
 			} else if (isFileHSqr(pawnSqr)) {
 				if ((isOtherColorAtSqr(pawnSqr + NORTH_1_WEST_1)) || (atSqr(pawnSqr + WEST_1) == 'e')) {
-					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_1_WEST_1);
+					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + NORTH_1_WEST_1);
 				}
 			} else {
 				if ((isOtherColorAtSqr(pawnSqr + NORTH_1_EAST_1)) || (atSqr(pawnSqr + EAST_1) == 'e')) {
-					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_1_EAST_1);
+					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + NORTH_1_EAST_1);
 				}
 				if ((isOtherColorAtSqr(pawnSqr + NORTH_1_WEST_1)) || (atSqr(pawnSqr + WEST_1) == 'e')) {
-					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + NORTH_1_WEST_1);
+					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + NORTH_1_WEST_1);
 				}
 			}
 		} else {
 			// Black pawns
 			if (isEmptySqr(pawnSqr + SOUTH_1)) {
-				pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_1);
+				pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + SOUTH_1);
 				if ((isRank7Sqr(pawnSqr)) && (isEmptySqr(pawnSqr + SOUTH_2))) {
-					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_2);
+					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + SOUTH_2);
 				}
 			}
 			if (isFileASqr(pawnSqr)) {
 				if ((isOtherColorAtSqr(pawnSqr + SOUTH_1_EAST_1)) || (atSqr(pawnSqr + EAST_1) == 'E')) {
-					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_1_EAST_1);
+					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + SOUTH_1_EAST_1);
 				}
 			} else if (isFileHSqr(pawnSqr)) {
 				if ((isOtherColorAtSqr(pawnSqr + SOUTH_1_WEST_1)) || (atSqr(pawnSqr + WEST_1) == 'E')) {
-					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_1_WEST_1);
+					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + SOUTH_1_WEST_1);
 				}
 			} else {
 				if ((isOtherColorAtSqr(pawnSqr + SOUTH_1_EAST_1)) || (atSqr(pawnSqr + EAST_1) == 'E')) {
-					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_1_EAST_1);
+					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + SOUTH_1_EAST_1);
 				}
 				if ((isOtherColorAtSqr(pawnSqr + SOUTH_1_WEST_1)) || (atSqr(pawnSqr + WEST_1) == 'E')) {
-					pawnMoves[numberOfMoves++] = (pawnSqr * 100) + (pawnSqr + SOUTH_1_WEST_1);
+					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + SOUTH_1_WEST_1);
 				}
 			}
 		}
-		return removeElementsThatAreZero(pawnMoves, numberOfMoves);
+		return removeNullElements(pawnMoves, numberOfMoves);
 	}
 	
 	/**
-	 * Returns an array of moves along straight directions.
+	 * Returns an array of moves along straight directions. This finds the legal and pseudo legal moves
+	 * that a rook can make, or the moves for a queen's straight directions.
 	 * 
 	 * @param pieceSqr int value where the piece is on the board
-	 * @return int[] each <code>int</code> is a move
+	 * @return Move[] the legal and pseudo legal moves in straight directions
 	 */
-	public int[] findStraightMoves(int pieceSqr) {
-		int[] straightMoves = new int[28];
+	public Move[] findStraightMoves(int pieceSqr) {
+		Move[] straightMoves = new Move[28];
 		int numberOfMoves = 0;
 
 		// Direction north
 		for (int inspectSqr = (pieceSqr + NORTH_1); inspectSqr >= A8_SQR; inspectSqr += NORTH_1) {
 			if (isEmptySqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -497,9 +497,9 @@ public class Position {
 		// Direction south
 		for (int inspectSqr = (pieceSqr + SOUTH_1); inspectSqr <= H1_SQR; inspectSqr += SOUTH_1) {
 			if (isEmptySqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -509,9 +509,9 @@ public class Position {
 		// Direction east
 		for (int inspectSqr = (pieceSqr + EAST_1); !isFileHSqr(inspectSqr + WEST_1); inspectSqr += EAST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -521,33 +521,34 @@ public class Position {
 		// Direction west
 		for (int inspectSqr = (pieceSqr + WEST_1); !isFileASqr(inspectSqr + EAST_1); inspectSqr += WEST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
 			}
 		}
-		return removeElementsThatAreZero(straightMoves, numberOfMoves);
+		return removeNullElements(straightMoves, numberOfMoves);
 	}
 	
 	/**
-	 * Returns an array of moves along diagonal directions
+	 * Returns an array of moves along diagonal directions. This finds the legal and pseudo legal moves
+	 * that a bishop can make, or the moves for a queen's diagonal directions.
 	 * 
 	 * @param pieceSqr int value where the piece is on the board
-	 * @return int[] each <code>int</code> is a move
+	 * @return Move[] the legal and pseudo legal moves in diagonal directions
 	 */
-	public int[] findDiagonalMoves(int pieceSqr) {
-		int[] diagonalMoves = new int[28];
+	public Move[] findDiagonalMoves(int pieceSqr) {
+		Move[] diagonalMoves = new Move[28];
 		int numberOfMoves = 0;
 		// Direction north-east
 		for (int inspectSqr = (pieceSqr + NORTH_1_EAST_1); (inspectSqr >= A8_SQR)
 				&& (!isFileHSqr(inspectSqr + SOUTH_1_WEST_1)); inspectSqr += NORTH_1_EAST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -557,9 +558,9 @@ public class Position {
 		for (int inspectSqr = (pieceSqr + SOUTH_1_EAST_1); (inspectSqr <= H1_SQR)
 				&& (!isFileHSqr(inspectSqr + NORTH_1_WEST_1)); inspectSqr += SOUTH_1_EAST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -569,9 +570,9 @@ public class Position {
 		for (int inspectSqr = (pieceSqr + SOUTH_1_WEST_1); (inspectSqr <= H1_SQR)
 				&& (!isFileASqr(inspectSqr + NORTH_1_EAST_1)); inspectSqr += SOUTH_1_WEST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -581,29 +582,29 @@ public class Position {
 		for (int inspectSqr = (pieceSqr + NORTH_1_WEST_1); (inspectSqr >= A8_SQR)
 				&& (!isFileASqr(inspectSqr + SOUTH_1_EAST_1)); inspectSqr += NORTH_1_WEST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = (pieceSqr * 100) + inspectSqr;
+				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
 			}
 		}
-		return removeElementsThatAreZero(diagonalMoves, numberOfMoves);
+		return removeNullElements(diagonalMoves, numberOfMoves);
 	}
 	
 	/**
-	 * Returns a new array without the elements which are zeroes. 
-	 * The numberNonZeroElements must match the number of non zero elements in the array.
+	 * Returns a new array without the elements which are null. 
+	 * The numberNonNullElements must match the number of non null elements in the array.
 	 * 
-	 * @param arrayToUpdate the integer array to be updated
-	 * @param numberNonZeroElements int number of elements that aren't zeroes
-	 * @return int[] without any elements that are zero
+	 * @param arrayToUpdate the move array to be updated
+	 * @param numberNonNullElements int number of elements that aren't <code>null</code>
+	 * @return Move[] without any elements that are <code>null</code>
 	 */
-	public int[] removeElementsThatAreZero(int[] arrayToUpdate, int numberNonZeroElements) {
-		int[] newArray = new int[numberNonZeroElements];
+	public Move[] removeNullElements(Move[] arrayToUpdate, int numberNonNullElements) {
+		Move[] newArray = new Move[numberNonNullElements];
 		for (int i = 0, j = 0; j < newArray.length; i++, j++) {
-			if (arrayToUpdate[i] != 0)
+			if (arrayToUpdate[i] != null)
 				newArray[j] = arrayToUpdate[i];
 			else
 				j--;
@@ -615,15 +616,15 @@ public class Position {
 	 * Returns true if the move is promotion.
 	 * 
 	 * @param piece character representing the piece
-	 * @param move int, move the piece is making
+	 * @param move the move to be tested
 	 * @return <code>true</code> if the move is a pawn promoting; 
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isPromotion(char piece, int move) {
+	public boolean isPromotion(char piece, Move move) {
 		if (piece == 'P')
-			return (isRank8Sqr(move % 100));
+			return (isRank8Sqr(move.getEndSqr()));
 		else if (piece == 'p')
-			return (isRank1Sqr(move % 100));
+			return (isRank1Sqr(move.getEndSqr()));
 		else
 			return false;
 	}
@@ -632,29 +633,29 @@ public class Position {
 	 * Returns true if the move is castling.
 	 * 
 	 * @param piece character representing the piece
-	 * @param move int, move the piece is making
+	 * @param move the move to be tested
 	 * @return <code>true</code> if the move is a king castling; 
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isCastling(char piece, int move) {
+	public boolean isCastling(char piece, Move move) {
 		return ((piece == 'K') || (piece == '5') || (piece == '4') || (piece == '3') || (piece == 'k') || (piece == '2')
 				|| (piece == '1') || (piece == '0'))
-				&& (((move / 100) == ((move % 100) + EAST_2)) || ((move / 100) == ((move % 100) + WEST_2)));
+				&& (((move.getStartSqr()) == ((move.getEndSqr()) + EAST_2)) || ((move.getStartSqr()) == ((move.getEndSqr()) + WEST_2)));
 	}
 	
 	/**
 	 * Returns true if the move is en passant.
 	 * 
 	 * @param piece character representing the piece
-	 * @param move int, move the piece is making
+	 * @param move the move to be tested
 	 * @return <code>true</code> if the move is a pawn capturing en passant; 
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isEnPassant(char piece, int move) {
+	public boolean isEnPassant(char piece, Move move) {
 		if (piece == 'P')
-			return atSqr((move % 100) + SOUTH_1) == 'e';
+			return atSqr((move.getEndSqr()) + SOUTH_1) == 'e';
 		else if (piece == 'p')
-			return atSqr((move % 100) + NORTH_1) == 'E';
+			return atSqr((move.getEndSqr()) + NORTH_1) == 'E';
 		else
 			return false;
 	}
@@ -663,15 +664,15 @@ public class Position {
 	 * Returns true if the move puts a pawn into a position where it can be captured en passant.
 	 * 
 	 * @param piece character representing the piece
-	 * @param move int, move the piece is making
+	 * @param move the move to be tested
 	 * @return <code>true</code> if the move is a pawn advancing 2 squares and potentially allowing itself
 	 * 			to be captured en passant; <code>false</code> otherwise.
 	 */
-	public boolean isAllowsEnPassant(char piece, int move) {
+	public boolean isAllowsEnPassant(char piece, Move move) {
 		if (piece == 'P')
-			return (((move / 100) + NORTH_2) == (move % 100)) && ((atSqr((move % 100) + EAST_1) == 'p') || (atSqr((move % 100) + WEST_1) == 'p'));
+			return (((move.getStartSqr()) + NORTH_2) == (move.getEndSqr())) && ((atSqr((move.getEndSqr()) + EAST_1) == 'p') || (atSqr((move.getEndSqr()) + WEST_1) == 'p'));
 		else if (piece == 'p')
-			return (((move / 100) + SOUTH_2) == (move % 100)) && ((atSqr((move % 100) + EAST_1) == 'P') || (atSqr((move % 100) + WEST_1) == 'P'));
+			return (((move.getStartSqr()) + SOUTH_2) == (move.getEndSqr())) && ((atSqr((move.getEndSqr()) + EAST_1) == 'P') || (atSqr((move.getEndSqr()) + WEST_1) == 'P'));
 		else
 			return false;
 	}
@@ -690,16 +691,16 @@ public class Position {
 	 * Returns true if the move puts the king (of the color who makes that move)
 	 * into check or castles that king through check.
 	 * 
-	 * @param move int, move to be assessed
+	 * @param move the move to be tested
 	 * @return <code>true</code> if this move puts the color that made it into check; 
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isSelfCheckMove(int move) {
+	public boolean isSelfCheckMove(Move move) {
 		Position tempPosition = new Position(this);
 		tempPosition.makeMove(move);
 		return tempPosition.isAttackedSqr(tempPosition.findKingSqr(!tempPosition.whiteToPlay), tempPosition.whiteToPlay)
-				|| (isCastling(atSqr(move / 100), move)
-						&& tempPosition.isAttackedSqr(((move / 100) + (move % 100)) / 2, tempPosition.whiteToPlay));
+				|| (isCastling(atSqr(move.getStartSqr()), move)
+						&& tempPosition.isAttackedSqr(((move.getStartSqr()) + (move.getEndSqr())) / 2, tempPosition.whiteToPlay));
 	}
 	
 	/**
@@ -720,9 +721,9 @@ public class Position {
 		if (whiteToPlay != whiteIsAttacking)
 			tempPosition.whiteToPlay = whiteIsAttacking;
 		
-		int[] tempMoves = tempPosition.findPossibleMoves();
+		Move[] tempMoves = tempPosition.findPossibleMoves();
 		for (int i = 0; i < tempMoves.length; i++) {
-			if ((tempMoves[i] % 100) == sqr)
+			if ((tempMoves[i].getEndSqr()) == sqr)
 				return true;
 		}
 		return (atSqr(sqr) == 'E') || (atSqr(sqr) == 'e');
@@ -860,24 +861,24 @@ public class Position {
 	/**
 	 * Updates the king's castling ability for non king moves.
 	 * 
-	 * @param move int, move the (non king) piece is making
+	 * @param move the move that the (non king) piece is making
 	 */
-	public void updateKingCastlingAbility(int move) {
+	public void updateKingCastlingAbility(Move move) {
 		// Updating white king for castling ability
-		if ((atSqr(E1_SQR) == '5') && (((move / 100) == H1_SQR) || ((move % 100) == H1_SQR)))
+		if ((atSqr(E1_SQR) == '5') && (((move.getStartSqr()) == H1_SQR) || ((move.getEndSqr()) == H1_SQR)))
 			updateSqr('3', E1_SQR);
-		else if ((atSqr(E1_SQR) == '5') && (((move / 100) == A1_SQR) || ((move % 100) == A1_SQR)))
+		else if ((atSqr(E1_SQR) == '5') && (((move.getStartSqr()) == A1_SQR) || ((move.getEndSqr()) == A1_SQR)))
 			updateSqr('4', E1_SQR);
-		else if (((atSqr(E1_SQR) == '4') && (((move / 100) == H1_SQR) || ((move % 100) == H1_SQR))) 
-				|| ((atSqr(E1_SQR) == '3') && (((move / 100) == A1_SQR) || ((move % 100) == A1_SQR))))
+		else if (((atSqr(E1_SQR) == '4') && (((move.getStartSqr()) == H1_SQR) || ((move.getEndSqr()) == H1_SQR))) 
+				|| ((atSqr(E1_SQR) == '3') && (((move.getStartSqr()) == A1_SQR) || ((move.getEndSqr()) == A1_SQR))))
 			updateSqr('K', E1_SQR);
 		// Updating black king for castling ability
-		else if ((atSqr(E8_SQR) == '2') && (((move / 100) == H8_SQR) || ((move % 100) == H8_SQR)))
+		else if ((atSqr(E8_SQR) == '2') && (((move.getStartSqr()) == H8_SQR) || ((move.getEndSqr()) == H8_SQR)))
 			updateSqr('0', E8_SQR);
-		else if ((atSqr(E8_SQR) == '2') && (((move / 100) == A8_SQR) || ((move % 100) == A8_SQR)))
+		else if ((atSqr(E8_SQR) == '2') && (((move.getStartSqr()) == A8_SQR) || ((move.getEndSqr()) == A8_SQR)))
 			updateSqr('1', E8_SQR);
-		else if (((atSqr(E8_SQR) == '1') && (((move / 100) == H8_SQR) || ((move % 100) == H8_SQR)))
-				|| ((atSqr(E8_SQR) == '0') && (((move / 100) == A8_SQR) || ((move % 100) == A8_SQR))))
+		else if (((atSqr(E8_SQR) == '1') && (((move.getStartSqr()) == H8_SQR) || ((move.getEndSqr()) == H8_SQR)))
+				|| ((atSqr(E8_SQR) == '0') && (((move.getStartSqr()) == A8_SQR) || ((move.getEndSqr()) == A8_SQR))))
 			updateSqr('k', E8_SQR);
 	}
 	

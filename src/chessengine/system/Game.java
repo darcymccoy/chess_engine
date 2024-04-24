@@ -14,7 +14,7 @@ public abstract class Game {
 	/** The current position in this game. */
 	private Position currentPosition;
 	/** The moves that have previously been made in this game. */
-	private int[] movesMade;
+	private Move[] movesMade;
 	/** Whether this game is currently being played. */
 	protected boolean inGame;
 	/** <code>Scanner</code> to get user input. */
@@ -27,7 +27,7 @@ public abstract class Game {
 	 * no moves have been made and the game hasn't been started.
 	 */
 	public Game() {
-		this(new Position(), new int[0], false);
+		this(new Position(), new Move[0], false);
 	}
 
 	/**
@@ -38,7 +38,7 @@ public abstract class Game {
 	 * @param movesMade integer array for the moves that have already been made
 	 * @param inGame <code>boolean</code> whether the game is currently being played
 	 */
-	public Game(Position currentPosition, int[] movesMade, boolean inGame) {
+	public Game(Position currentPosition, Move[] movesMade, boolean inGame) {
 		this.currentPosition = currentPosition;
 		this.movesMade = movesMade;
 		this.inGame = inGame;
@@ -79,7 +79,7 @@ public abstract class Game {
 	 */
 	public void letEngineMakeMove() {
 		try {
-			int engineMove = engine.findTopMoveDepth3(currentPosition);
+			Move engineMove = engine.findTopMoveDepth3(currentPosition);
 			currentPosition.makeMove(engineMove);
 			addMoveToMovesMade(engineMove);
 		} catch (NoLegalMovesException e) {
@@ -88,15 +88,18 @@ public abstract class Game {
 	}
 	
 	/**
-	 * Prompts the user for a move and makes that move on the currentPosition.
+	 * Prompts the user for a move and makes that move on the current position.
 	 */
 	public void letUserMakeMove() {
-		int userMove = 0;
+		Move userMove = null;
 		
 		while (inGame) {
-			System.out.print("Enter your move: ");
 			try {
-				userMove = scanner.nextInt();
+				System.out.print("Enter the starting square of your move: ");
+				int startSqr = scanner.nextInt();
+				System.out.print("Enter the ending square of your move: ");
+				int endSqr = scanner.nextInt();
+				userMove = new Move(startSqr, endSqr);
 			} catch(RuntimeException e) {
 				scanner.nextLine();
 				System.out.println("This isn't a legal move. Moves must be a 4 digit integer. Try again.");
@@ -137,10 +140,10 @@ public abstract class Game {
 	/**
 	 * Adds a move to the end of movesMade.
 	 * 
-	 * @param move the <code>int</code> move to be added to the moves that have been made
+	 * @param move the <code>Move</code> to be added to the moves that have been made in this game
 	 */
-	public void addMoveToMovesMade(int move) {
-		int[] newMovesMade = new int[movesMade.length + 1];
+	public void addMoveToMovesMade(Move move) {
+		Move[] newMovesMade = new Move[movesMade.length + 1];
 		
 		for (int i = 0; i < movesMade.length; i++) {
 			newMovesMade[i] = movesMade[i];
@@ -165,7 +168,7 @@ public abstract class Game {
 		String printGame = currentPosition.toString() + "\n";
 
 		for (int i = 0; i < movesMade.length; i++) {
-			printGame += movesMade[i] + " ";
+			printGame += movesMade[i].toString() + " ";
 			if (((i + 1) % 2) == 0)
 				printGame += "\n";
 		}
