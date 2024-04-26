@@ -6,7 +6,7 @@ package chessengine.system;
  * 
  * @author Darcy McCoy
  * @version %I%
- * @since 1.1
+ * @since 1.0
  */
 public class Move {
 	
@@ -28,7 +28,7 @@ public class Move {
 	 * @param endSqr
 	 */
 	public Move(int startSqr, int endSqr) {
-		this(startSqr, endSqr, '-');
+		this(startSqr, endSqr, Chess.EMPTY);
 	}
 	
 	/**
@@ -47,14 +47,40 @@ public class Move {
 		this.promoteTo = promoteTo;
 	}
 
+	
+	/**
+	 * Returns a string representation of the move. For promotion moves, a "=" and the 
+	 * character representation of the move being promoted to will be added to the end of the string.
+	 * 
+	 * @return a string representation of this move
+	 */
+	@Override
 	public String toString() {
-		if (promoteTo == '-') {
-			return Integer.toString(startSqr + endSqr);
+		if (promoteTo == Chess.EMPTY) {
+			return Integer.toString(startSqr) +  Integer.toString(endSqr);
 		} else {
 			return startSqr + endSqr + "=" + promoteTo;
 		}
 	}
-	
+
+	/**
+	 * Tests if 2 moves are the same.
+	 * 
+	 * @param obj Object to be tested
+	 * @return <code>true</code> if this move and the testing move are the same chess moves
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Move other = (Move) obj;
+		return (endSqr == other.endSqr) && (promoteTo == other.promoteTo) && (startSqr == other.startSqr);
+	}
+
 	/**
 	 * @return the startSqr
 	 */
