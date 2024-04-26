@@ -47,6 +47,68 @@ public class Move {
 		this.promoteTo = promoteTo;
 	}
 
+	/**
+	 * Returns true if this move is promotion.
+	 * 
+	 * @param piece character representing the piece making this move
+	 * @return <code>true</code> if this move is a pawn promoting; <code>false</code>
+	 *         otherwise.
+	 */
+	public boolean isPromotion(char piece) {
+		return ((piece == Chess.WH_PAWN) && Chess.isRank8Sqr(endSqr)) ||
+				((piece == Chess.BK_PAWN) && Chess.isRank1Sqr(endSqr));
+	}
+	
+	/**
+	 * Returns true if this move is castling.
+	 * 
+	 * @param piece character representing the piece making this move
+	 * @return <code>true</code> if this move is a king castling; <code>false</code>
+	 *         otherwise.
+	 */
+	public boolean isCastling(char piece) {
+		return ((piece == Chess.WH_KING) || (piece == Chess.WH_KING_CASTLE_BOTH_SIDES)
+				|| (piece == Chess.WH_KING_CASTLE_KINGSIDE) || (piece == Chess.WH_KING_CASTLE_QUEENSIDE)
+				|| (piece == Chess.BK_KING) || (piece == Chess.BK_KING_CASTLE_BOTH_SIDES)
+				|| (piece == Chess.BK_KING_CASTLE_KINGSIDE) || (piece == Chess.BK_KING_CASTLE_QUEENSIDE))
+				&& ((startSqr == (endSqr + Chess.EAST_2)) || (startSqr == (endSqr + Chess.WEST_2)));
+	}
+	
+	/**
+	 * Returns true if this move is en passant.
+	 * 
+	 * @param piece character representing the piece
+	 * @param north1SqrContents the character that is at the square 1 square to the north 
+	 * of the ending square of this move
+	 * @param south1SqrContents the character that is at the square 1 square to the south 
+	 * of the ending square of this move
+	 * @return <code>true</code> if this move is a pawn capturing en passant;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean isEnPassant(char piece, char north1SqrContents, char south1SqrContents) {
+		return ((piece == Chess.WH_PAWN) && (south1SqrContents == Chess.BK_PAWN_ENPASS)) || 
+				((piece == Chess.BK_PAWN) && (north1SqrContents == Chess.WH_PAWN_ENPASS));
+	}
+	
+	/**
+	 * Returns true if the move puts a pawn into a position where it can be captured
+	 * en passant.
+	 * 
+	 * @param piece character representing the piece
+	 * @param east1SqrContents the character that is at the square 1 square to the east 
+	 * of the ending square of this move
+	 * @param west1SqrContents the character that is at the square 1 square to the west 
+	 * of the ending square of this move
+	 * @return <code>true</code> if the move is a pawn advancing 2 squares and
+	 *         potentially allowing itself to be captured en passant;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean isAllowsEnPassant(char piece, char east1SqrContents, char west1SqrContents) {
+		return ((piece == Chess.WH_PAWN) && ((startSqr + Chess.NORTH_2) == endSqr) 
+				&& (east1SqrContents == Chess.BK_PAWN) || (west1SqrContents == Chess.BK_PAWN)) ||
+				((piece == Chess.BK_PAWN) && ((startSqr + Chess.SOUTH_2) == endSqr) 
+						&& (east1SqrContents == Chess.WH_PAWN) || (west1SqrContents == Chess.WH_PAWN));
+	}
 	
 	/**
 	 * Returns a string representation of the move. For promotion moves, a "=" and the 
@@ -122,7 +184,5 @@ public class Move {
 	public void setPromoteTo(char promoteTo) {
 		this.promoteTo = promoteTo;
 	}
-	
-	
 	
 }

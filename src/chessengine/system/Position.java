@@ -68,7 +68,7 @@ public class Position {
 
 		for (int i = 0; i < possibleMoves.length; i++) {
 			if (!isSelfCheckMove(possibleMoves[i])
-					&& (!isCastling(atSqr(possibleMoves[i].getStartSqr()), possibleMoves[i]) || !isCheck())) {
+					&& (!possibleMoves[i].isCastling(atSqr(possibleMoves[i].getStartSqr())) || !isCheck())) {
 				legalMoves[numberOfLegalMoves++] = possibleMoves[i];
 			}
 		}
@@ -89,7 +89,7 @@ public class Position {
 	public void makeMove(Move move) {
 		char pieceToPut = atSqr(move.getStartSqr());
 
-		if (isCastling(pieceToPut, move)) {
+		if (move.isCastling(pieceToPut)) {
 
 			if ((move.getStartSqr()) == ((move.getEndSqr()) + Chess.WEST_2)) {
 				// Kingside castling
@@ -101,21 +101,21 @@ public class Position {
 				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.WEST_2);
 			}
 
-		} else if (isEnPassant(pieceToPut, move)) {
+		} else if (move.isEnPassant(pieceToPut, atSqr(move.getEndSqr() + Chess.NORTH_1), atSqr(move.getEndSqr() + Chess.SOUTH_1))) {
 
 			if (whiteToPlay)
 				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.SOUTH_1);
 			else
 				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.NORTH_1);
 
-		} else if (isAllowsEnPassant(pieceToPut, move)) {
+		} else if (move.isAllowsEnPassant(pieceToPut, atSqr(move.getEndSqr() + Chess.EAST_1), atSqr(move.getEndSqr() + Chess.WEST_1))) {
 
 			if (whiteToPlay)
 				pieceToPut = Chess.WH_PAWN_ENPASS;
 			else
 				pieceToPut = Chess.BK_PAWN_ENPASS;
 
-		} else if (isPromotion(pieceToPut, move)) {
+		} else if (move.isPromotion(pieceToPut)) {
 
 			if (whiteToPlay)
 				pieceToPut = Chess.WH_QUEEN;
@@ -157,7 +157,7 @@ public class Position {
 			Move[] tempMoves = findPossiblePieceMoves(atSqr(move.getStartSqr()), move.getStartSqr());
 			for (int i = 0; i < tempMoves.length; i++) {
 				if (move.equals(tempMoves[i]))
-					return !isSelfCheckMove(move) && (!isCastling(atSqr(move.getStartSqr()), move) || !isCheck());
+					return !isSelfCheckMove(move) && (!move.isCastling(atSqr(move.getStartSqr())) || !isCheck());
 			}
 		}
 		return false;
@@ -587,80 +587,6 @@ public class Position {
 	}
 
 	/**
-	 * Returns true if the move is promotion.
-	 * 
-	 * @param piece character representing the piece
-	 * @param move  the move to be tested
-	 * @return <code>true</code> if the move is a pawn promoting; <code>false</code>
-	 *         otherwise.
-	 */
-	public boolean isPromotion(char piece, Move move) {
-		if (piece == Chess.WH_PAWN)
-			return (Chess.isRank8Sqr(move.getEndSqr()));
-		else if (piece == Chess.BK_PAWN)
-			return (Chess.isRank1Sqr(move.getEndSqr()));
-		else
-			return false;
-	}
-
-	/**
-	 * Returns true if the move is castling.
-	 * 
-	 * @param piece character representing the piece
-	 * @param move  the move to be tested
-	 * @return <code>true</code> if the move is a king castling; <code>false</code>
-	 *         otherwise.
-	 */
-	public boolean isCastling(char piece, Move move) {
-		return ((piece == Chess.WH_KING) || (piece == Chess.WH_KING_CASTLE_BOTH_SIDES)
-				|| (piece == Chess.WH_KING_CASTLE_KINGSIDE) || (piece == Chess.WH_KING_CASTLE_QUEENSIDE)
-				|| (piece == Chess.BK_KING) || (piece == Chess.BK_KING_CASTLE_BOTH_SIDES)
-				|| (piece == Chess.BK_KING_CASTLE_KINGSIDE) || (piece == Chess.BK_KING_CASTLE_QUEENSIDE))
-				&& (((move.getStartSqr()) == ((move.getEndSqr()) + Chess.EAST_2))
-						|| ((move.getStartSqr()) == ((move.getEndSqr()) + Chess.WEST_2)));
-	}
-
-	/**
-	 * Returns true if the move is en passant.
-	 * 
-	 * @param piece character representing the piece
-	 * @param move  the move to be tested
-	 * @return <code>true</code> if the move is a pawn capturing en passant;
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isEnPassant(char piece, Move move) {
-		if (piece == Chess.WH_PAWN)
-			return atSqr((move.getEndSqr()) + Chess.SOUTH_1) == Chess.BK_PAWN_ENPASS;
-		else if (piece == Chess.BK_PAWN)
-			return atSqr((move.getEndSqr()) + Chess.NORTH_1) == Chess.WH_PAWN_ENPASS;
-		else
-			return false;
-	}
-
-	/**
-	 * Returns true if the move puts a pawn into a position where it can be captured
-	 * en passant.
-	 * 
-	 * @param piece character representing the piece
-	 * @param move  the move to be tested
-	 * @return <code>true</code> if the move is a pawn advancing 2 squares and
-	 *         potentially allowing itself to be captured en passant;
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isAllowsEnPassant(char piece, Move move) {
-		if (piece == Chess.WH_PAWN)
-			return (((move.getStartSqr()) + Chess.NORTH_2) == (move.getEndSqr()))
-					&& ((atSqr((move.getEndSqr()) + Chess.EAST_1) == Chess.BK_PAWN)
-							|| (atSqr((move.getEndSqr()) + Chess.WEST_1) == Chess.BK_PAWN));
-		else if (piece == Chess.BK_PAWN)
-			return (((move.getStartSqr()) + Chess.SOUTH_2) == (move.getEndSqr()))
-					&& ((atSqr((move.getEndSqr()) + Chess.EAST_1) == Chess.WH_PAWN)
-							|| (atSqr((move.getEndSqr()) + Chess.WEST_1) == Chess.WH_PAWN));
-		else
-			return false;
-	}
-
-	/**
 	 * Returns true if the color to move is in check.
 	 * 
 	 * @return <code>true</code> if this position has the color to move's king
@@ -679,10 +605,10 @@ public class Position {
 	 *         check; <code>false</code> otherwise.
 	 */
 	public boolean isSelfCheckMove(Move move) {
-		Position tempPosition = new Position(this);
+		Position tempPosition = clone();
 		tempPosition.makeMove(move);
 		return tempPosition.isAttackedSqr(tempPosition.findKingSqr(!tempPosition.whiteToPlay), tempPosition.whiteToPlay)
-				|| (isCastling(atSqr(move.getStartSqr()), move) && tempPosition
+				|| (move.isCastling(atSqr(move.getStartSqr())) && tempPosition
 						.isAttackedSqr(((move.getStartSqr()) + (move.getEndSqr())) / 2, tempPosition.whiteToPlay));
 	}
 
@@ -731,7 +657,6 @@ public class Position {
 		}
 		return -1;
 	}
-
 	
 	/**
 	 * Returns true if the piece at this square is the opposite color of the color
