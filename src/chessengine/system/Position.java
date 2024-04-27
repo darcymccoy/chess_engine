@@ -72,7 +72,7 @@ public class Position {
 				legalMoves[numberOfLegalMoves++] = possibleMoves[i];
 			}
 		}
-		legalMoves = removeNullElements(legalMoves, numberOfLegalMoves);
+		legalMoves = Move.removeNullElements(legalMoves, numberOfLegalMoves);
 		if (!(legalMoves.length == 0)) {
 			return legalMoves;
 		} else {
@@ -184,7 +184,8 @@ public class Position {
 				possibleMoves[numberOfPossibleMoves++] = possiblePieceMoves[j];
 			}
 		}
-		return removeNullElements(possibleMoves, numberOfPossibleMoves);
+		possibleMoves = Move.removeNullElements(possibleMoves, numberOfPossibleMoves);
+		return possibleMoves;
 	}
 
 	/**
@@ -289,7 +290,8 @@ public class Position {
 				knightMoves[numberOfMoves++] = new Move(knightSqr, knightSqr + inspectMove);
 			}
 		}
-		return removeNullElements(knightMoves, numberOfMoves);
+		knightMoves = Move.removeNullElements(knightMoves, numberOfMoves);
+		return knightMoves;
 	}
 
 	/**
@@ -346,7 +348,8 @@ public class Position {
 				&& (isEmptySqr(kingSqr + Chess.WEST_3))) {
 			kingMoves[numberOfMoves++] = new Move(kingSqr, kingSqr + Chess.WEST_2);
 		}
-		return removeNullElements(kingMoves, numberOfMoves);
+		kingMoves = Move.removeNullElements(kingMoves, numberOfMoves);
+		return kingMoves;
 	}
 
 	/**
@@ -436,7 +439,8 @@ public class Position {
 				}
 			}
 		}
-		return removeNullElements(pawnMoves, numberOfMoves);
+		pawnMoves = Move.removeNullElements(pawnMoves, numberOfMoves);
+		return pawnMoves;
 	}
 
 	/**
@@ -500,7 +504,8 @@ public class Position {
 				break;
 			}
 		}
-		return removeNullElements(straightMoves, numberOfMoves);
+		straightMoves = Move.removeNullElements(straightMoves, numberOfMoves);
+		return straightMoves;
 	}
 
 	/**
@@ -562,28 +567,8 @@ public class Position {
 				break;
 			}
 		}
-		return removeNullElements(diagonalMoves, numberOfMoves);
-	}
-
-	/**
-	 * Returns a new array without the elements which are <code>null</code>. The
-	 * <code>numberNonNullElements</code> must match the number of non
-	 * <code>null</code> elements in the array.
-	 * 
-	 * @param arrayToUpdate         the move array to be updated
-	 * @param numberNonNullElements int number of elements that aren't
-	 *                              <code>null</code>
-	 * @return Move[] without any elements that are <code>null</code>
-	 */
-	public Move[] removeNullElements(Move[] arrayToUpdate, int numberNonNullElements) {
-		Move[] newArray = new Move[numberNonNullElements];
-		for (int i = 0, j = 0; j < newArray.length; i++, j++) {
-			if (arrayToUpdate[i] != null)
-				newArray[j] = arrayToUpdate[i];
-			else
-				j--;
-		}
-		return newArray;
+		diagonalMoves = Move.removeNullElements(diagonalMoves, numberOfMoves);
+		return diagonalMoves;
 	}
 
 	/**

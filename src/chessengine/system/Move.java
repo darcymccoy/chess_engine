@@ -111,6 +111,27 @@ public class Move {
 	}
 	
 	/**
+	 * Returns a new array without the elements which are <code>null</code>. The
+	 * <code>numberNonNullElements</code> must match the number of non
+	 * <code>null</code> elements in the array.
+	 * 
+	 * @param arrayToUpdate         the move array to be updated
+	 * @param numberNonNullElements int number of elements that aren't
+	 *                              <code>null</code>
+	 * @return Move[] without any elements that are <code>null</code>
+	 */
+	public static Move[] removeNullElements(Move[] arrayToUpdate, int numberNonNullElements) {
+		Move[] newArray = new Move[numberNonNullElements];
+		for (int i = 0, j = 0; j < newArray.length; i++, j++) {
+			if (arrayToUpdate[i] != null)
+				newArray[j] = arrayToUpdate[i];
+			else
+				j--;
+		}
+		return newArray;
+	}
+	
+	/**
 	 * Returns a string representation of the move. For promotion moves, a "=" and the 
 	 * character representation of the move being promoted to will be added to the end of the string.
 	 * 
