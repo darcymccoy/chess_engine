@@ -62,14 +62,14 @@ public class Position {
 	 *                               <code>Position</code>
 	 */
 	public Move[] findLegalMoves() throws NoLegalMovesException {
-		Move[] possibleMoves = findPossibleMoves();
-		Move[] legalMoves = new Move[possibleMoves.length];
+		Move[] pseudoLegalMoves = findPseudoLegalMoves();
+		Move[] legalMoves = new Move[pseudoLegalMoves.length];
 		int numberOfLegalMoves = 0;
 
-		for (int i = 0; i < possibleMoves.length; i++) {
-			if (!isSelfCheckMove(possibleMoves[i])
-					&& (!possibleMoves[i].isCastling(atSqr(possibleMoves[i].getStartSqr())) || !isCheck())) {
-				legalMoves[numberOfLegalMoves++] = possibleMoves[i];
+		for (int i = 0; i < pseudoLegalMoves.length; i++) {
+			if (!isSelfCheckMove(pseudoLegalMoves[i])
+					&& (!pseudoLegalMoves[i].isCastling(atSqr(pseudoLegalMoves[i].getStartSqr())) || !isCheck())) {
+				legalMoves[numberOfLegalMoves++] = pseudoLegalMoves[i];
 			}
 		}
 		legalMoves = Move.removeNullElements(legalMoves, numberOfLegalMoves);
@@ -154,7 +154,7 @@ public class Position {
 	public boolean isLegalMove(Move move) {
 		if (((move.getStartSqr()) <= Chess.H1_SQR) && ((move.getEndSqr()) <= Chess.H1_SQR)
 				&& ((move.getStartSqr()) >= Chess.A8_SQR) && ((move.getEndSqr()) >= Chess.A8_SQR)) {
-			Move[] tempMoves = findPossiblePieceMoves(atSqr(move.getStartSqr()), move.getStartSqr());
+			Move[] tempMoves = findPseudoLegalPieceMoves(atSqr(move.getStartSqr()), move.getStartSqr());
 			for (int i = 0; i < tempMoves.length; i++) {
 				if (move.equals(tempMoves[i]))
 					return !isSelfCheckMove(move) && (!move.isCastling(atSqr(move.getStartSqr())) || !isCheck());
@@ -170,22 +170,22 @@ public class Position {
 	 * 
 	 * @return Move[] the legal and pseudo legal moves in a position
 	 */
-	public Move[] findPossibleMoves() {
-		Move[] possibleMoves = new Move[218];
-		Move[] possiblePieceMoves = new Move[0];
-		int numberOfPossibleMoves = 0;
+	public Move[] findPseudoLegalMoves() {
+		Move[] pseudoLegalMoves = new Move[218];
+		Move[] pseudoLegalPieceMoves = null;
+		int numberOfPseudoLegalMoves = 0;
 
 		for (int i = 0; i < board.length(); i++) {
 			if ((isEmptySqr(i)) || (isOtherColorAtSqr(i)))
 				continue;
 
-			possiblePieceMoves = findPossiblePieceMoves(atSqr(i), i);
-			for (int j = 0; j < possiblePieceMoves.length; j++) {
-				possibleMoves[numberOfPossibleMoves++] = possiblePieceMoves[j];
+			pseudoLegalPieceMoves = findPseudoLegalPieceMoves(atSqr(i), i);
+			for (int j = 0; j < pseudoLegalPieceMoves.length; j++) {
+				pseudoLegalMoves[numberOfPseudoLegalMoves++] = pseudoLegalPieceMoves[j];
 			}
 		}
-		possibleMoves = Move.removeNullElements(possibleMoves, numberOfPossibleMoves);
-		return possibleMoves;
+		pseudoLegalMoves = Move.removeNullElements(pseudoLegalMoves, numberOfPseudoLegalMoves);
+		return pseudoLegalMoves;
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class Position {
 	 * @param pieceSqr int value where the piece is on the board
 	 * @return Move[] the legal and pseudo legal moves for a single piece
 	 */
-	public Move[] findPossiblePieceMoves(char piece, int pieceSqr) {
+	public Move[] findPseudoLegalPieceMoves(char piece, int pieceSqr) {
 		switch (piece) {
 		case Chess.WH_PAWN:
 		case Chess.BK_PAWN:
@@ -616,7 +616,7 @@ public class Position {
 		if (whiteToPlay != whiteIsAttacking)
 			tempPosition.whiteToPlay = whiteIsAttacking;
 
-		Move[] tempMoves = tempPosition.findPossibleMoves();
+		Move[] tempMoves = tempPosition.findPseudoLegalMoves();
 		for (int i = 0; i < tempMoves.length; i++) {
 			if ((tempMoves[i].getEndSqr()) == sqr)
 				return true;
