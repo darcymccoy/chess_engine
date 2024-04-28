@@ -156,6 +156,21 @@ public final class Chess {
 	/** Character representations of the black king that can only castle on the queenside. */
 	public static final char BK_KING_CASTLE_QUEENSIDE = '0';
 	
+	/** Maximum number of moves a pawn can make. */
+	public static final int MAX_PAWN_MOVES = 12;
+	
+	/** Maximum number of moves a piece can make in straight directions. */
+	public static final int MAX_STRAIGHT_MOVES = 28;
+	
+	/** Maximum number of moves a piece can make in diagonal directions. */
+	public static final int MAX_DIAGONAL_MOVES = 28;
+	
+	/** Maximum number of moves a king can make. */
+	public static final int MAX_KING_MOVES = 8;
+	
+	/** Maximum number of moves a knight can make. */
+	public static final int MAX_KNIGHT_MOVES = 8;
+	
 	/**
 	 * Returns true if the piece is white.
 	 * 
@@ -188,7 +203,7 @@ public final class Chess {
 	 *         <code>false</code> otherwise.
 	 */
 	public static boolean isRank1Sqr(int sqr) {
-		return (sqr >= Chess.A1_SQR) && (sqr <= Chess.H1_SQR);
+		return (sqr >= A1_SQR) && (sqr <= H1_SQR);
 	}
 
 	/**
@@ -199,7 +214,7 @@ public final class Chess {
 	 *         <code>false</code> otherwise.
 	 */
 	public static boolean isRank2Sqr(int sqr) {
-		return (sqr >= Chess.A2_SQR) && (sqr <= Chess.H2_SQR);
+		return (sqr >= A2_SQR) && (sqr <= H2_SQR);
 	}
 
 	/**
@@ -210,7 +225,7 @@ public final class Chess {
 	 *         <code>false</code> otherwise.
 	 */
 	public static boolean isRank7Sqr(int sqr) {
-		return (sqr >= Chess.A7_SQR) && (sqr <= Chess.H7_SQR);
+		return (sqr >= A7_SQR) && (sqr <= H7_SQR);
 	}
 
 	/**
@@ -221,7 +236,7 @@ public final class Chess {
 	 *         <code>false</code> otherwise.
 	 */
 	public static boolean isRank8Sqr(int sqr) {
-		return (sqr >= Chess.A8_SQR) && (sqr <= Chess.H8_SQR);
+		return (sqr >= A8_SQR) && (sqr <= H8_SQR);
 	}
 
 	/**
@@ -243,7 +258,7 @@ public final class Chess {
 	 *         otherwise.
 	 */
 	public static boolean isFileBSqr(int sqr) {
-		return (sqr + Chess.WEST_1) % 8 == 0;
+		return (sqr + WEST_1) % 8 == 0;
 	}
 
 	/**
@@ -254,7 +269,7 @@ public final class Chess {
 	 *         otherwise.
 	 */
 	public static boolean isFileGSqr(int sqr) {
-		return (sqr + Chess.EAST_2) % 8 == 0;
+		return (sqr + EAST_2) % 8 == 0;
 	}
 
 	/**
@@ -265,7 +280,7 @@ public final class Chess {
 	 *         otherwise.
 	 */
 	public static boolean isFileHSqr(int sqr) {
-		return (sqr + Chess.EAST_1) % 8 == 0;
+		return (sqr + EAST_1) % 8 == 0;
 	}
 
 }

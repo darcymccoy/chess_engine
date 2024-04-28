@@ -241,7 +241,7 @@ public class Position {
 	 * @return Move[] the legal and pseudo legal moves for this knight
 	 */
 	public Move[] findKnightMoves(int knightSqr) {
-		Move[] knightMoves = new Move[8];
+		Move[] knightMoves = new Move[Chess.MAX_KNIGHT_MOVES];
 		int numberOfMoves = 0;
 		int[] inspectMoves = { Chess.NORTH_2 + Chess.EAST_1, Chess.NORTH_1 + Chess.EAST_2, Chess.SOUTH_1 + Chess.EAST_2,
 				Chess.SOUTH_2 + Chess.EAST_1, Chess.SOUTH_2 + Chess.WEST_1, Chess.SOUTH_1 + Chess.WEST_2,
@@ -302,7 +302,7 @@ public class Position {
 	 */
 	public Move[] findKingMoves(int kingSqr) {
 		char piece = atSqr(kingSqr);
-		Move[] kingMoves = new Move[10];
+		Move[] kingMoves = new Move[Chess.MAX_KING_MOVES];
 		int numberOfMoves = 0;
 		int[] inspectMoves = { Chess.NORTH_1, Chess.NORTH_1_EAST_1, Chess.EAST_1, Chess.SOUTH_1_EAST_1, Chess.SOUTH_1,
 				Chess.SOUTH_1_WEST_1, Chess.WEST_1, Chess.NORTH_1_WEST_1 };
@@ -379,7 +379,7 @@ public class Position {
 	 * @return Move[] the legal and pseudo legal moves for this pawn
 	 */
 	public Move[] findPawnMoves(int pawnSqr) {
-		Move[] pawnMoves = new Move[12];
+		Move[] pawnMoves = new Move[Chess.MAX_PAWN_MOVES];
 		int numberOfMoves = 0;
 
 		if (whiteToPlay) {
@@ -452,7 +452,7 @@ public class Position {
 	 * @return Move[] the legal and pseudo legal moves in straight directions
 	 */
 	public Move[] findStraightMoves(int pieceSqr) {
-		Move[] straightMoves = new Move[28];
+		Move[] straightMoves = new Move[Chess.MAX_STRAIGHT_MOVES];
 		int numberOfMoves = 0;
 
 		// Direction north
@@ -517,7 +517,7 @@ public class Position {
 	 * @return Move[] the legal and pseudo legal moves in diagonal directions
 	 */
 	public Move[] findDiagonalMoves(int pieceSqr) {
-		Move[] diagonalMoves = new Move[28];
+		Move[] diagonalMoves = new Move[Chess.MAX_DIAGONAL_MOVES];
 		int numberOfMoves = 0;
 		// Direction north-east
 		for (int inspectSqr = (pieceSqr + Chess.NORTH_1_EAST_1); (inspectSqr >= Chess.A8_SQR)
