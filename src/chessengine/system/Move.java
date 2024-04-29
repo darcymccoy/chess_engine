@@ -10,6 +10,9 @@ package chessengine.system;
  */
 public class Move {
 	
+	/** The character representation of the piece that is making this move. */
+	char piece;
+	
 	/** The square on the board that the piece originated from. */
 	int startSqr;
 	
@@ -23,12 +26,15 @@ public class Move {
 	char promoteTo;
 	
 	/**
+	 * Class constructor specifying the piece, start and end squares of this move.
+	 * This can construct every move except for pawns promoting.
 	 * 
-	 * @param startSqr
-	 * @param endSqr
+	 * @param piece character representing the piece that is making this move
+	 * @param startSqr integer square on the board that the piece originated on
+	 * @param endSqr integer square on the board that the piece ends on
 	 */
-	public Move(int startSqr, int endSqr) {
-		this(startSqr, endSqr, Chess.EMPTY);
+	public Move(char piece, int startSqr, int endSqr) {
+		this(piece, startSqr, endSqr, Chess.EMPTY);
 	}
 	
 	/**
@@ -36,12 +42,14 @@ public class Move {
 	 * being promoted to. This should only be called externally when used to
 	 * construct moves that are pawns promoting.
 	 * 
+	 * @param piece character representing the piece that is making this move
 	 * @param startSqr integer square on the board that the piece originated on
 	 * @param endSqr integer square on the board that the piece ends on
-	 * @param promoteTo Character representing the piece that the pawn promotes to. If this move isn't 
+	 * @param promoteTo character representing the piece that the pawn promotes to. If this move isn't 
 	 * promotion, then this will be <code>'-'</code>.
 	 */
-	public Move(int startSqr, int endSqr, char promoteTo) {
+	public Move(char piece, int startSqr, int endSqr, char promoteTo) {
+		this.piece = piece;
 		this.startSqr = startSqr;
 		this.endSqr = endSqr;
 		this.promoteTo = promoteTo;
@@ -50,11 +58,10 @@ public class Move {
 	/**
 	 * Returns true if this move is promotion.
 	 * 
-	 * @param piece character representing the piece making this move
 	 * @return <code>true</code> if this move is a pawn promoting; <code>false</code>
 	 *         otherwise.
 	 */
-	public boolean isPromotion(char piece) {
+	public boolean isPromotion() {
 		return ((piece == Chess.WH_PAWN) && Chess.isRank8Sqr(endSqr)) ||
 				((piece == Chess.BK_PAWN) && Chess.isRank1Sqr(endSqr));
 	}
@@ -62,11 +69,10 @@ public class Move {
 	/**
 	 * Returns true if this move is castling.
 	 * 
-	 * @param piece character representing the piece making this move
 	 * @return <code>true</code> if this move is a king castling; <code>false</code>
 	 *         otherwise.
 	 */
-	public boolean isCastling(char piece) {
+	public boolean isCastling() {
 		return ((piece == Chess.WH_KING) || (piece == Chess.WH_KING_CASTLE_BOTH_SIDES)
 				|| (piece == Chess.WH_KING_CASTLE_KINGSIDE) || (piece == Chess.WH_KING_CASTLE_QUEENSIDE)
 				|| (piece == Chess.BK_KING) || (piece == Chess.BK_KING_CASTLE_BOTH_SIDES)
@@ -75,9 +81,8 @@ public class Move {
 	}
 	
 	/**
-	 * Returns true if this move is en passant.
+	 * Returns true if this move is a pawn capturing en passant.
 	 * 
-	 * @param piece character representing the piece
 	 * @param north1SqrContents the character that is at the square 1 square to the north 
 	 * of the ending square of this move
 	 * @param south1SqrContents the character that is at the square 1 square to the south 
@@ -85,7 +90,7 @@ public class Move {
 	 * @return <code>true</code> if this move is a pawn capturing en passant;
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isEnPassant(char piece, char north1SqrContents, char south1SqrContents) {
+	public boolean isEnPassant(char north1SqrContents, char south1SqrContents) {
 		return ((piece == Chess.WH_PAWN) && (south1SqrContents == Chess.BK_PAWN_ENPASS)) || 
 				((piece == Chess.BK_PAWN) && (north1SqrContents == Chess.WH_PAWN_ENPASS));
 	}
@@ -94,7 +99,6 @@ public class Move {
 	 * Returns true if the move puts a pawn into a position where it can be captured
 	 * en passant.
 	 * 
-	 * @param piece character representing the piece
 	 * @param east1SqrContents the character that is at the square 1 square to the east 
 	 * of the ending square of this move
 	 * @param west1SqrContents the character that is at the square 1 square to the west 
@@ -103,7 +107,7 @@ public class Move {
 	 *         potentially allowing itself to be captured en passant;
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isAllowsEnPassant(char piece, char east1SqrContents, char west1SqrContents) {
+	public boolean isAllowsEnPassant(char east1SqrContents, char west1SqrContents) {
 		return ((piece == Chess.WH_PAWN) && ((startSqr + Chess.NORTH_2) == endSqr) 
 				&& (east1SqrContents == Chess.BK_PAWN) || (west1SqrContents == Chess.BK_PAWN)) ||
 				((piece == Chess.BK_PAWN) && ((startSqr + Chess.SOUTH_2) == endSqr) 
@@ -161,7 +165,22 @@ public class Move {
 		if (getClass() != obj.getClass())
 			return false;
 		Move other = (Move) obj;
-		return (endSqr == other.endSqr) && (promoteTo == other.promoteTo) && (startSqr == other.startSqr);
+		return (piece == other.piece) && (endSqr == other.endSqr) && 
+				(promoteTo == other.promoteTo) && (startSqr == other.startSqr);
+	}
+	
+	/**
+	 * @return the piece
+	 */
+	public char getPiece() {
+		return piece;
+	}
+
+	/**
+	 * @param piece the piece to set
+	 */
+	public void setPiece(char piece) {
+		this.piece = piece;
 	}
 
 	/**

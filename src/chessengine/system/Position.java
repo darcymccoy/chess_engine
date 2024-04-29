@@ -68,7 +68,7 @@ public class Position {
 
 		for (int i = 0; i < pseudoLegalMoves.length; i++) {
 			if (!isSelfCheckMove(pseudoLegalMoves[i])
-					&& (!pseudoLegalMoves[i].isCastling(atSqr(pseudoLegalMoves[i].getStartSqr())) || !isCheck())) {
+					&& (!pseudoLegalMoves[i].isCastling() || !isCheck())) {
 				legalMoves[numberOfLegalMoves++] = pseudoLegalMoves[i];
 			}
 		}
@@ -87,9 +87,9 @@ public class Position {
 	 * @param move the move to be made
 	 */
 	public void makeMove(Move move) {
-		char pieceToPut = atSqr(move.getStartSqr());
+		char pieceToPut = move.getPiece();
 
-		if (move.isCastling(pieceToPut)) {
+		if (move.isCastling()) {
 
 			if ((move.getStartSqr()) == ((move.getEndSqr()) + Chess.WEST_2)) {
 				// Kingside castling
@@ -101,21 +101,21 @@ public class Position {
 				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.WEST_2);
 			}
 
-		} else if (move.isEnPassant(pieceToPut, atSqr(move.getEndSqr() + Chess.NORTH_1), atSqr(move.getEndSqr() + Chess.SOUTH_1))) {
+		} else if (move.isEnPassant(atSqr(move.getEndSqr() + Chess.NORTH_1), atSqr(move.getEndSqr() + Chess.SOUTH_1))) {
 
 			if (whiteToPlay)
 				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.SOUTH_1);
 			else
 				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.NORTH_1);
 
-		} else if (move.isAllowsEnPassant(pieceToPut, atSqr(move.getEndSqr() + Chess.EAST_1), atSqr(move.getEndSqr() + Chess.WEST_1))) {
+		} else if (move.isAllowsEnPassant(atSqr(move.getEndSqr() + Chess.EAST_1), atSqr(move.getEndSqr() + Chess.WEST_1))) {
 
 			if (whiteToPlay)
 				pieceToPut = Chess.WH_PAWN_ENPASS;
 			else
 				pieceToPut = Chess.BK_PAWN_ENPASS;
 
-		} else if (move.isPromotion(pieceToPut)) {
+		} else if (move.isPromotion()) {
 
 			if (whiteToPlay)
 				pieceToPut = Chess.WH_QUEEN;
@@ -157,7 +157,7 @@ public class Position {
 			Move[] tempMoves = findPseudoLegalPieceMoves(atSqr(move.getStartSqr()), move.getStartSqr());
 			for (int i = 0; i < tempMoves.length; i++) {
 				if (move.equals(tempMoves[i]))
-					return !isSelfCheckMove(move) && (!move.isCastling(atSqr(move.getStartSqr())) || !isCheck());
+					return !isSelfCheckMove(move) && (!move.isCastling() || !isCheck());
 			}
 		}
 		return false;
@@ -287,7 +287,7 @@ public class Position {
 		for (int inspectMove : inspectMoves) {
 			if ((inspectMove != 0)
 					&& (isOtherColorAtSqr(knightSqr + inspectMove) || isEmptySqr(knightSqr + inspectMove))) {
-				knightMoves[numberOfMoves++] = new Move(knightSqr, knightSqr + inspectMove);
+				knightMoves[numberOfMoves++] = new Move(atSqr(knightSqr), knightSqr, knightSqr + inspectMove);
 			}
 		}
 		knightMoves = Move.removeNullElements(knightMoves, numberOfMoves);
@@ -327,7 +327,7 @@ public class Position {
 		}
 		for (int inspectMove : inspectMoves) {
 			if ((inspectMove != 0) && (isOtherColorAtSqr(kingSqr + inspectMove) || isEmptySqr(kingSqr + inspectMove))) {
-				kingMoves[numberOfMoves++] = new Move(kingSqr, kingSqr + inspectMove);
+				kingMoves[numberOfMoves++] = new Move(atSqr(kingSqr), kingSqr, kingSqr + inspectMove);
 			}
 		}
 
@@ -337,7 +337,7 @@ public class Position {
 				|| (((piece == Chess.BK_KING_CASTLE_BOTH_SIDES) || (piece == Chess.BK_KING_CASTLE_KINGSIDE))
 						&& (atSqr(kingSqr + Chess.EAST_3) == Chess.BK_ROOK)))
 				&& (isEmptySqr(kingSqr + Chess.EAST_1)) && (isEmptySqr(kingSqr + Chess.EAST_2))) {
-			kingMoves[numberOfMoves++] = new Move(kingSqr, kingSqr + Chess.EAST_2);
+			kingMoves[numberOfMoves++] = new Move(atSqr(kingSqr), kingSqr, kingSqr + Chess.EAST_2);
 		}
 		// Queenside castling
 		if (((((piece == Chess.WH_KING_CASTLE_BOTH_SIDES) || (piece == Chess.WH_KING_CASTLE_QUEENSIDE))
@@ -346,7 +346,7 @@ public class Position {
 						&& (atSqr(kingSqr + Chess.WEST_4) == Chess.BK_ROOK)))
 				&& (isEmptySqr(kingSqr + Chess.WEST_1)) && (isEmptySqr(kingSqr + Chess.WEST_2))
 				&& (isEmptySqr(kingSqr + Chess.WEST_3))) {
-			kingMoves[numberOfMoves++] = new Move(kingSqr, kingSqr + Chess.WEST_2);
+			kingMoves[numberOfMoves++] = new Move(atSqr(kingSqr), kingSqr, kingSqr + Chess.WEST_2);
 		}
 		kingMoves = Move.removeNullElements(kingMoves, numberOfMoves);
 		return kingMoves;
@@ -385,57 +385,57 @@ public class Position {
 		if (whiteToPlay) {
 			// White pawns
 			if (isEmptySqr(pawnSqr + Chess.NORTH_1)) {
-				pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.NORTH_1);
+				pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.NORTH_1);
 				if ((Chess.isRank2Sqr(pawnSqr)) && (isEmptySqr(pawnSqr + Chess.NORTH_2))) {
-					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.NORTH_2);
+					pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.NORTH_2);
 				}
 			}
 			if (Chess.isFileASqr(pawnSqr)) {
 				if ((isOtherColorAtSqr(pawnSqr + Chess.NORTH_1_EAST_1))
 						|| (atSqr(pawnSqr + Chess.EAST_1) == Chess.BK_PAWN_ENPASS)) {
-					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.NORTH_1_EAST_1);
+					pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.NORTH_1_EAST_1);
 				}
 			} else if (Chess.isFileHSqr(pawnSqr)) {
 				if ((isOtherColorAtSqr(pawnSqr + Chess.NORTH_1_WEST_1))
 						|| (atSqr(pawnSqr + Chess.WEST_1) == Chess.BK_PAWN_ENPASS)) {
-					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.NORTH_1_WEST_1);
+					pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.NORTH_1_WEST_1);
 				}
 			} else {
 				if ((isOtherColorAtSqr(pawnSqr + Chess.NORTH_1_EAST_1))
 						|| (atSqr(pawnSqr + Chess.EAST_1) == Chess.BK_PAWN_ENPASS)) {
-					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.NORTH_1_EAST_1);
+					pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.NORTH_1_EAST_1);
 				}
 				if ((isOtherColorAtSqr(pawnSqr + Chess.NORTH_1_WEST_1))
 						|| (atSqr(pawnSqr + Chess.WEST_1) == Chess.BK_PAWN_ENPASS)) {
-					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.NORTH_1_WEST_1);
+					pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.NORTH_1_WEST_1);
 				}
 			}
 		} else {
 			// Black pawns
 			if (isEmptySqr(pawnSqr + Chess.SOUTH_1)) {
-				pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.SOUTH_1);
+				pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.SOUTH_1);
 				if ((Chess.isRank7Sqr(pawnSqr)) && (isEmptySqr(pawnSqr + Chess.SOUTH_2))) {
-					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.SOUTH_2);
+					pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.SOUTH_2);
 				}
 			}
 			if (Chess.isFileASqr(pawnSqr)) {
 				if ((isOtherColorAtSqr(pawnSqr + Chess.SOUTH_1_EAST_1))
 						|| (atSqr(pawnSqr + Chess.EAST_1) == Chess.WH_PAWN_ENPASS)) {
-					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.SOUTH_1_EAST_1);
+					pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.SOUTH_1_EAST_1);
 				}
 			} else if (Chess.isFileHSqr(pawnSqr)) {
 				if ((isOtherColorAtSqr(pawnSqr + Chess.SOUTH_1_WEST_1))
 						|| (atSqr(pawnSqr + Chess.WEST_1) == Chess.WH_PAWN_ENPASS)) {
-					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.SOUTH_1_WEST_1);
+					pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.SOUTH_1_WEST_1);
 				}
 			} else {
 				if ((isOtherColorAtSqr(pawnSqr + Chess.SOUTH_1_EAST_1))
 						|| (atSqr(pawnSqr + Chess.EAST_1) == Chess.WH_PAWN_ENPASS)) {
-					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.SOUTH_1_EAST_1);
+					pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.SOUTH_1_EAST_1);
 				}
 				if ((isOtherColorAtSqr(pawnSqr + Chess.SOUTH_1_WEST_1))
 						|| (atSqr(pawnSqr + Chess.WEST_1) == Chess.WH_PAWN_ENPASS)) {
-					pawnMoves[numberOfMoves++] = new Move(pawnSqr, pawnSqr + Chess.SOUTH_1_WEST_1);
+					pawnMoves[numberOfMoves++] = new Move(atSqr(pawnSqr), pawnSqr, pawnSqr + Chess.SOUTH_1_WEST_1);
 				}
 			}
 		}
@@ -458,9 +458,9 @@ public class Position {
 		// Direction north
 		for (int inspectSqr = (pieceSqr + Chess.NORTH_1); inspectSqr >= Chess.A8_SQR; inspectSqr += Chess.NORTH_1) {
 			if (isEmptySqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -470,9 +470,9 @@ public class Position {
 		// Direction south
 		for (int inspectSqr = (pieceSqr + Chess.SOUTH_1); inspectSqr <= Chess.H1_SQR; inspectSqr += Chess.SOUTH_1) {
 			if (isEmptySqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -483,9 +483,9 @@ public class Position {
 		for (int inspectSqr = (pieceSqr + Chess.EAST_1); !Chess.isFileHSqr(
 				inspectSqr + Chess.WEST_1); inspectSqr += Chess.EAST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -496,9 +496,9 @@ public class Position {
 		for (int inspectSqr = (pieceSqr + Chess.WEST_1); !Chess.isFileASqr(
 				inspectSqr + Chess.EAST_1); inspectSqr += Chess.WEST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				straightMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -523,9 +523,9 @@ public class Position {
 		for (int inspectSqr = (pieceSqr + Chess.NORTH_1_EAST_1); (inspectSqr >= Chess.A8_SQR)
 				&& (!Chess.isFileHSqr(inspectSqr + Chess.SOUTH_1_WEST_1)); inspectSqr += Chess.NORTH_1_EAST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -535,9 +535,9 @@ public class Position {
 		for (int inspectSqr = (pieceSqr + Chess.SOUTH_1_EAST_1); (inspectSqr <= Chess.H1_SQR)
 				&& (!Chess.isFileHSqr(inspectSqr + Chess.NORTH_1_WEST_1)); inspectSqr += Chess.SOUTH_1_EAST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -547,9 +547,9 @@ public class Position {
 		for (int inspectSqr = (pieceSqr + Chess.SOUTH_1_WEST_1); (inspectSqr <= Chess.H1_SQR)
 				&& (!Chess.isFileASqr(inspectSqr + Chess.NORTH_1_EAST_1)); inspectSqr += Chess.SOUTH_1_WEST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -559,9 +559,9 @@ public class Position {
 		for (int inspectSqr = (pieceSqr + Chess.NORTH_1_WEST_1); (inspectSqr >= Chess.A8_SQR)
 				&& (!Chess.isFileASqr(inspectSqr + Chess.SOUTH_1_EAST_1)); inspectSqr += Chess.NORTH_1_WEST_1) {
 			if (isEmptySqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 			} else if (isOtherColorAtSqr(inspectSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(pieceSqr, inspectSqr);
+				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, inspectSqr);
 				break;
 			} else {
 				break;
@@ -593,7 +593,7 @@ public class Position {
 		Position tempPosition = clone();
 		tempPosition.makeMove(move);
 		return tempPosition.isAttackedSqr(tempPosition.findKingSqr(!tempPosition.whiteToPlay), tempPosition.whiteToPlay)
-				|| (move.isCastling(atSqr(move.getStartSqr())) && tempPosition
+				|| (move.isCastling() && tempPosition
 						.isAttackedSqr(((move.getStartSqr()) + (move.getEndSqr())) / 2, tempPosition.whiteToPlay));
 	}
 
