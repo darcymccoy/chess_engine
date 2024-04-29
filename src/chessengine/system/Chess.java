@@ -46,51 +46,50 @@ public final class Chess {
 
 	/** The index of the H1 square on the board. */
 	public static final int H1_SQR = 63;
-
-	// Cardinal and ordinal direction vectors
-	/** North 1 square from white's perspective of the board. */
+	
+	/** Direction vector for north 1 square from white's perspective of the board. */
 	public static final int NORTH_1 = -8;
 
-	/** North 2 squares from white's perspective of the board. */
+	/** Direction vector for north 2 squares from white's perspective of the board. */
 	public static final int NORTH_2 = NORTH_1 + NORTH_1;
 
-	/** North east 1 square from white's perspective of the board. */
+	/** Direction vector for north east 1 square from white's perspective of the board. */
 	public static final int NORTH_1_EAST_1 = -7;
 	
-	/** East 1 square from white's perspective of the board. */
+	/** Direction vector for east 1 square from white's perspective of the board. */
 	public static final int EAST_1 = 1;
 	
-	/** East 2 squares from white's perspective of the board. */
+	/** Direction vector for east 2 squares from white's perspective of the board. */
 	public static final int EAST_2 = EAST_1 + EAST_1;
 	
-	/** East 3 squares from white's perspective of the board. */
+	/** Direction vector for east 3 squares from white's perspective of the board. */
 	public static final int EAST_3 = EAST_1 + EAST_1 + EAST_1;
 	
-	/** South east 1 square from white's perspective of the board. */
+	/** Direction vector for south east 1 square from white's perspective of the board. */
 	public static final int SOUTH_1_EAST_1 = 9;
 	
-	/** South 1 square from white's perspective of the board. */
+	/** Direction vector for south 1 square from white's perspective of the board. */
 	public static final int SOUTH_1 = 8;
 	
-	/** South 2 squares from white's perspective of the board. */
+	/** Direction vector for south 2 squares from white's perspective of the board. */
 	public static final int SOUTH_2 = SOUTH_1 + SOUTH_1;
 	
-	/** South west 1 square from white's perspective of the board. */
+	/** Direction vector for south west 1 square from white's perspective of the board. */
 	public static final int SOUTH_1_WEST_1 = 7;
 	
-	/** West 1 square from white's perspective of the board. */
+	/** Direction vector for west 1 square from white's perspective of the board. */
 	public static final int WEST_1 = -1;
 	
-	/** West 2 squares from white's perspective of the board. */
+	/** Direction vector for west 2 squares from white's perspective of the board. */
 	public static final int WEST_2 = WEST_1 + WEST_1;
 	
-	/** West 3 squares from white's perspective of the board. */
+	/** Direction vector for west 3 squares from white's perspective of the board. */
 	public static final int WEST_3 = WEST_1 + WEST_1 + WEST_1;
 	
-	/** West 4 squares from white's perspective of the board. */
+	/** Direction vector for west 4 squares from white's perspective of the board. */
 	public static final int WEST_4 = WEST_1 + WEST_1 + WEST_1 + WEST_1;
 	
-	/** North west 1 square from white's perspective of the board. */
+	/** Direction vector for north west 1 square from white's perspective of the board. */
 	public static final int NORTH_1_WEST_1 = -9;
 	
 	/** Character representations of an empty square. */
