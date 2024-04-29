@@ -3,7 +3,7 @@ package chessengine.system;
 import java.util.Scanner;
 
 /**
- * <code>abstract</code> class for any type of chess game. 
+ * Abstract class for any type of chess game. 
  * To play a game, this class must be extended and the <code>play()</code> method be implemented.
  * 
  * @author Darcy McCoy
@@ -11,14 +11,19 @@ import java.util.Scanner;
  * @since 1.0
  */
 public abstract class Game {
+	
 	/** The current position in this game. */
 	private Position currentPosition;
+	
 	/** The moves that have previously been made in this game. */
 	private Move[] movesMade;
+	
 	/** Whether this game is currently being played. */
 	protected boolean inGame;
+	
 	/** <code>Scanner</code> to get user input. */
 	private static Scanner scanner = new Scanner(System.in);
+	
 	/** The chess engine which can play against a user or against itself. */
 	private static Engine engine = new Engine();
 
@@ -99,7 +104,7 @@ public abstract class Game {
 				int startSqr = scanner.nextInt();
 				System.out.print("Enter the ending square of your move: ");
 				int endSqr = scanner.nextInt();
-				userMove = new Move(startSqr, endSqr);
+				userMove = new Move(currentPosition.atSqr(startSqr), startSqr, endSqr);
 			} catch(RuntimeException e) {
 				scanner.nextLine();
 				System.out.println("This isn't a legal move. Moves must be a 4 digit integer. Try again.");
