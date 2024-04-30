@@ -68,8 +68,7 @@ public class Position {
 		int numberOfLegalMoves = 0;
 
 		for (int i = 0; i < pseudoLegalMoves.length; i++) {
-			if (!isSelfCheckMove(pseudoLegalMoves[i])
-					&& (!pseudoLegalMoves[i].isCastling() || !isCheck())) {
+			if (!isSelfCheckMove(pseudoLegalMoves[i]) && (!pseudoLegalMoves[i].isCastling() || !isCheck())) {
 				legalMoves[numberOfLegalMoves++] = pseudoLegalMoves[i];
 			}
 		}
@@ -109,7 +108,8 @@ public class Position {
 			else
 				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.NORTH_1);
 
-		} else if (move.isAllowsEnPassant(atSqr(move.getEndSqr() + Chess.EAST_1), atSqr(move.getEndSqr() + Chess.WEST_1))) {
+		} else if (move.isAllowsEnPassant(atSqr(move.getEndSqr() + Chess.EAST_1),
+				atSqr(move.getEndSqr() + Chess.WEST_1))) {
 
 			if (whiteToPlay)
 				pieceToPut = Chess.WH_PAWN_ENPASS;
@@ -479,8 +479,8 @@ public class Position {
 		}
 
 		// Direction east
-		for (int testSqr = (pieceSqr + Chess.EAST_1); !Chess.isFileHSqr(
-				testSqr + Chess.WEST_1); testSqr += Chess.EAST_1) {
+		for (int testSqr = (pieceSqr + Chess.EAST_1); !Chess
+				.isFileHSqr(testSqr + Chess.WEST_1); testSqr += Chess.EAST_1) {
 			if (isEmptySqr(testSqr)) {
 				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
 			} else if (isOtherColorAtSqr(testSqr)) {
@@ -492,8 +492,8 @@ public class Position {
 		}
 
 		// Direction west
-		for (int testSqr = (pieceSqr + Chess.WEST_1); !Chess.isFileASqr(
-				testSqr + Chess.EAST_1); testSqr += Chess.WEST_1) {
+		for (int testSqr = (pieceSqr + Chess.WEST_1); !Chess
+				.isFileASqr(testSqr + Chess.EAST_1); testSqr += Chess.WEST_1) {
 			if (isEmptySqr(testSqr)) {
 				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
 			} else if (isOtherColorAtSqr(testSqr)) {
@@ -592,8 +592,8 @@ public class Position {
 		Position tempPosition = clone();
 		tempPosition.makeMove(move);
 		return tempPosition.isAttackedSqr(tempPosition.findKingSqr(!tempPosition.whiteToPlay), tempPosition.whiteToPlay)
-				|| (move.isCastling() && tempPosition
-						.isAttackedSqr(((move.getStartSqr()) + (move.getEndSqr())) / 2, tempPosition.whiteToPlay));
+				|| (move.isCastling() && tempPosition.isAttackedSqr(((move.getStartSqr()) + (move.getEndSqr())) / 2,
+						tempPosition.whiteToPlay));
 	}
 
 	/**
@@ -632,16 +632,12 @@ public class Position {
 	 */
 	public int findKingSqr(boolean whiteKingColor) {
 		for (int i = 0; i < board.length(); i++) {
-			if ((whiteKingColor && ((atSqr(i) == Chess.WH_KING) || (atSqr(i) == Chess.WH_KING_CASTLE_BOTH_SIDES)
-					|| (atSqr(i) == Chess.WH_KING_CASTLE_KINGSIDE) || (atSqr(i) == Chess.WH_KING_CASTLE_QUEENSIDE)))
-					|| (!whiteKingColor && ((atSqr(i) == Chess.BK_KING) || (atSqr(i) == Chess.BK_KING_CASTLE_BOTH_SIDES)
-							|| (atSqr(i) == Chess.BK_KING_CASTLE_KINGSIDE)
-							|| (atSqr(i) == Chess.BK_KING_CASTLE_QUEENSIDE))))
+			if ((whiteKingColor && Chess.isWhiteKing(atSqr(i))) || (!whiteKingColor && Chess.isBlackKing(atSqr(i))))
 				return i;
 		}
 		return -1;
 	}
-	
+
 	/**
 	 * Returns true if the piece at this square is the opposite color of the color
 	 * who is to play.
