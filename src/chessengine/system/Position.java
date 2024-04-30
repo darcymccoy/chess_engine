@@ -162,7 +162,7 @@ public class Position {
 	 * @return <code>Move[]</code> the legal and pseudo legal moves in a position
 	 */
 	public Move[] findPseudoLegalMoves() {
-		Move[] pseudoLegalMoves = new Move[218];
+		Move[] pseudoLegalMoves = new Move[Chess.MAX_MOVES];
 		Move[] pseudoLegalPieceMoves = null;
 		int numberOfPseudoLegalMoves = 0;
 
