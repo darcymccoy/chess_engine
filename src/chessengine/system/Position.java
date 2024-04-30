@@ -452,7 +452,9 @@ public class Position {
 		
 		for (int i = 0; i < pawnMoves.length; i++) {
 			newMoves[numberOfMoves++] = pawnMoves[i];
-			if (pawnMoves[i].isPromotion()) {
+			if (pawnMoves[i] == null)
+				continue;
+			else if (pawnMoves[i].isPromotion()) {
 				numberOfMoves--;
 				for (char promoteType : promoteTypes) {
 					newMoves[numberOfMoves] = pawnMoves[i].clone();
