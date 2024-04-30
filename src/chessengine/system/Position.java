@@ -37,7 +37,7 @@ public class Position {
 	}
 
 	/**
-	 * Copy constructor to copy a <code>Position</code>.
+	 * Copy constructor.
 	 * 
 	 * @param otherPosition the <code>Position</code> to copy
 	 */
@@ -111,11 +111,7 @@ public class Position {
 				pieceToPut = Chess.BK_PAWN_ENPASS;
 
 		} else if (move.isPromotion()) {
-
-			if (whiteToPlay)
-				pieceToPut = Chess.WH_QUEEN;
-			else
-				pieceToPut = Chess.BK_QUEEN;
+			pieceToPut = move.getPromoteTo();
 		}
 
 		if ((atSqr(move.getStartSqr()) == Chess.WH_KING_CASTLE_BOTH_SIDES)
@@ -163,7 +159,7 @@ public class Position {
 	 * move can make. This can include illegal moves (such as self check moves,
 	 * castling out of check).
 	 * 
-	 * @return Move[] the legal and pseudo legal moves in a position
+	 * @return <code>Move[]</code> the legal and pseudo legal moves in a position
 	 */
 	public Move[] findPseudoLegalMoves() {
 		Move[] pseudoLegalMoves = new Move[218];
@@ -188,7 +184,7 @@ public class Position {
 	 * 
 	 * @param piece    character representing the piece
 	 * @param pieceSqr int value where the piece is on the board
-	 * @return Move[] the legal and pseudo legal moves for a single piece
+	 * @return <code>Move[]</code> the legal and pseudo legal moves for a single piece
 	 */
 	public Move[] findPseudoLegalPieceMoves(char piece, int pieceSqr) {
 		switch (piece) {
@@ -233,7 +229,7 @@ public class Position {
 	 * Returns an array of moves that the knight can make.
 	 * 
 	 * @param knightSqr int value where the piece is on the board
-	 * @return Move[] the legal and pseudo legal moves for this knight
+	 * @return <code>Move[]</code> the legal and pseudo legal moves for this knight
 	 */
 	public Move[] findKnightMoves(int knightSqr) {
 		Move[] knightMoves = new Move[Chess.MAX_KNIGHT_MOVES];
@@ -291,7 +287,7 @@ public class Position {
 	 * Returns an array of moves that the king can make
 	 * 
 	 * @param kingSqr int value where the piece is on the board
-	 * @return Move[] the legal and pseudo legal moves for this king
+	 * @return <code>Move[]</code> the legal and pseudo legal moves for this king
 	 */
 	public Move[] findKingMoves(int kingSqr) {
 		char piece = atSqr(kingSqr);
@@ -349,7 +345,7 @@ public class Position {
 	 * Returns an array of moves that the queen can make
 	 * 
 	 * @param queenSqr int value where the piece is on the board
-	 * @return Move[] the legal and pseudo legal moves for this queen
+	 * @return <code>Move[]</code> the legal and pseudo legal moves for this queen
 	 */
 	public Move[] findQueenMoves(int queenSqr) {
 		Move[] tempStraightMoves = findStraightMoves(queenSqr);
@@ -369,7 +365,7 @@ public class Position {
 	 * Returns an array of moves that the pawn can make.
 	 * 
 	 * @param pawnSqr int value where the piece is on the board
-	 * @return Move[] the legal and pseudo legal moves for this pawn
+	 * @return <code>Move[]</code> the legal and pseudo legal moves for this pawn
 	 */
 	public Move[] findPawnMoves(int pawnSqr) {
 		Move[] pawnMoves = new Move[Chess.MAX_PAWN_MOVES];
@@ -432,8 +428,39 @@ public class Position {
 				}
 			}
 		}
+		pawnMoves = addPromoteTypes(pawnMoves);
 		pawnMoves = Move.removeNullElements(pawnMoves, numberOfMoves);
 		return pawnMoves;
+	}
+	
+	/**
+	 * Returns an array of moves with the piece that is being promoted to set for 
+	 * each promotion move. This will clone each promotion move 4 times and set the 
+	 * corresponding promotion piece for each of those cloned moves.
+	 *  
+	 * @param pawnMoves the array of moves to have the promotion pieces moves added
+	 * @return <code>Move[]</code> with all the non promotion moves and the set promotion moves
+	 */
+	private Move[] addPromoteTypes(Move[] pawnMoves) {
+		Move[] newMoves = new Move[Chess.MAX_PAWN_MOVES];
+		int numberOfMoves = 0;
+		char[] promoteTypes;
+		if (whiteToPlay)
+			promoteTypes = Chess.WH_PROMOTING_TYPES;
+		else
+			promoteTypes = Chess.BK_PROMOTING_TYPES;
+		
+		for (int i = 0; i < pawnMoves.length; i++) {
+			newMoves[numberOfMoves++] = pawnMoves[i];
+			if (pawnMoves[i].isPromotion()) {
+				numberOfMoves--;
+				for (char promoteType : promoteTypes) {
+					newMoves[numberOfMoves] = pawnMoves[i].clone();
+					newMoves[numberOfMoves++].setPromoteTo(promoteType);
+				}
+			}
+		}
+		return newMoves;
 	}
 
 	/**
@@ -442,7 +469,7 @@ public class Position {
 	 * directions.
 	 * 
 	 * @param pieceSqr int value where the piece is on the board
-	 * @return Move[] the legal and pseudo legal moves in straight directions
+	 * @return <code>Move[]</code> the legal and pseudo legal moves in straight directions
 	 */
 	public Move[] findStraightMoves(int pieceSqr) {
 		Move[] straightMoves = new Move[Chess.MAX_STRAIGHT_MOVES];
@@ -507,7 +534,7 @@ public class Position {
 	 * diagonal directions.
 	 * 
 	 * @param pieceSqr int value where the piece is on the board
-	 * @return Move[] the legal and pseudo legal moves in diagonal directions
+	 * @return <code>Move[]</code> the legal and pseudo legal moves in diagonal directions
 	 */
 	public Move[] findDiagonalMoves(int pieceSqr) {
 		Move[] diagonalMoves = new Move[Chess.MAX_DIAGONAL_MOVES];

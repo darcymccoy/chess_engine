@@ -225,6 +225,12 @@ public final class Chess {
 
 	/** Maximum number of moves a knight can make. */
 	public static final int MAX_KNIGHT_MOVES = 8;
+	
+	/** Character representations of the pieces that white pawns can promote to. */
+	public static final char[] WH_PROMOTING_TYPES = {WH_KNIGHT, WH_BISHOP, WH_ROOK, WH_QUEEN};
+	
+	/** Character representations of the pieces that black pawns can promote to. */
+	public static final char[] BK_PROMOTING_TYPES = {BK_KNIGHT, BK_BISHOP, BK_ROOK, BK_QUEEN};
 
 	/**
 	 * Returns true if the piece is the white king.

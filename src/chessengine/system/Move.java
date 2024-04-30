@@ -55,7 +55,26 @@ public class Move {
 		this.endSqr = endSqr;
 		this.promoteTo = promoteTo;
 	}
+	
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param otherMove the <code>Move</code> to copy
+	 */
+	public Move(Move otherMove) {
+		this(otherMove.piece, otherMove.startSqr, otherMove.endSqr, otherMove.promoteTo);
+	}
 
+	/**
+	 * Returns a copy of this move.
+	 * 
+	 * @return <code>Move</code> that is a copy of this move
+	 */
+	@Override
+	public Move clone() {
+		return new Move(this);
+	}
+	
 	/**
 	 * Returns true if this move is promotion.
 	 * 

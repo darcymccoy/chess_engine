@@ -52,7 +52,7 @@ public abstract class Game {
 	/**
 	 * Copy constructor.
 	 * 
-	 * @param otherGame the <code>Game</code> to be copied.
+	 * @param otherGame the <code>Game</code> to be copy
 	 */
 	public Game(Game otherGame) {
 		this(otherGame.currentPosition, otherGame.movesMade, otherGame.inGame);
@@ -105,9 +105,14 @@ public abstract class Game {
 				System.out.print("Enter the ending square of your move: ");
 				int endSqr = scanner.nextInt();
 				userMove = new Move(currentPosition.atSqr(startSqr), startSqr, endSqr);
+				if (userMove.isPromotion()) {
+					System.out.print("Enter the piece you're promoting to "
+							+ "(r, b, n or q; uppercase for white, lowercase for black");
+					userMove.setPromoteTo(scanner.next().charAt(0));
+				}
 			} catch(RuntimeException e) {
 				scanner.nextLine();
-				System.out.println("This isn't a legal move. Moves must be a 4 digit integer. Try again.");
+				System.out.println("This isn't a legal move. Try again.");
 				continue;
 			}
 			
