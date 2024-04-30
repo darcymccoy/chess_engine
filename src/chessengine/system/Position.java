@@ -95,7 +95,7 @@ public class Position {
 		} else if (move.isQueensideCastling()) {
 			updateSqr(atSqr(move.getEndSqr() + Chess.WEST_2), move.getEndSqr() + Chess.EAST_1);
 			updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.WEST_2);
-		} else if (move.isEnPassant(atSqr(move.getEndSqr() + Chess.NORTH_1), atSqr(move.getEndSqr() + Chess.SOUTH_1))) {
+		} else if (move.isEnPassant(atSqr(move.getEndSqr()))) {
 
 			if (whiteToPlay)
 				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.SOUTH_1);

@@ -119,16 +119,13 @@ public class Move {
 	/**
 	 * Returns true if this move is a pawn capturing en passant.
 	 * 
-	 * @param north1SqrContents the character that is at the square 1 square to the
-	 *                          north of the ending square of this move
-	 * @param south1SqrContents the character that is at the square 1 square to the
-	 *                          south of the ending square of this move
+	 * @param endSqrContents the character that is at the square where this piece is going in this move
 	 * @return <code>true</code> if this move is a pawn capturing en passant;
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isEnPassant(char north1SqrContents, char south1SqrContents) {
-		return ((piece == Chess.WH_PAWN) && (south1SqrContents == Chess.BK_PAWN_ENPASS))
-				|| ((piece == Chess.BK_PAWN) && (north1SqrContents == Chess.WH_PAWN_ENPASS));
+	public boolean isEnPassant(char endSqrContents) {
+		return ((piece == Chess.WH_PAWN) || (piece == Chess.BK_PAWN)) && 
+				(endSqrContents == Chess.EMPTY) && ((startSqr / 8) != (endSqr / 8));
 	}
 
 	/**
