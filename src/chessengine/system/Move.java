@@ -74,8 +74,27 @@ public class Move {
 	 *         otherwise.
 	 */
 	public boolean isCastling() {
-		return (Chess.isWhiteKing(piece) || Chess.isBlackKing(piece))
-				&& ((startSqr == (endSqr + Chess.EAST_2)) || (startSqr == (endSqr + Chess.WEST_2)));
+		return isKingsideCastling() || isQueensideCastling();
+	}
+	
+	/**
+	 * Returns true if this move is castling on the kingside of the board.
+	 * 
+	 * @return <code>true</code> if this move is a king castling on the kingside; <code>false</code>
+	 *         otherwise.
+	 */
+	public boolean isKingsideCastling() {
+		return (Chess.isWhiteKing(piece) || Chess.isBlackKing(piece)) && (startSqr == (endSqr + Chess.WEST_2));
+	}
+	
+	/**
+	 * Returns true if this move is castling on the queenside of the board.
+	 * 
+	 * @return <code>true</code> if this move is a king castling on the queenside; <code>false</code>
+	 *         otherwise.
+	 */
+	public boolean isQueensideCastling() {
+		return (Chess.isWhiteKing(piece) || Chess.isBlackKing(piece)) && (startSqr == (endSqr + Chess.EAST_2));
 	}
 
 	/**

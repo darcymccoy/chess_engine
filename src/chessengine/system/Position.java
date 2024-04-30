@@ -89,18 +89,12 @@ public class Position {
 	public void makeMove(Move move) {
 		char pieceToPut = move.getPiece();
 
-		if (move.isCastling()) {
-
-			if ((move.getStartSqr()) == ((move.getEndSqr()) + Chess.WEST_2)) {
-				// Kingside castling
-				updateSqr(atSqr(move.getEndSqr() + Chess.EAST_1), move.getEndSqr() + Chess.WEST_1);
-				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.EAST_1);
-			} else {
-				// Queenside castling
-				updateSqr(atSqr(move.getEndSqr() + Chess.WEST_2), move.getEndSqr() + Chess.EAST_1);
-				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.WEST_2);
-			}
-
+		if (move.isKingsideCastling()) {
+			updateSqr(atSqr(move.getEndSqr() + Chess.EAST_1), move.getEndSqr() + Chess.WEST_1);
+			updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.EAST_1);
+		} else if (move.isQueensideCastling()) {
+			updateSqr(atSqr(move.getEndSqr() + Chess.WEST_2), move.getEndSqr() + Chess.EAST_1);
+			updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.WEST_2);
 		} else if (move.isEnPassant(atSqr(move.getEndSqr() + Chess.NORTH_1), atSqr(move.getEndSqr() + Chess.SOUTH_1))) {
 
 			if (whiteToPlay)
@@ -672,7 +666,7 @@ public class Position {
 	 * @param sqr       int value of the square to be updated
 	 */
 	public void updateSqr(char charToPut, int sqr) {
-		board = board.substring(Chess.A8_SQR, sqr) + charToPut + board.substring(sqr + 1);
+		board = board.substring(0, sqr) + charToPut + board.substring(sqr + 1);
 	}
 
 	/**
@@ -683,27 +677,27 @@ public class Position {
 	public void updateKingCastlingAbility(Move move) {
 		// Updating white king for castling ability
 		if ((atSqr(Chess.E1_SQR) == Chess.WH_KING_CASTLE_BOTH_SIDES)
-				&& (((move.getStartSqr()) == Chess.H1_SQR) || ((move.getEndSqr()) == Chess.H1_SQR)))
+				&& ((move.getStartSqr() == Chess.H1_SQR) || (move.getEndSqr() == Chess.H1_SQR)))
 			updateSqr(Chess.WH_KING_CASTLE_QUEENSIDE, Chess.E1_SQR);
 		else if ((atSqr(Chess.E1_SQR) == Chess.WH_KING_CASTLE_BOTH_SIDES)
-				&& (((move.getStartSqr()) == Chess.A1_SQR) || ((move.getEndSqr()) == Chess.A1_SQR)))
+				&& ((move.getStartSqr() == Chess.A1_SQR) || (move.getEndSqr() == Chess.A1_SQR)))
 			updateSqr(Chess.WH_KING_CASTLE_KINGSIDE, Chess.E1_SQR);
 		else if (((atSqr(Chess.E1_SQR) == Chess.WH_KING_CASTLE_KINGSIDE)
-				&& (((move.getStartSqr()) == Chess.H1_SQR) || ((move.getEndSqr()) == Chess.H1_SQR)))
+				&& ((move.getStartSqr() == Chess.H1_SQR) || (move.getEndSqr() == Chess.H1_SQR)))
 				|| ((atSqr(Chess.E1_SQR) == Chess.WH_KING_CASTLE_QUEENSIDE)
-						&& (((move.getStartSqr()) == Chess.A1_SQR) || ((move.getEndSqr()) == Chess.A1_SQR))))
+						&& (((move.getStartSqr()) == Chess.A1_SQR) || (move.getEndSqr() == Chess.A1_SQR))))
 			updateSqr(Chess.WH_KING, Chess.E1_SQR);
 		// Updating black king for castling ability
-		else if ((atSqr(Chess.E8_SQR) == Chess.BK_KING_CASTLE_BOTH_SIDES)
-				&& (((move.getStartSqr()) == Chess.H8_SQR) || ((move.getEndSqr()) == Chess.H8_SQR)))
+		if ((atSqr(Chess.E8_SQR) == Chess.BK_KING_CASTLE_BOTH_SIDES)
+				&& ((move.getStartSqr() == Chess.H8_SQR) || (move.getEndSqr() == Chess.H8_SQR)))
 			updateSqr(Chess.BK_KING_CASTLE_QUEENSIDE, Chess.E8_SQR);
 		else if ((atSqr(Chess.E8_SQR) == Chess.BK_KING_CASTLE_BOTH_SIDES)
-				&& (((move.getStartSqr()) == Chess.A8_SQR) || ((move.getEndSqr()) == Chess.A8_SQR)))
+				&& ((move.getStartSqr() == Chess.A8_SQR) || (move.getEndSqr() == Chess.A8_SQR)))
 			updateSqr(Chess.BK_KING_CASTLE_KINGSIDE, Chess.E8_SQR);
 		else if (((atSqr(Chess.E8_SQR) == Chess.BK_KING_CASTLE_KINGSIDE)
-				&& (((move.getStartSqr()) == Chess.H8_SQR) || ((move.getEndSqr()) == Chess.H8_SQR)))
+				&& ((move.getStartSqr() == Chess.H8_SQR) || (move.getEndSqr() == Chess.H8_SQR)))
 				|| ((atSqr(Chess.E8_SQR) == Chess.BK_KING_CASTLE_QUEENSIDE)
-						&& (((move.getStartSqr()) == Chess.A8_SQR) || ((move.getEndSqr()) == Chess.A8_SQR))))
+						&& ((move.getStartSqr() == Chess.A8_SQR) || (move.getEndSqr() == Chess.A8_SQR))))
 			updateSqr(Chess.BK_KING, Chess.E8_SQR);
 	}
 
