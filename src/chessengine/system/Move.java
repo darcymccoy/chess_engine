@@ -125,7 +125,7 @@ public class Move {
 	 */
 	public boolean isEnPassant(char endSqrContents) {
 		return ((piece == Chess.WH_PAWN) || (piece == Chess.BK_PAWN)) && 
-				(endSqrContents == Chess.EMPTY) && ((startSqr / 8) != (endSqr / 8));
+				(endSqrContents == Chess.EMPTY) && ((startSqr % 8) != (endSqr % 8));
 	}
 
 	/**

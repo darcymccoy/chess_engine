@@ -56,7 +56,7 @@ public class Position {
 	}
 
 	/**
-	 * Returns an array of all legal moves that the color to move can make
+	 * Returns an array of all legal moves that the color to move can make.
 	 * 
 	 * @return Move[] the legal moves found in this position
 	 * @throws NoLegalMovesException if the color to play has no legal moves in this
@@ -102,26 +102,25 @@ public class Position {
 			else
 				updateSqr(Chess.EMPTY, move.getEndSqr() + Chess.NORTH_1);
 
-		} else if (move.isAllowsEnPassant(atSqr(move.getEndSqr() + Chess.EAST_1),
+		} else if (move.isPromotion()) {
+			pieceToPut = move.getPromoteTo();
+		}
+		if (move.isAllowsEnPassant(atSqr(move.getEndSqr() + Chess.EAST_1),
 				atSqr(move.getEndSqr() + Chess.WEST_1))) {
 
 			if (whiteToPlay)
 				pieceToPut = Chess.WH_PAWN_ENPASS;
 			else
 				pieceToPut = Chess.BK_PAWN_ENPASS;
-
-		} else if (move.isPromotion()) {
-			pieceToPut = move.getPromoteTo();
 		}
-
-		if ((atSqr(move.getStartSqr()) == Chess.WH_KING_CASTLE_BOTH_SIDES)
-				|| (atSqr(move.getStartSqr()) == Chess.WH_KING_CASTLE_KINGSIDE)
-				|| (atSqr(move.getStartSqr()) == Chess.WH_KING_CASTLE_QUEENSIDE)) {
+		if ((move.getPiece() == Chess.WH_KING_CASTLE_BOTH_SIDES)
+				|| (move.getPiece() == Chess.WH_KING_CASTLE_KINGSIDE)
+				|| (move.getPiece() == Chess.WH_KING_CASTLE_QUEENSIDE)) {
 			// Updating white king for castling ability for king moves
 			pieceToPut = Chess.WH_KING;
-		} else if ((atSqr(move.getStartSqr()) == Chess.BK_KING_CASTLE_BOTH_SIDES)
-				|| (atSqr(move.getStartSqr()) == Chess.BK_KING_CASTLE_KINGSIDE)
-				|| (atSqr(move.getStartSqr()) == Chess.BK_KING_CASTLE_QUEENSIDE)) {
+		} else if ((move.getPiece() == Chess.BK_KING_CASTLE_BOTH_SIDES)
+				|| (move.getPiece() == Chess.BK_KING_CASTLE_KINGSIDE)
+				|| (move.getPiece() == Chess.BK_KING_CASTLE_QUEENSIDE)) {
 			// Updating black king for castling ability for king moves
 			pieceToPut = Chess.BK_KING;
 		} else {
@@ -476,54 +475,21 @@ public class Position {
 	public Move[] findStraightMoves(int pieceSqr) {
 		Move[] straightMoves = new Move[Chess.MAX_STRAIGHT_MOVES];
 		int numberOfMoves = 0;
+		int[] testVectors = { Chess.NORTH_1, Chess.EAST_1, Chess.SOUTH_1, Chess.WEST_1 };
 
-		// Direction north
-		for (int testSqr = (pieceSqr + Chess.NORTH_1); testSqr >= Chess.A8_SQR; testSqr += Chess.NORTH_1) {
-			if (isEmptySqr(testSqr)) {
-				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-			} else if (isOtherColorAtSqr(testSqr)) {
-				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-				break;
-			} else {
-				break;
-			}
-		}
-
-		// Direction south
-		for (int testSqr = (pieceSqr + Chess.SOUTH_1); testSqr <= Chess.H1_SQR; testSqr += Chess.SOUTH_1) {
-			if (isEmptySqr(testSqr)) {
-				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-			} else if (isOtherColorAtSqr(testSqr)) {
-				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-				break;
-			} else {
-				break;
-			}
-		}
-
-		// Direction east
-		for (int testSqr = (pieceSqr + Chess.EAST_1); !Chess
-				.isFileHSqr(testSqr + Chess.WEST_1); testSqr += Chess.EAST_1) {
-			if (isEmptySqr(testSqr)) {
-				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-			} else if (isOtherColorAtSqr(testSqr)) {
-				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-				break;
-			} else {
-				break;
-			}
-		}
-
-		// Direction west
-		for (int testSqr = (pieceSqr + Chess.WEST_1); !Chess
-				.isFileASqr(testSqr + Chess.EAST_1); testSqr += Chess.WEST_1) {
-			if (isEmptySqr(testSqr)) {
-				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-			} else if (isOtherColorAtSqr(testSqr)) {
-				straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-				break;
-			} else {
-				break;
+		for (int i = 0; i < testVectors.length; i++) {
+			for (int testSqr = (pieceSqr + testVectors[i]); (testSqr <= Chess.H1_SQR) && (testSqr >= Chess.A8_SQR); testSqr += testVectors[i]) {
+				if (((testVectors[i] == Chess.EAST_1) && (Chess.isFileHSqr(testSqr + Chess.WEST_1))) || 
+						((testVectors[i] == Chess.WEST_1) && Chess.isFileASqr(testSqr + Chess.EAST_1))) {
+					break;// If the test square has passed the east or west edge of the board
+				} else if (isEmptySqr(testSqr)) {
+					straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
+				} else if (isOtherColorAtSqr(testSqr)) {
+					straightMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
+					break;
+				} else {
+					break;
+				}
 			}
 		}
 		straightMoves = Move.removeNullElements(straightMoves, numberOfMoves);
@@ -541,52 +507,20 @@ public class Position {
 	public Move[] findDiagonalMoves(int pieceSqr) {
 		Move[] diagonalMoves = new Move[Chess.MAX_DIAGONAL_MOVES];
 		int numberOfMoves = 0;
-		// Direction north-east
-		for (int testSqr = (pieceSqr + Chess.NORTH_1_EAST_1); (testSqr >= Chess.A8_SQR)
-				&& (!Chess.isFileHSqr(testSqr + Chess.SOUTH_1_WEST_1)); testSqr += Chess.NORTH_1_EAST_1) {
-			if (isEmptySqr(testSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-			} else if (isOtherColorAtSqr(testSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-				break;
-			} else {
-				break;
-			}
-		}
-		// Direction south-east
-		for (int testSqr = (pieceSqr + Chess.SOUTH_1_EAST_1); (testSqr <= Chess.H1_SQR)
-				&& (!Chess.isFileHSqr(testSqr + Chess.NORTH_1_WEST_1)); testSqr += Chess.SOUTH_1_EAST_1) {
-			if (isEmptySqr(testSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-			} else if (isOtherColorAtSqr(testSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-				break;
-			} else {
-				break;
-			}
-		}
-		// Direction south-west
-		for (int testSqr = (pieceSqr + Chess.SOUTH_1_WEST_1); (testSqr <= Chess.H1_SQR)
-				&& (!Chess.isFileASqr(testSqr + Chess.NORTH_1_EAST_1)); testSqr += Chess.SOUTH_1_WEST_1) {
-			if (isEmptySqr(testSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-			} else if (isOtherColorAtSqr(testSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-				break;
-			} else {
-				break;
-			}
-		}
-		// Direction north-west
-		for (int testSqr = (pieceSqr + Chess.NORTH_1_WEST_1); (testSqr >= Chess.A8_SQR)
-				&& (!Chess.isFileASqr(testSqr + Chess.SOUTH_1_EAST_1)); testSqr += Chess.NORTH_1_WEST_1) {
-			if (isEmptySqr(testSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-			} else if (isOtherColorAtSqr(testSqr)) {
-				diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
-				break;
-			} else {
-				break;
+		int[] testVectors = { Chess.NORTH_1_EAST_1, Chess.SOUTH_1_EAST_1, Chess.SOUTH_1_WEST_1, Chess.NORTH_1_WEST_1 };
+		
+		for (int i = 0; i < testVectors.length; i++) {
+			for (int testSqr = (pieceSqr + testVectors[i]); (testSqr <= Chess.H1_SQR) && (testSqr >= Chess.A8_SQR); testSqr += testVectors[i]) {
+				if (((i <= 1) && (Chess.isFileHSqr(testSqr + Chess.WEST_1))) || ((i >= 2) && Chess.isFileASqr(testSqr + Chess.EAST_1))) {
+					break;// If the test square has passed the east or west edge of the board
+				} else if (isEmptySqr(testSqr)) {
+					diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
+				} else if (isOtherColorAtSqr(testSqr)) {
+					diagonalMoves[numberOfMoves++] = new Move(atSqr(pieceSqr), pieceSqr, testSqr);
+					break;
+				} else {
+					break;
+				}
 			}
 		}
 		diagonalMoves = Move.removeNullElements(diagonalMoves, numberOfMoves);
@@ -649,13 +583,13 @@ public class Position {
 	/**
 	 * Returns one of the kings' squares.
 	 * 
-	 * @param whiteKingColor <code>boolean</code> whether white is the color of the
+	 * @param findWhiteKing <code>boolean</code> whether white is the color of the
 	 *                       king to be found
 	 * @return int value where the king is on the board
 	 */
-	public int findKingSqr(boolean whiteKingColor) {
+	public int findKingSqr(boolean findWhiteKing) {
 		for (int i = 0; i < board.length(); i++) {
-			if ((whiteKingColor && Chess.isWhiteKing(atSqr(i))) || (!whiteKingColor && Chess.isBlackKing(atSqr(i))))
+			if ((findWhiteKing && Chess.isWhiteKing(atSqr(i))) || (!findWhiteKing && Chess.isBlackKing(atSqr(i))))
 				return i;
 		}
 		return -1;
