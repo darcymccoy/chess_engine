@@ -1,5 +1,7 @@
 package chessengine.system;
 
+import java.util.LinkedList;
+
 /**
  * Calculation and evaluation engine for a chess position.
  * This class does not contain or store a chess position, and must 
@@ -111,25 +113,25 @@ public class Engine {
 		int maxReplyDepth1 = -1000000;
 		int maxReplyDepth2 = 1000000;
 		
-		Move[] legalMovesDepth1 = currentPosition.findLegalMoves();
-		for (int i = 0; i < legalMovesDepth1.length; i++) {
+		LinkedList<Move> legalMovesDepth1 = currentPosition.findLegalMoves();
+		for (int i = 0; i < legalMovesDepth1.size(); i++) {
 			maxReplyDepth1 = -1000000;
 			Position tempPositionDepth1 = currentPosition.clone();
-			tempPositionDepth1.makeMove(legalMovesDepth1[i]);
+			tempPositionDepth1.makeMove(legalMovesDepth1.get(i));
 			
-			Move[] legalMovesDepth2 = tempPositionDepth1.findLegalMoves();
-			for (int j = 0; j < legalMovesDepth2.length; j++) {
+			LinkedList<Move> legalMovesDepth2 = tempPositionDepth1.findLegalMoves();
+			for (int j = 0; j < legalMovesDepth2.size(); j++) {
 				maxReplyDepth2 = 1000000;
 				Position tempPositionDepth2 = tempPositionDepth1.clone();
-				tempPositionDepth2.makeMove(legalMovesDepth2[j]);
+				tempPositionDepth2.makeMove(legalMovesDepth2.get(j));
 			
-				Move[] legalMovesDepth3 = tempPositionDepth2.findLegalMoves();
-				for (int k = 0; k < legalMovesDepth3.length; k++) {
+				LinkedList<Move> legalMovesDepth3 = tempPositionDepth2.findLegalMoves();
+				for (int k = 0; k < legalMovesDepth3.size(); k++) {
 					Position tempPositionDepth3 = tempPositionDepth2.clone();
-					tempPositionDepth3.makeMove(legalMovesDepth3[k]);
+					tempPositionDepth3.makeMove(legalMovesDepth3.get(k));
 					
 					int evaluationDepth3 = evaluatePosition(tempPositionDepth3) 
-							+ moveBonusesAndPenalties(tempPositionDepth3, legalMovesDepth3[k]);
+							+ moveBonusesAndPenalties(tempPositionDepth3, legalMovesDepth3.get(k));
 					if (evaluationDepth3 < maxReplyDepth2)
 						maxReplyDepth2 = evaluationDepth3;
 				}
@@ -140,7 +142,7 @@ public class Engine {
 			
 			if (maxReplyDepth1 < topMoveMaxReply) {
 				topMoveMaxReply = maxReplyDepth1;
-				topMove = legalMovesDepth1[i];
+				topMove = legalMovesDepth1.get(i);
 			}
 		}
 		return topMove;
@@ -158,14 +160,14 @@ public class Engine {
 	public Move findTopMoveDepth1(Position currentPosition) throws NoLegalMovesException {
 		Move topMove = null;
 		int topMoveEvaluation = 10000;
-		Move[] legalMovesDepth1 = currentPosition.findLegalMoves();
+		LinkedList<Move> legalMovesDepth1 = currentPosition.findLegalMoves();
 		
-		for (int i = 0; i < legalMovesDepth1.length; i++) {
+		for (int i = 0; i < legalMovesDepth1.size(); i++) {
 			Position tempPositionDepth1 = currentPosition.clone();
-			tempPositionDepth1.makeMove(legalMovesDepth1[i]);
+			tempPositionDepth1.makeMove(legalMovesDepth1.get(i));
 			
 			if (evaluatePosition(tempPositionDepth1) < topMoveEvaluation) {
-				topMove = legalMovesDepth1[i];
+				topMove = legalMovesDepth1.get(i);
 				topMoveEvaluation = evaluatePosition(tempPositionDepth1);
 			}
 		}

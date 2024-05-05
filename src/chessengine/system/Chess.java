@@ -210,24 +210,6 @@ public final class Chess {
 	 * queenside.
 	 */
 	public static final char BK_KING_CASTLE_QUEENSIDE = '0';
-
-	/** Maximum number of moves a pawn can make. */
-	public static final int MAX_PAWN_MOVES = 12;
-
-	/** Maximum number of moves a piece can make in straight directions. */
-	public static final int MAX_STRAIGHT_MOVES = 28;
-
-	/** Maximum number of moves a piece can make in diagonal directions. */
-	public static final int MAX_DIAGONAL_MOVES = 28;
-
-	/** Maximum number of moves a king can make. */
-	public static final int MAX_KING_MOVES = 8;
-
-	/** Maximum number of moves a knight can make. */
-	public static final int MAX_KNIGHT_MOVES = 8;
-	
-	/** Maximum number of moves in a position. */
-	public static final int MAX_MOVES = 218;
 	
 	/** Character representations of the pieces that white pawns can promote to. */
 	public static final char[] WH_PROMOTING_TYPES = {WH_KNIGHT, WH_BISHOP, WH_ROOK, WH_QUEEN};

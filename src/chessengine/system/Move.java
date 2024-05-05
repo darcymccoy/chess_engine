@@ -11,19 +11,19 @@ package chessengine.system;
 public class Move {
 
 	/** The character representation of the piece that is making this move. */
-	char piece;
+	private char piece;
 
 	/** The square on the board that the piece originated from. */
-	int startSqr;
+	private int startSqr;
 
 	/** The square on the board that the piece ends on. */
-	int endSqr;
+	private int endSqr;
 
 	/**
 	 * The character representation of the piece that the pawn is promoting to. If
 	 * the move isn't promotion, then this will be <code>'-'</code>.
 	 */
-	char promoteTo;
+	private char promoteTo;
 
 	/**
 	 * Class constructor specifying the piece, start and end squares of this move.
