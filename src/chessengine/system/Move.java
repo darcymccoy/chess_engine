@@ -129,25 +129,6 @@ public class Move {
 	}
 
 	/**
-	 * Returns true if the move puts a pawn into a position where it can be captured
-	 * en passant.
-	 * 
-	 * @param east1SqrContents the character that is at the square 1 square to the
-	 *                         east of the ending square of this move
-	 * @param west1SqrContents the character that is at the square 1 square to the
-	 *                         west of the ending square of this move
-	 * @return <code>true</code> if the move is a pawn advancing 2 squares and
-	 *         potentially allowing itself to be captured en passant;
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isAllowsEnPassant(char east1SqrContents, char west1SqrContents) {
-		return ((piece == Chess.WH_PAWN) && ((startSqr + Chess.NORTH_2) == endSqr)
-				&& (east1SqrContents == Chess.BK_PAWN) || (west1SqrContents == Chess.BK_PAWN))
-				|| ((piece == Chess.BK_PAWN) && ((startSqr + Chess.SOUTH_2) == endSqr)
-						&& (east1SqrContents == Chess.WH_PAWN) || (west1SqrContents == Chess.WH_PAWN));
-	}
-
-	/**
 	 * Returns a string representation of the move. For promotion moves, a "=" and
 	 * the character representation of the move being promoted to will be added to
 	 * the end of the string.

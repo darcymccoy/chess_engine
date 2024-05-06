@@ -106,7 +106,7 @@ public class Position {
 		} else if (move.isPromotion()) {
 			pieceToPut = move.getPromoteTo();
 		}
-		if (move.isAllowsEnPassant(getSqr(move.getEndSqr() + Chess.EAST_1), getSqr(move.getEndSqr() + Chess.WEST_1))) {
+		if (isAllowsEnPassant(move)) {
 
 			if (whiteToPlay) {
 				pieceToPut = Chess.WH_PAWN_ENPASS;
@@ -131,6 +131,34 @@ public class Position {
 		setSqr(Chess.EMPTY, move.getStartSqr());
 		setSqr(pieceToPut, move.getEndSqr());
 		whiteToPlay = !whiteToPlay;
+	}
+	
+	/**
+	 * Returns true if the move puts a pawn into a position where it can be captured
+	 * en passant.
+	 * 
+	 * @param move the Move to be tested
+	 * @return <code>true</code> if the move is a pawn advancing 2 squares and
+	 *         allowing itself to be captured en passant;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean isAllowsEnPassant(Move move) {
+		if ((move.getPiece() == Chess.WH_PAWN) || (move.getPiece() == Chess.BK_PAWN)) {
+	        char east1SqrContents = '-';
+	        char west1SqrContents = '-';
+	        
+	        if (!Chess.isFileHSqr(move.getEndSqr())) {
+	            east1SqrContents = getSqr(move.getEndSqr() + Chess.EAST_1);
+	        }
+	        if (!Chess.isFileASqr(move.getEndSqr())) {
+	            west1SqrContents = getSqr(move.getEndSqr() + Chess.WEST_1);
+	        }
+	        return (((move.getStartSqr() + Chess.NORTH_2) == move.getEndSqr())
+	                && ((east1SqrContents == Chess.BK_PAWN) || (west1SqrContents == Chess.BK_PAWN)))
+	                || (((move.getStartSqr() + Chess.SOUTH_2) == move.getEndSqr())
+	                && ((east1SqrContents == Chess.WH_PAWN) || (west1SqrContents == Chess.WH_PAWN)));
+	    }
+	    return false;
 	}
 
 	/**
@@ -364,7 +392,6 @@ public class Position {
 		} else {
 			testVector = Chess.SOUTH_1;
 		}
-
 		pawnMoves.addAll(findStraightPawnMoves(pawnSqr, testVector));
 		pawnMoves.addAll(findDiagonalPawnMoves(pawnSqr, testVector));
 		pawnMoves = addPromoteTypes(pawnMoves);
