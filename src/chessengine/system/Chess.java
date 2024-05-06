@@ -352,5 +352,28 @@ public final class Chess {
 	public static boolean isFileHSqr(int sqr) {
 		return (sqr + EAST_1) % 8 == 0;
 	}
+	
+	/**
+	 * Returns true if the vector contains in any way the east direction vector.
+	 * 
+	 * @param vector int to test
+	 * @return <code>true</code> if this vector contains east; <code>false</code>
+	 *         otherwise.
+	 */
+	public static boolean containsEastDirection(int vector) {
+		return (vector == EAST_1) || (vector == EAST_2) || (vector == EAST_3) || (vector == NORTH_1_EAST_1) || (vector == SOUTH_1_EAST_1);
+	}
+	
+	/**
+	 * Returns true if the vector contains in any way the east direction vector.
+	 * 
+	 * @param vector int to test
+	 * @return <code>true</code> if this vector contains east; <code>false</code>
+	 *         otherwise.
+	 */
+	public static boolean containsWestDirection(int vector) {
+		return (vector == WEST_1) || (vector == WEST_2) || (vector == WEST_3) || (vector == WEST_4) 
+				|| (vector == NORTH_1_WEST_1) || (vector == SOUTH_1_WEST_1);
+	}
 
 }
