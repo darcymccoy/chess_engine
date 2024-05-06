@@ -449,6 +449,7 @@ public class Position {
 		}
 		return newMoves;
 	}
+	
 
 	/**
 	 * Returns the moves along straight directions. This finds the legal and pseudo
@@ -481,6 +482,7 @@ public class Position {
 		}
 		return straightMoves;
 	}
+	
 
 	/**
 	 * Returns the moves along diagonal directions. This finds the legal and pseudo
@@ -513,6 +515,7 @@ public class Position {
 		}
 		return diagonalMoves;
 	}
+	
 
 	/**
 	 * Returns true if the color to move is in check.
@@ -523,6 +526,7 @@ public class Position {
 	public boolean isCheck() {
 		return isAttackedSqr(findKingSqr(whiteToPlay), !whiteToPlay);
 	}
+	
 
 	/**
 	 * Returns true if the move puts the king (of the color who makes that move)
@@ -539,6 +543,7 @@ public class Position {
 				|| (move.isCastling() && tempPosition.isAttackedSqr(((move.getStartSqr()) + (move.getEndSqr())) / 2,
 						tempPosition.whiteToPlay));
 	}
+	
 
 	/**
 	 * Returns true if the square is attacked by a piece of the corresponding color.
@@ -569,6 +574,7 @@ public class Position {
 		}
 		return (getSqr(sqr) == Chess.WH_PAWN_ENPASS) || (getSqr(sqr) == Chess.BK_PAWN_ENPASS);
 	}
+	
 
 	/**
 	 * Returns one of the kings' squares.
@@ -585,6 +591,7 @@ public class Position {
 		}
 		return -1;
 	}
+	
 
 	/**
 	 * Returns true if the piece at this square is the opposite color of the color
@@ -601,6 +608,7 @@ public class Position {
 			return Chess.isWhitePiece(getSqr(sqr));
 		}
 	}
+	
 
 	/**
 	 * Returns true if there is no piece at this square.
@@ -612,6 +620,7 @@ public class Position {
 	public boolean isEmptySqr(int sqr) {
 		return getSqr(sqr) == Chess.EMPTY;
 	}
+	
 
 	/**
 	 * Updates this square on the board to either empty or to the piece that is
@@ -623,6 +632,7 @@ public class Position {
 	public void setSqr(char charToPut, int sqr) {
 		board = board.substring(0, sqr) + charToPut + board.substring(sqr + 1);
 	}
+	
 
 	/**
 	 * Updates the king's castling ability for non king moves.
@@ -657,6 +667,7 @@ public class Position {
 			setSqr(Chess.BK_KING, Chess.E8_SQR);
 		}
 	}
+	
 
 	/**
 	 * Updates the board so that pawns that could have been captured en passant
@@ -671,6 +682,7 @@ public class Position {
 			}
 		}
 	}
+	
 
 	/**
 	 * Returns the contents of a square.
@@ -681,6 +693,7 @@ public class Position {
 	public char getSqr(int sqr) {
 		return board.charAt(sqr);
 	}
+	
 
 	/**
 	 * Returns a string with the player who is to move and the board laid out in a
@@ -705,6 +718,7 @@ public class Position {
 		}
 		return printPosition;
 	}
+	
 
 	/**
 	 * @return <code>true</code> if white is to play; <code>false</code> otherwise.
@@ -712,6 +726,7 @@ public class Position {
 	public boolean isWhiteToPlay() {
 		return whiteToPlay;
 	}
+	
 
 	/**
 	 * @param whiteToPlay <code>boolean</code> whether to set white as the color to
@@ -720,6 +735,7 @@ public class Position {
 	public void setWhiteToPlay(boolean whiteToPlay) {
 		this.whiteToPlay = whiteToPlay;
 	}
+	
 
 	/**
 	 * @return String, the board as 64 characters starting from square A8
@@ -727,6 +743,7 @@ public class Position {
 	public String getBoard() {
 		return board;
 	}
+	
 
 	/**
 	 * @param board <code>String</code>, the new board
