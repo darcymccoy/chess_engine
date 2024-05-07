@@ -354,6 +354,21 @@ public final class Chess {
 	}
 	
 	/**
+	 * Returns true if this vector put this square over the edge of the board.
+	 * 
+	 * @param sqr the square to be tested
+	 * @param vector the direction vector that was used to find test square 
+	 * @return <code>true</code> if this square has gone over any of the edges of the board; <code>false</code>
+	 *         otherwise.
+	 */
+	public static boolean hasExceededEdgeOfBoard(int sqr, int vector) {
+		if ((sqr < A8_SQR) || (sqr > H1_SQR))
+			return false;
+		return (containsEastDirection(vector) && Chess.isFileHSqr(sqr + Chess.WEST_1))
+				|| (Chess.containsWestDirection(vector) && Chess.isFileASqr(sqr + Chess.EAST_1));
+	}
+	
+	/**
 	 * Returns true if the vector contains in any way the east direction vector.
 	 * 
 	 * @param vector int to test

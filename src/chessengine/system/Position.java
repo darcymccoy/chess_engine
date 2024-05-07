@@ -386,14 +386,14 @@ public class Position {
 	 */
 	public LinkedList<Move> findPawnMoves(int pawnSqr) {
 		LinkedList<Move> pawnMoves = new LinkedList<>();
-		int testVector;
+		int movementVector;
 		if (whiteToPlay) {
-			testVector = Chess.NORTH_1;
+			movementVector = Chess.NORTH_1;
 		} else {
-			testVector = Chess.SOUTH_1;
+			movementVector = Chess.SOUTH_1;
 		}
-		pawnMoves.addAll(findStraightPawnMoves(pawnSqr, testVector));
-		pawnMoves.addAll(findDiagonalPawnMoves(pawnSqr, testVector));
+		pawnMoves.addAll(findStraightPawnMoves(pawnSqr, movementVector));
+		pawnMoves.addAll(findDiagonalPawnMoves(pawnSqr, movementVector));
 		pawnMoves = addPromoteTypes(pawnMoves);
 		return pawnMoves;
 	}
@@ -402,24 +402,20 @@ public class Position {
 	 * Returns the pseudo legal moves that the pawn can capture on (diagonally).
 	 *
 	 * @param pawnSqr    int index of the square the pawn is on
-	 * @param testVector int direction vector of the pawn's movement
+	 * @param movementVector int direction vector of the pawn's movement
 	 * @return <code>LinkedList</code> the moves where the pawn can capture
 	 */
-	private LinkedList<Move> findDiagonalPawnMoves(int pawnSqr, int testVector) {
+	private LinkedList<Move> findDiagonalPawnMoves(int pawnSqr, int movementVector) {
 		LinkedList<Move> diagonalPawnMoves = new LinkedList<>();
-		if (!Chess.isFileHSqr(pawnSqr)) {
-			if ((isOtherColorAtSqr(pawnSqr + Chess.EAST_1 + testVector))
-					|| ((getSqr(pawnSqr + Chess.EAST_1) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
-					|| ((getSqr(pawnSqr + Chess.EAST_1) == Chess.WH_PAWN_ENPASS) && !whiteToPlay)) {
-				diagonalPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, pawnSqr + Chess.EAST_1 + testVector));
-			}
-		}
-		if (!Chess.isFileASqr(pawnSqr)) {
-			if ((isOtherColorAtSqr(pawnSqr + Chess.WEST_1 + testVector))
-					|| ((getSqr(pawnSqr + Chess.WEST_1) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
-					|| ((getSqr(pawnSqr + Chess.WEST_1) == Chess.WH_PAWN_ENPASS) && !whiteToPlay)) {
-				diagonalPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, pawnSqr + Chess.WEST_1 + testVector));
-			}
+		int[] captureVectors = { Chess.EAST_1, Chess.WEST_1 };
+		for (int captureVector : captureVectors) {
+			int testSqr = pawnSqr + captureVector + movementVector;
+			if (Chess.hasExceededEdgeOfBoard(testSqr, captureVector))
+				continue;
+			if ((isOtherColorAtSqr(testSqr))
+					|| ((getSqr(pawnSqr + captureVector) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
+					|| ((getSqr(pawnSqr + captureVector) == Chess.WH_PAWN_ENPASS) && !whiteToPlay))
+				diagonalPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, testSqr));
 		}
 		return diagonalPawnMoves;
 	}
@@ -429,14 +425,14 @@ public class Position {
 	 * of it.
 	 *
 	 * @param pawnSqr    int index of the square the pawn is on
-	 * @param testVector int direction vector of the pawn's movement
+	 * @param movementVector int direction vector of the pawn's movement
 	 * @return <code>LinkedList</code> the moves that the pawn can make for the 2
 	 *         squares ahead of it
 	 */
-	private LinkedList<Move> findStraightPawnMoves(int pawnSqr, int testVector) {
+	private LinkedList<Move> findStraightPawnMoves(int pawnSqr, int movementVector) {
 		LinkedList<Move> straightPawnMoves = new LinkedList<>();
-		for (int testSqr = (pawnSqr + testVector), i = 0; ((testSqr <= Chess.H1_SQR) && (testSqr >= Chess.A8_SQR))
-				&& i < 2; testSqr += testVector, i++) {
+		for (int testSqr = (pawnSqr + movementVector), i = 0; ((testSqr <= Chess.H1_SQR) && (testSqr >= Chess.A8_SQR))
+				&& i < 2; testSqr += movementVector, i++) {
 			if (isEmptySqr(testSqr)) {
 				straightPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, testSqr));
 			} else {
@@ -494,12 +490,8 @@ public class Position {
 		int[] testVectors = { Chess.NORTH_1, Chess.EAST_1, Chess.SOUTH_1, Chess.WEST_1 };
 
 		for (int testVector : testVectors) {
-			for (int testSqr = (pieceSqr + testVector); (testSqr <= Chess.H1_SQR)
-					&& (testSqr >= Chess.A8_SQR); testSqr += testVector) {
-				if ((Chess.containsEastDirection(testVector) && Chess.isFileHSqr(testSqr + Chess.WEST_1))
-						|| (Chess.containsWestDirection(testVector) && Chess.isFileASqr(testSqr + Chess.EAST_1))) {
-					break;// If the test square has passed the east or west edge of the board
-				} else if (isEmptySqr(testSqr)) {
+			for (int testSqr = (pieceSqr + testVector); !Chess.hasExceededEdgeOfBoard(testSqr, testVector); testSqr += testVector) {
+				if (isEmptySqr(testSqr)) {
 					straightMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr));
 				} else if (isOtherColorAtSqr(testSqr)) {
 					straightMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr));
@@ -527,12 +519,8 @@ public class Position {
 		int[] testVectors = { Chess.NORTH_1_EAST_1, Chess.SOUTH_1_EAST_1, Chess.SOUTH_1_WEST_1, Chess.NORTH_1_WEST_1 };
 
 		for (int testVector : testVectors) {
-			for (int testSqr = (pieceSqr + testVector); (testSqr <= Chess.H1_SQR)
-					&& (testSqr >= Chess.A8_SQR); testSqr += testVector) {
-				if ((Chess.containsEastDirection(testVector) && Chess.isFileHSqr(testSqr + Chess.WEST_1))
-						|| (Chess.containsWestDirection(testVector) && Chess.isFileASqr(testSqr + Chess.EAST_1))) {
-					break;// If the test square has passed the east or west edge of the board
-				} else if (isEmptySqr(testSqr)) {
+			for (int testSqr = (pieceSqr + testVector); !Chess.hasExceededEdgeOfBoard(testSqr, testVector); testSqr += testVector) {
+				if (isEmptySqr(testSqr)) {
 					diagonalMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr));
 				} else if (isOtherColorAtSqr(testSqr)) {
 					diagonalMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr));
