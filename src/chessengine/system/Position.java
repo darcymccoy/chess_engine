@@ -468,10 +468,12 @@ public class Position {
 		for (int i = 0; i < pawnMoves.size(); i++, numberOfMoves++) {
 			newMoves.add(pawnMoves.get(i));
 			if (newMoves.get(i).isPromotion()) {
+				newMoves.remove(numberOfMoves);
 				for (char promoteType : promoteTypes) {
-					newMoves.set(numberOfMoves, pawnMoves.get(i).clone());
+					newMoves.add(pawnMoves.get(i).clone());
 					newMoves.get(numberOfMoves++).setPromoteTo(promoteType);
 				}
+				numberOfMoves--;
 			}
 		}
 		return newMoves;
