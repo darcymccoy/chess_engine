@@ -95,7 +95,7 @@ public class Position {
 		} else if (move.isQueensideCastling()) {
 			setSqr(getSqr(move.getEndSqr() + Chess.WEST_2), move.getEndSqr() + Chess.EAST_1);
 			setSqr(Chess.EMPTY, move.getEndSqr() + Chess.WEST_2);
-		} else if (move.isEnPassant(getSqr(move.getEndSqr()))) {
+		} else if (move.isEnPassant()) {
 
 			if (whiteToPlay) {
 				setSqr(Chess.EMPTY, move.getEndSqr() + Chess.SOUTH_1);
@@ -107,7 +107,6 @@ public class Position {
 			pieceToPut = move.getPromoteTo();
 		}
 		if (isAllowsEnPassant(move)) {
-
 			if (whiteToPlay) {
 				pieceToPut = Chess.WH_PAWN_ENPASS;
 			} else {
@@ -127,6 +126,7 @@ public class Position {
 			// Updating king castling ability for non-king moves
 			updateKingCastlingAbility(move);
 		}
+		
 		removeEnPassantAbility();
 		setSqr(Chess.EMPTY, move.getStartSqr());
 		setSqr(pieceToPut, move.getEndSqr());
@@ -300,7 +300,7 @@ public class Position {
 		for (int testVector : testVectors) {
 			if ((testVector != 0)
 					&& (isOtherColorAtSqr(knightSqr + testVector) || isEmptySqr(knightSqr + testVector))) {
-				knightMoves.add(new Move(getSqr(knightSqr), knightSqr, knightSqr + testVector));
+				knightMoves.add(new Move(getSqr(knightSqr), knightSqr, knightSqr + testVector, getSqr(knightSqr + testVector)));
 			}
 		}
 		return knightMoves;
@@ -339,7 +339,7 @@ public class Position {
 		}
 		for (int testVector : testVectors) {
 			if ((testVector != 0) && (isOtherColorAtSqr(kingSqr + testVector) || isEmptySqr(kingSqr + testVector))) {
-				kingMoves.add(new Move(piece, kingSqr, kingSqr + testVector));
+				kingMoves.add(new Move(piece, kingSqr, kingSqr + testVector, getSqr(kingSqr + testVector)));
 			}
 		}
 
@@ -349,7 +349,7 @@ public class Position {
 				|| (((piece == Chess.BK_KING_CASTLE_BOTH_SIDES) || (piece == Chess.BK_KING_CASTLE_KINGSIDE))
 						&& (getSqr(kingSqr + Chess.EAST_3) == Chess.BK_ROOK)))
 				&& (isEmptySqr(kingSqr + Chess.EAST_1)) && (isEmptySqr(kingSqr + Chess.EAST_2))) {
-			kingMoves.add(new Move(piece, kingSqr, kingSqr + Chess.EAST_2));
+			kingMoves.add(new Move(piece, kingSqr, kingSqr + Chess.EAST_2, getSqr(kingSqr + Chess.EAST_2)));
 		}
 		// Queenside castling
 		if (((((piece == Chess.WH_KING_CASTLE_BOTH_SIDES) || (piece == Chess.WH_KING_CASTLE_QUEENSIDE))
@@ -358,7 +358,7 @@ public class Position {
 						&& (getSqr(kingSqr + Chess.WEST_4) == Chess.BK_ROOK)))
 				&& (isEmptySqr(kingSqr + Chess.WEST_1)) && (isEmptySqr(kingSqr + Chess.WEST_2))
 				&& (isEmptySqr(kingSqr + Chess.WEST_3))) {
-			kingMoves.add(new Move(piece, kingSqr, kingSqr + Chess.WEST_2));
+			kingMoves.add(new Move(piece, kingSqr, kingSqr + Chess.WEST_2, getSqr(kingSqr + Chess.WEST_2)));
 		}
 		return kingMoves;
 	}
@@ -415,7 +415,7 @@ public class Position {
 			if ((isOtherColorAtSqr(testSqr))
 					|| ((getSqr(pawnSqr + captureVector) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
 					|| ((getSqr(pawnSqr + captureVector) == Chess.WH_PAWN_ENPASS) && !whiteToPlay))
-				diagonalPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, testSqr));
+				diagonalPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, testSqr, getSqr(testSqr)));
 		}
 		return diagonalPawnMoves;
 	}
@@ -434,7 +434,7 @@ public class Position {
 		for (int testSqr = (pawnSqr + movementVector), i = 0; ((testSqr <= Chess.H1_SQR) && (testSqr >= Chess.A8_SQR))
 				&& i < 2; testSqr += movementVector, i++) {
 			if (isEmptySqr(testSqr)) {
-				straightPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, testSqr));
+				straightPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, testSqr, getSqr(testSqr)));
 			} else {
 				break;
 			}
@@ -492,9 +492,9 @@ public class Position {
 		for (int testVector : testVectors) {
 			for (int testSqr = (pieceSqr + testVector); !Chess.hasExceededEdgeOfBoard(testSqr, testVector); testSqr += testVector) {
 				if (isEmptySqr(testSqr)) {
-					straightMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr));
+					straightMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
 				} else if (isOtherColorAtSqr(testSqr)) {
-					straightMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr));
+					straightMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
 					break;
 				} else {
 					break;
@@ -521,9 +521,9 @@ public class Position {
 		for (int testVector : testVectors) {
 			for (int testSqr = (pieceSqr + testVector); !Chess.hasExceededEdgeOfBoard(testSqr, testVector); testSqr += testVector) {
 				if (isEmptySqr(testSqr)) {
-					diagonalMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr));
+					diagonalMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
 				} else if (isOtherColorAtSqr(testSqr)) {
-					diagonalMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr));
+					diagonalMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
 					break;
 				} else {
 					break;

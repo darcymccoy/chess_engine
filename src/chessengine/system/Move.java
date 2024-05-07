@@ -18,6 +18,9 @@ public class Move {
 
 	/** The square on the board that the piece ends on. */
 	private int endSqr;
+	
+	/** The character at the square that the piece ends on */
+	private char endSqrContents;
 
 	/**
 	 * The character representation of the piece that the pawn is promoting to. If
@@ -32,9 +35,10 @@ public class Move {
 	 * @param piece    character representing the piece that is making this move
 	 * @param startSqr integer square on the board that the piece originated on
 	 * @param endSqr   integer square on the board that the piece ends on
+	 * @param endSqrContents character at the square that the piece ends on
 	 */
-	public Move(char piece, int startSqr, int endSqr) {
-		this(piece, startSqr, endSqr, Chess.EMPTY);
+	public Move(char piece, int startSqr, int endSqr, char endSqrContents) {
+		this(piece, startSqr, endSqr, Chess.EMPTY, endSqrContents);
 	}
 
 	/**
@@ -48,12 +52,14 @@ public class Move {
 	 * @param promoteTo character representing the piece that the pawn promotes to.
 	 *                  If this move isn't promotion, then this will be
 	 *                  <code>'-'</code>.
+	 * @param endSqrContents character at the square that the piece ends on
 	 */
-	public Move(char piece, int startSqr, int endSqr, char promoteTo) {
+	public Move(char piece, int startSqr, int endSqr, char promoteTo, char endSqrContents) {
 		this.piece = piece;
 		this.startSqr = startSqr;
 		this.endSqr = endSqr;
 		this.promoteTo = promoteTo;
+		this.endSqrContents = endSqrContents;
 	}
 	
 	/**
@@ -119,11 +125,10 @@ public class Move {
 	/**
 	 * Returns true if this move is a pawn capturing en passant.
 	 * 
-	 * @param endSqrContents the character that is at the square where this piece is going in this move
 	 * @return <code>true</code> if this move is a pawn capturing en passant;
 	 *         <code>false</code> otherwise.
 	 */
-	public boolean isEnPassant(char endSqrContents) {
+	public boolean isEnPassant() {
 		return ((piece == Chess.WH_PAWN) || (piece == Chess.BK_PAWN)) && 
 				(endSqrContents == Chess.EMPTY) && ((startSqr % 8) != (endSqr % 8));
 	}

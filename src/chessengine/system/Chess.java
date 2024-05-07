@@ -364,8 +364,8 @@ public final class Chess {
 	public static boolean hasExceededEdgeOfBoard(int sqr, int vector) {
 		if ((sqr < A8_SQR) || (sqr > H1_SQR))
 			return false;
-		return (containsEastDirection(vector) && Chess.isFileHSqr(sqr + Chess.WEST_1))
-				|| (Chess.containsWestDirection(vector) && Chess.isFileASqr(sqr + Chess.EAST_1));
+		return (containsEastDirection(vector) && isFileHSqr(sqr + WEST_1))
+				|| (containsWestDirection(vector) && isFileASqr(sqr + EAST_1));
 	}
 	
 	/**

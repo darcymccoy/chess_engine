@@ -104,7 +104,7 @@ public abstract class Game {
 				int startSqr = scanner.nextInt();
 				System.out.print("Enter the ending square of your move: ");
 				int endSqr = scanner.nextInt();
-				userMove = new Move(currentPosition.getSqr(startSqr), startSqr, endSqr);
+				userMove = new Move(currentPosition.getSqr(startSqr), startSqr, endSqr, currentPosition.getSqr(endSqr));
 				if (userMove.isPromotion()) {
 					System.out.print("Enter the piece you're promoting to "
 							+ "(r, b, n or q; uppercase for white, lowercase for black");
