@@ -131,7 +131,8 @@ public class Engine {
 					tempPositionDepth3.makeMove(legalMovesDepth3.get(k));
 					
 					int evaluationDepth3 = evaluatePosition(tempPositionDepth3) 
-							+ moveBonusesAndPenalties(tempPositionDepth3, legalMovesDepth3.get(k));
+							+ getMovePenalties(tempPositionDepth3, legalMovesDepth3.get(k))
+							+ getMoveBonuses(tempPositionDepth3, legalMovesDepth3.get(k));
 					if (evaluationDepth3 < maxReplyDepth2)
 						maxReplyDepth2 = evaluationDepth3;
 				}
@@ -196,29 +197,41 @@ public class Engine {
 	}
 	
 	/**
-	 * Returns an integer which represents the bonuses and penalties for
-	 * a move (that has been played on the position). This integer is from the 
+	 * Returns the penalties for a move (that has been played on the position). This integer is from the 
 	 * perspective of the color who is to play after the move has been made.
-	 * For example, a move which puts the opposing king into check is (generally) bad for the 
-	 * checked color so, for this move, some negative integer would be added to the bonus and penalty total.
+	 * 
+	 * @param position the <code>Position</code> after the move has been made on it
+	 * @param move the <code>Move</code> to have it's penalties calculated
+	 * @return <code>int</code> total of the penalties that the move incurred
+	 * @see chessengine.Engine#getMoveBonuses
+	 */
+	public int getMovePenalties(Position position, Move move) {
+		int penalties = 0;
+		if (position.isAttackedSqr(move.getEndSqr(), position.isWhiteToPlay()))
+			penalties += 10;
+		return penalties;
+	}
+	
+	/**
+	 * Returns the bonuses for a move (that has been played on the position). This integer is from the 
+	 * perspective of the color who is to play after the move has been made. For example, 
+	 * a move which puts the opposing king into check is (generally) bad for the 
+	 * checked color so, for this move, some negative integer would be added to the bonus total.
 	 * This negative integer represents that the move aided the color making it and put the opposing 
 	 * color into a worse position.
 	 * 
 	 * @param position the <code>Position</code> after the move has been made on it
-	 * @param move the <code>Move</code> that has been made
-	 * @return an <code>int</code> total of the bonuses and penalties that the move incurred
+	 * @param move the <code>Move</code> to have it's bonuses calculated
+	 * @return <code>int</code> total of the bonuses that the move incurred
+	 * @see chessengine.Engine#getMovePenalties
 	 */
-	public int moveBonusesAndPenalties(Position position, Move move) {
-		int bonusesAndPenalties = 0;
-		
+	public int getMoveBonuses(Position position, Move move) {
+		int bonuses = 0;
 		if (position.isCheck())
-			bonusesAndPenalties -= 15;
-		if (position.isAttackedSqr(move.getEndSqr(), position.isWhiteToPlay()))
-			bonusesAndPenalties += 10;
+			bonuses -= 15;
 		if (position.isAttackedSqr(move.getEndSqr(), !position.isWhiteToPlay()))
-			bonusesAndPenalties -= 10;
-		
-		return bonusesAndPenalties;
+			bonuses -= 10;
+		return bonuses;
 	}
 	
 	/**
