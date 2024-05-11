@@ -88,8 +88,8 @@ public class Move {
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean isPromotion() {
-		return ((piece == Chess.WH_PAWN) && Chess.isRank8Sqr(endSqr))
-				|| ((piece == Chess.BK_PAWN) && Chess.isRank1Sqr(endSqr));
+		return ((piece == Chess.WH_PAWN) && Board.isRank8Sqr(endSqr))
+				|| ((piece == Chess.BK_PAWN) && Board.isRank1Sqr(endSqr));
 	}
 
 	/**

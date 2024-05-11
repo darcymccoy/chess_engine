@@ -15,15 +15,14 @@ public class Position {
 	/** Whether white is the color to play in the current position. */
 	private boolean whiteToPlay;
 
-	/** The board of the position stored as a 64 character <code>String</code>. */
-	private String board;
+	/** The information of a physical board for the chess position */
+	private Board board;
 
 	/**
 	 * Default constructor (standard starting chess position, white is to play).
 	 */
 	public Position() {
-		this(true,
-				"rnbq2bnr" + "pppppppp" + "--------" + "--------" + "--------" + "--------" + "PPPPPPPP" + "RNBQ5BNR");
+		this(true, new Board());
 	}
 
 	/**
@@ -33,7 +32,7 @@ public class Position {
 	 * @param board       string 64 characters long where each character is a square
 	 *                    on the board starting from A8 and moving left and down
 	 */
-	public Position(boolean whiteToPlay, String board) {
+	public Position(boolean whiteToPlay, Board board) {
 		this.whiteToPlay = whiteToPlay;
 		this.board = board;
 	}
@@ -90,17 +89,17 @@ public class Position {
 		char pieceToPut = move.getPiece();
 
 		if (move.isKingsideCastling()) {
-			setSqr(getSqr(move.getEndSqr() + Chess.EAST_1), move.getEndSqr() + Chess.WEST_1);
-			setSqr(Chess.EMPTY, move.getEndSqr() + Chess.EAST_1);
+			board.setSqr(getSqr(move.getEndSqr() + Chess.EAST_1), move.getEndSqr() + Chess.WEST_1);
+			board.setSqr(Chess.EMPTY, move.getEndSqr() + Chess.EAST_1);
 		} else if (move.isQueensideCastling()) {
-			setSqr(getSqr(move.getEndSqr() + Chess.WEST_2), move.getEndSqr() + Chess.EAST_1);
-			setSqr(Chess.EMPTY, move.getEndSqr() + Chess.WEST_2);
+			board.setSqr(getSqr(move.getEndSqr() + Chess.WEST_2), move.getEndSqr() + Chess.EAST_1);
+			board.setSqr(Chess.EMPTY, move.getEndSqr() + Chess.WEST_2);
 		} else if (move.isEnPassant()) {
 
 			if (whiteToPlay) {
-				setSqr(Chess.EMPTY, move.getEndSqr() + Chess.SOUTH_1);
+				board.setSqr(Chess.EMPTY, move.getEndSqr() + Chess.SOUTH_1);
 			} else {
-				setSqr(Chess.EMPTY, move.getEndSqr() + Chess.NORTH_1);
+				board.setSqr(Chess.EMPTY, move.getEndSqr() + Chess.NORTH_1);
 			}
 
 		} else if (move.isPromotion()) {
@@ -124,12 +123,12 @@ public class Position {
 			pieceToPut = Chess.BK_KING;
 		} else {
 			// Updating king castling ability for non-king moves
-			updateKingCastlingAbility(move);
+			board.updateKingCastlingAbility(move);
 		}
 		
-		removeEnPassantAbility();
-		setSqr(Chess.EMPTY, move.getStartSqr());
-		setSqr(pieceToPut, move.getEndSqr());
+		board.removeEnPassantAbility();
+		board.setSqr(Chess.EMPTY, move.getStartSqr());
+		board.setSqr(pieceToPut, move.getEndSqr());
 		whiteToPlay = !whiteToPlay;
 	}
 	
@@ -147,10 +146,10 @@ public class Position {
 	        char east1SqrContents = '-';
 	        char west1SqrContents = '-';
 	        
-	        if (!Chess.isFileHSqr(move.getEndSqr())) {
+	        if (!Board.isFileHSqr(move.getEndSqr())) {
 	            east1SqrContents = getSqr(move.getEndSqr() + Chess.EAST_1);
 	        }
-	        if (!Chess.isFileASqr(move.getEndSqr())) {
+	        if (!Board.isFileASqr(move.getEndSqr())) {
 	            west1SqrContents = getSqr(move.getEndSqr() + Chess.WEST_1);
 	        }
 	        return (((move.getStartSqr() + Chess.NORTH_2) == move.getEndSqr())
@@ -170,8 +169,8 @@ public class Position {
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean isLegalMove(Move testMove) {
-		if ((testMove.getStartSqr() <= Chess.H1_SQR) && (testMove.getEndSqr() <= Chess.H1_SQR)
-				&& (testMove.getStartSqr() >= Chess.A8_SQR) && (testMove.getEndSqr() >= Chess.A8_SQR)) {
+		if ((testMove.getStartSqr() <= Board.H1_SQR) && (testMove.getEndSqr() <= Board.H1_SQR)
+				&& (testMove.getStartSqr() >= Board.A8_SQR) && (testMove.getEndSqr() >= Board.A8_SQR)) {
 			LinkedList<Move> tempMoves = findPseudoLegalPieceMoves(testMove.getPiece(), testMove.getStartSqr());
 			for (Move move : tempMoves) {
 				if (move.equals(testMove)) {
@@ -193,8 +192,8 @@ public class Position {
 	public LinkedList<Move> findPseudoLegalMoves() {
 		LinkedList<Move> pseudoLegalMoves = new LinkedList<>();
 
-		for (int i = 0; i < board.length(); i++) {
-			if (isEmptySqr(i) || isOtherColorAtSqr(i)) {
+		for (int i = 0; i < board.getSqrs().length(); i++) {
+			if (board.isEmptySqr(i) || isOtherColorAtSqr(i)) {
 				continue;
 			}
 			pseudoLegalMoves.addAll(findPseudoLegalPieceMoves(getSqr(i), i));
@@ -262,44 +261,44 @@ public class Position {
 				Chess.SOUTH_2 + Chess.EAST_1, Chess.SOUTH_2 + Chess.WEST_1, Chess.SOUTH_1 + Chess.WEST_2,
 				Chess.NORTH_1 + Chess.WEST_2, Chess.NORTH_2 + Chess.WEST_1 };
 
-		if (Chess.isRank8Sqr(knightSqr)) {// Assessing rank square
+		if (Board.isRank8Sqr(knightSqr)) {// Assessing rank square
 			testVectors[7] = 0;
 			testVectors[6] = 0;
 			testVectors[1] = 0;
 			testVectors[0] = 0;
-		} else if (Chess.isRank7Sqr(knightSqr)) {
+		} else if (Board.isRank7Sqr(knightSqr)) {
 			testVectors[7] = 0;
 			testVectors[0] = 0;
-		} else if (Chess.isRank1Sqr(knightSqr)) {
+		} else if (Board.isRank1Sqr(knightSqr)) {
 			testVectors[5] = 0;
 			testVectors[4] = 0;
 			testVectors[3] = 0;
 			testVectors[2] = 0;
-		} else if (Chess.isRank2Sqr(knightSqr)) {
+		} else if (Board.isRank2Sqr(knightSqr)) {
 			testVectors[4] = 0;
 			testVectors[3] = 0;
 		}
 
-		if (Chess.isFileHSqr(knightSqr)) {// Assessing file square
+		if (Board.isFileHSqr(knightSqr)) {// Assessing file square
 			testVectors[3] = 0;
 			testVectors[2] = 0;
 			testVectors[1] = 0;
 			testVectors[0] = 0;
-		} else if (Chess.isFileGSqr(knightSqr)) {
+		} else if (Board.isFileGSqr(knightSqr)) {
 			testVectors[2] = 0;
 			testVectors[1] = 0;
-		} else if (Chess.isFileASqr(knightSqr)) {
+		} else if (Board.isFileASqr(knightSqr)) {
 			testVectors[7] = 0;
 			testVectors[6] = 0;
 			testVectors[5] = 0;
 			testVectors[4] = 0;
-		} else if (Chess.isFileBSqr(knightSqr)) {
+		} else if (Board.isFileBSqr(knightSqr)) {
 			testVectors[6] = 0;
 			testVectors[5] = 0;
 		}
 		for (int testVector : testVectors) {
 			if ((testVector != 0)
-					&& (isOtherColorAtSqr(knightSqr + testVector) || isEmptySqr(knightSqr + testVector))) {
+					&& (isOtherColorAtSqr(knightSqr + testVector) || board.isEmptySqr(knightSqr + testVector))) {
 				knightMoves.add(new Move(getSqr(knightSqr), knightSqr, knightSqr + testVector, getSqr(knightSqr + testVector)));
 			}
 		}
@@ -319,26 +318,26 @@ public class Position {
 		int[] testVectors = { Chess.NORTH_1, Chess.NORTH_1_EAST_1, Chess.EAST_1, Chess.SOUTH_1_EAST_1, Chess.SOUTH_1,
 				Chess.SOUTH_1_WEST_1, Chess.WEST_1, Chess.NORTH_1_WEST_1 };
 
-		if (Chess.isFileHSqr(kingSqr)) {
+		if (Board.isFileHSqr(kingSqr)) {
 			testVectors[1] = 0;
 			testVectors[2] = 0;
 			testVectors[3] = 0;
-		} else if (Chess.isFileASqr(kingSqr)) {
+		} else if (Board.isFileASqr(kingSqr)) {
 			testVectors[5] = 0;
 			testVectors[6] = 0;
 			testVectors[7] = 0;
 		}
-		if (Chess.isRank1Sqr(kingSqr)) {
+		if (Board.isRank1Sqr(kingSqr)) {
 			testVectors[3] = 0;
 			testVectors[4] = 0;
 			testVectors[5] = 0;
-		} else if (Chess.isRank8Sqr(kingSqr)) {
+		} else if (Board.isRank8Sqr(kingSqr)) {
 			testVectors[0] = 0;
 			testVectors[1] = 0;
 			testVectors[7] = 0;
 		}
 		for (int testVector : testVectors) {
-			if ((testVector != 0) && (isOtherColorAtSqr(kingSqr + testVector) || isEmptySqr(kingSqr + testVector))) {
+			if ((testVector != 0) && (isOtherColorAtSqr(kingSqr + testVector) || board.isEmptySqr(kingSqr + testVector))) {
 				kingMoves.add(new Move(piece, kingSqr, kingSqr + testVector, getSqr(kingSqr + testVector)));
 			}
 		}
@@ -348,7 +347,7 @@ public class Position {
 				&& (getSqr(kingSqr + Chess.EAST_3) == Chess.WH_ROOK))
 				|| (((piece == Chess.BK_KING_CASTLE_BOTH_SIDES) || (piece == Chess.BK_KING_CASTLE_KINGSIDE))
 						&& (getSqr(kingSqr + Chess.EAST_3) == Chess.BK_ROOK)))
-				&& (isEmptySqr(kingSqr + Chess.EAST_1)) && (isEmptySqr(kingSqr + Chess.EAST_2))) {
+				&& (board.isEmptySqr(kingSqr + Chess.EAST_1)) && (board.isEmptySqr(kingSqr + Chess.EAST_2))) {
 			kingMoves.add(new Move(piece, kingSqr, kingSqr + Chess.EAST_2, getSqr(kingSqr + Chess.EAST_2)));
 		}
 		// Queenside castling
@@ -356,8 +355,8 @@ public class Position {
 				&& (getSqr(kingSqr + Chess.WEST_4) == Chess.WH_ROOK))
 				|| (((piece == Chess.BK_KING_CASTLE_BOTH_SIDES) || (piece == Chess.BK_KING_CASTLE_QUEENSIDE))
 						&& (getSqr(kingSqr + Chess.WEST_4) == Chess.BK_ROOK)))
-				&& (isEmptySqr(kingSqr + Chess.WEST_1)) && (isEmptySqr(kingSqr + Chess.WEST_2))
-				&& (isEmptySqr(kingSqr + Chess.WEST_3))) {
+				&& (board.isEmptySqr(kingSqr + Chess.WEST_1)) && (board.isEmptySqr(kingSqr + Chess.WEST_2))
+				&& (board.isEmptySqr(kingSqr + Chess.WEST_3))) {
 			kingMoves.add(new Move(piece, kingSqr, kingSqr + Chess.WEST_2, getSqr(kingSqr + Chess.WEST_2)));
 		}
 		return kingMoves;
@@ -410,7 +409,7 @@ public class Position {
 		int[] captureVectors = { Chess.EAST_1, Chess.WEST_1 };
 		for (int captureVector : captureVectors) {
 			int testSqr = pawnSqr + captureVector + movementVector;
-			if (Chess.hasExceededEdgeOfBoard(testSqr, captureVector))
+			if (Board.hasExceededAnEdge(testSqr, captureVector))
 				continue;
 			if ((isOtherColorAtSqr(testSqr))
 					|| ((getSqr(pawnSqr + captureVector) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
@@ -431,9 +430,9 @@ public class Position {
 	 */
 	private LinkedList<Move> findStraightPawnMoves(int pawnSqr, int movementVector) {
 		LinkedList<Move> straightPawnMoves = new LinkedList<>();
-		for (int testSqr = (pawnSqr + movementVector), i = 0; ((testSqr <= Chess.H1_SQR) && (testSqr >= Chess.A8_SQR))
+		for (int testSqr = (pawnSqr + movementVector), i = 0; ((testSqr <= Board.H1_SQR) && (testSqr >= Board.A8_SQR))
 				&& i < 2; testSqr += movementVector, i++) {
-			if (isEmptySqr(testSqr)) {
+			if (board.isEmptySqr(testSqr)) {
 				straightPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, testSqr, getSqr(testSqr)));
 			} else {
 				break;
@@ -474,7 +473,6 @@ public class Position {
 		}
 		return newMoves;
 	}
-	
 
 	/**
 	 * Returns the moves along straight directions. This finds the legal and pseudo
@@ -490,8 +488,8 @@ public class Position {
 		int[] testVectors = { Chess.NORTH_1, Chess.EAST_1, Chess.SOUTH_1, Chess.WEST_1 };
 
 		for (int testVector : testVectors) {
-			for (int testSqr = (pieceSqr + testVector); !Chess.hasExceededEdgeOfBoard(testSqr, testVector); testSqr += testVector) {
-				if (isEmptySqr(testSqr)) {
+			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr, testVector); testSqr += testVector) {
+				if (board.isEmptySqr(testSqr)) {
 					straightMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
 				} else if (isOtherColorAtSqr(testSqr)) {
 					straightMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
@@ -503,7 +501,6 @@ public class Position {
 		}
 		return straightMoves;
 	}
-	
 
 	/**
 	 * Returns the moves along diagonal directions. This finds the legal and pseudo
@@ -519,8 +516,8 @@ public class Position {
 		int[] testVectors = { Chess.NORTH_1_EAST_1, Chess.SOUTH_1_EAST_1, Chess.SOUTH_1_WEST_1, Chess.NORTH_1_WEST_1 };
 
 		for (int testVector : testVectors) {
-			for (int testSqr = (pieceSqr + testVector); !Chess.hasExceededEdgeOfBoard(testSqr, testVector); testSqr += testVector) {
-				if (isEmptySqr(testSqr)) {
+			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr, testVector); testSqr += testVector) {
+				if (board.isEmptySqr(testSqr)) {
 					diagonalMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
 				} else if (isOtherColorAtSqr(testSqr)) {
 					diagonalMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
@@ -532,7 +529,6 @@ public class Position {
 		}
 		return diagonalMoves;
 	}
-	
 
 	/**
 	 * Returns true if the color to move is in check.
@@ -541,9 +537,8 @@ public class Position {
 	 *         attacked; <code>false</code> otherwise.
 	 */
 	public boolean isCheck() {
-		return isAttackedSqr(findKingSqr(whiteToPlay), !whiteToPlay);
+		return isAttackedSqr(board.findKingSqr(whiteToPlay), !whiteToPlay);
 	}
-	
 
 	/**
 	 * Returns true if the move puts the king (of the color who makes that move)
@@ -556,11 +551,10 @@ public class Position {
 	public boolean isSelfCheckMove(Move move) {
 		Position tempPosition = clone();
 		tempPosition.makeMove(move);
-		return tempPosition.isAttackedSqr(tempPosition.findKingSqr(!tempPosition.whiteToPlay), tempPosition.whiteToPlay)
+		return tempPosition.isAttackedSqr(tempPosition.board.findKingSqr(!tempPosition.whiteToPlay), tempPosition.whiteToPlay)
 				|| (move.isCastling() && tempPosition.isAttackedSqr(((move.getStartSqr()) + (move.getEndSqr())) / 2,
 						tempPosition.whiteToPlay));
 	}
-	
 
 	/**
 	 * Returns true if the square is attacked by a piece of the corresponding color.
@@ -573,10 +567,10 @@ public class Position {
 	 */
 	public boolean isAttackedSqr(int sqr, boolean whiteIsAttacking) {
 		Position tempPosition = clone();
-		if ((Chess.isWhitePiece(getSqr(sqr)) || (isEmptySqr(sqr))) && whiteIsAttacking) {
-			tempPosition.setSqr(Chess.BK_QUEEN, sqr);
-		} else if ((Chess.isBlackPiece(getSqr(sqr)) || (isEmptySqr(sqr))) && !whiteIsAttacking) {
-			tempPosition.setSqr(Chess.WH_QUEEN, sqr);
+		if ((Chess.isWhitePiece(getSqr(sqr)) || (board.isEmptySqr(sqr))) && whiteIsAttacking) {
+			tempPosition.board.setSqr(Chess.BK_QUEEN, sqr);
+		} else if ((Chess.isBlackPiece(getSqr(sqr)) || (board.isEmptySqr(sqr))) && !whiteIsAttacking) {
+			tempPosition.board.setSqr(Chess.WH_QUEEN, sqr);
 		}
 
 		if (whiteToPlay != whiteIsAttacking) {
@@ -591,24 +585,6 @@ public class Position {
 		}
 		return (getSqr(sqr) == Chess.WH_PAWN_ENPASS) || (getSqr(sqr) == Chess.BK_PAWN_ENPASS);
 	}
-	
-
-	/**
-	 * Returns one of the kings' squares.
-	 *
-	 * @param findWhiteKing <code>boolean</code> whether white is the color of the
-	 *                      king to be found
-	 * @return int value where the king is on the board
-	 */
-	public int findKingSqr(boolean findWhiteKing) {
-		for (int i = 0; i < board.length(); i++) {
-			if ((findWhiteKing && Chess.isWhiteKing(getSqr(i))) || (!findWhiteKing && Chess.isBlackKing(getSqr(i)))) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	
 
 	/**
 	 * Returns true if the piece at this square is the opposite color of the color
@@ -625,81 +601,6 @@ public class Position {
 			return Chess.isWhitePiece(getSqr(sqr));
 		}
 	}
-	
-
-	/**
-	 * Returns true if there is no piece at this square.
-	 *
-	 * @param sqr int value of the square
-	 * @return <code>true</code> if this square has no piece on it;
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isEmptySqr(int sqr) {
-		return getSqr(sqr) == Chess.EMPTY;
-	}
-	
-
-	/**
-	 * Updates this square on the board to either empty or to the piece that is
-	 * passed.
-	 *
-	 * @param charToPut character representing the piece or an empty square
-	 * @param sqr       int value of the square to be updated
-	 */
-	public void setSqr(char charToPut, int sqr) {
-		board = board.substring(0, sqr) + charToPut + board.substring(sqr + 1);
-	}
-	
-
-	/**
-	 * Updates the king's castling ability for non king moves.
-	 *
-	 * @param move the move that the (non king) piece is making
-	 */
-	public void updateKingCastlingAbility(Move move) {
-		// Updating white king for castling ability
-		if ((getSqr(Chess.E1_SQR) == Chess.WH_KING_CASTLE_BOTH_SIDES)
-				&& ((move.getStartSqr() == Chess.H1_SQR) || (move.getEndSqr() == Chess.H1_SQR))) {
-			setSqr(Chess.WH_KING_CASTLE_QUEENSIDE, Chess.E1_SQR);
-		} else if ((getSqr(Chess.E1_SQR) == Chess.WH_KING_CASTLE_BOTH_SIDES)
-				&& ((move.getStartSqr() == Chess.A1_SQR) || (move.getEndSqr() == Chess.A1_SQR))) {
-			setSqr(Chess.WH_KING_CASTLE_KINGSIDE, Chess.E1_SQR);
-		} else if (((getSqr(Chess.E1_SQR) == Chess.WH_KING_CASTLE_KINGSIDE)
-				&& ((move.getStartSqr() == Chess.H1_SQR) || (move.getEndSqr() == Chess.H1_SQR)))
-				|| ((getSqr(Chess.E1_SQR) == Chess.WH_KING_CASTLE_QUEENSIDE)
-						&& (((move.getStartSqr()) == Chess.A1_SQR) || (move.getEndSqr() == Chess.A1_SQR)))) {
-			setSqr(Chess.WH_KING, Chess.E1_SQR);
-		}
-		// Updating black king for castling ability
-		if ((getSqr(Chess.E8_SQR) == Chess.BK_KING_CASTLE_BOTH_SIDES)
-				&& ((move.getStartSqr() == Chess.H8_SQR) || (move.getEndSqr() == Chess.H8_SQR))) {
-			setSqr(Chess.BK_KING_CASTLE_QUEENSIDE, Chess.E8_SQR);
-		} else if ((getSqr(Chess.E8_SQR) == Chess.BK_KING_CASTLE_BOTH_SIDES)
-				&& ((move.getStartSqr() == Chess.A8_SQR) || (move.getEndSqr() == Chess.A8_SQR))) {
-			setSqr(Chess.BK_KING_CASTLE_KINGSIDE, Chess.E8_SQR);
-		} else if (((getSqr(Chess.E8_SQR) == Chess.BK_KING_CASTLE_KINGSIDE)
-				&& ((move.getStartSqr() == Chess.H8_SQR) || (move.getEndSqr() == Chess.H8_SQR)))
-				|| ((getSqr(Chess.E8_SQR) == Chess.BK_KING_CASTLE_QUEENSIDE)
-						&& ((move.getStartSqr() == Chess.A8_SQR) || (move.getEndSqr() == Chess.A8_SQR)))) {
-			setSqr(Chess.BK_KING, Chess.E8_SQR);
-		}
-	}
-	
-
-	/**
-	 * Updates the board so that pawns that could have been captured en passant
-	 * become regular pawns.
-	 */
-	public void removeEnPassantAbility() {
-		for (int i = 0; i < board.length(); i++) {
-			if (getSqr(i) == Chess.WH_PAWN_ENPASS) {
-				setSqr(Chess.WH_PAWN, i);
-			} else if (getSqr(i) == Chess.BK_PAWN_ENPASS) {
-				setSqr(Chess.BK_PAWN, i);
-			}
-		}
-	}
-	
 
 	/**
 	 * Returns the contents of a square.
@@ -708,9 +609,8 @@ public class Position {
 	 * @return character contents of the square
 	 */
 	public char getSqr(int sqr) {
-		return board.charAt(sqr);
+		return board.getSqr(sqr);
 	}
-	
 
 	/**
 	 * Returns a string with the player who is to move and the board laid out in a
@@ -727,15 +627,14 @@ public class Position {
 			printPosition = "Black to move:\n";
 		}
 
-		for (int i = 0; i < board.length(); i++) {
+		for (int i = 0; i < board.getSqrs().length(); i++) {
 			printPosition += getSqr(i) + " ";
-			if (Chess.isFileHSqr(i)) {
+			if (Board.isFileHSqr(i)) {
 				printPosition += "\n";
 			}
 		}
 		return printPosition;
 	}
-	
 
 	/**
 	 * @return <code>true</code> if white is to play; <code>false</code> otherwise.
@@ -743,7 +642,6 @@ public class Position {
 	public boolean isWhiteToPlay() {
 		return whiteToPlay;
 	}
-	
 
 	/**
 	 * @param whiteToPlay <code>boolean</code> whether to set white as the color to
@@ -752,20 +650,18 @@ public class Position {
 	public void setWhiteToPlay(boolean whiteToPlay) {
 		this.whiteToPlay = whiteToPlay;
 	}
-	
 
 	/**
 	 * @return String, the board as 64 characters starting from square A8
 	 */
-	public String getBoard() {
+	public Board getBoard() {
 		return board;
 	}
-	
 
 	/**
 	 * @param board <code>String</code>, the new board
 	 */
-	public void setBoard(String board) {
+	public void setBoard(Board board) {
 		this.board = board;
 	}
 

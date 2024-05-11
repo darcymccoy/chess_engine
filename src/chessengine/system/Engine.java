@@ -187,7 +187,7 @@ public class Engine {
 	 */
 	public int evaluatePosition(Position position) {
 		int positionEvaluation = 0;
-		for (int i = 0; i < position.getBoard().length(); i++) {
+		for (int i = 0; i < position.getBoard().getSqrs().length(); i++) {
 			positionEvaluation += getPieceValue(position.getSqr(i), i);
 		}
 		if (position.isWhiteToPlay())
