@@ -143,8 +143,8 @@ public class Position {
 	 */
 	public boolean isAllowsEnPassant(Move move) {
 		if ((move.getPiece() == Chess.WH_PAWN) || (move.getPiece() == Chess.BK_PAWN)) {
-	        char east1SqrContents = '-';
-	        char west1SqrContents = '-';
+	        char east1SqrContents = 0;
+	        char west1SqrContents = 0;
 	        
 	        if (!Board.isFileHSqr(move.getEndSqr())) {
 	            east1SqrContents = getSqr(move.getEndSqr() + Chess.EAST_1);
@@ -261,45 +261,12 @@ public class Position {
 				Chess.SOUTH_2 + Chess.EAST_1, Chess.SOUTH_2 + Chess.WEST_1, Chess.SOUTH_1 + Chess.WEST_2,
 				Chess.NORTH_1 + Chess.WEST_2, Chess.NORTH_2 + Chess.WEST_1 };
 
-		if (Board.isRank8Sqr(knightSqr)) {// Assessing rank square
-			testVectors[7] = 0;
-			testVectors[6] = 0;
-			testVectors[1] = 0;
-			testVectors[0] = 0;
-		} else if (Board.isRank7Sqr(knightSqr)) {
-			testVectors[7] = 0;
-			testVectors[0] = 0;
-		} else if (Board.isRank1Sqr(knightSqr)) {
-			testVectors[5] = 0;
-			testVectors[4] = 0;
-			testVectors[3] = 0;
-			testVectors[2] = 0;
-		} else if (Board.isRank2Sqr(knightSqr)) {
-			testVectors[4] = 0;
-			testVectors[3] = 0;
-		}
-
-		if (Board.isFileHSqr(knightSqr)) {// Assessing file square
-			testVectors[3] = 0;
-			testVectors[2] = 0;
-			testVectors[1] = 0;
-			testVectors[0] = 0;
-		} else if (Board.isFileGSqr(knightSqr)) {
-			testVectors[2] = 0;
-			testVectors[1] = 0;
-		} else if (Board.isFileASqr(knightSqr)) {
-			testVectors[7] = 0;
-			testVectors[6] = 0;
-			testVectors[5] = 0;
-			testVectors[4] = 0;
-		} else if (Board.isFileBSqr(knightSqr)) {
-			testVectors[6] = 0;
-			testVectors[5] = 0;
-		}
 		for (int testVector : testVectors) {
-			if ((testVector != 0)
-					&& (isOtherColorAtSqr(knightSqr + testVector) || board.isEmptySqr(knightSqr + testVector))) {
-				knightMoves.add(new Move(getSqr(knightSqr), knightSqr, knightSqr + testVector, getSqr(knightSqr + testVector)));
+			int testSqr = knightSqr + testVector;
+			if (Board.hasExceededAnEdge(testSqr, testVector))
+				continue;
+			else if (isOtherColorAtSqr(testSqr) || board.isEmptySqr(testSqr)) {
+				knightMoves.add(new Move(getSqr(knightSqr), knightSqr, testSqr, getSqr(testSqr)));
 			}
 		}
 		return knightMoves;

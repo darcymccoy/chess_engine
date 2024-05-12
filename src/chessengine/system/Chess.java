@@ -219,8 +219,8 @@ public final class Chess {
 	 *         otherwise.
 	 */
 	public static boolean isWhitePiece(char piece) {
-		return (isWhiteKing(piece) || (piece == WH_ROOK) || (piece == WH_KNIGHT) || (piece == WH_BISHOP)
-				|| (piece == WH_QUEEN) || (piece == WH_PAWN) || (piece == WH_PAWN_ENPASS));
+		return isWhiteKing(piece) || (piece == WH_ROOK) || (piece == WH_KNIGHT) || (piece == WH_BISHOP)
+				|| (piece == WH_QUEEN) || (piece == WH_PAWN) || (piece == WH_PAWN_ENPASS);
 	}
 
 	/**
@@ -231,31 +231,53 @@ public final class Chess {
 	 *         otherwise.
 	 */
 	public static boolean isBlackPiece(char piece) {
-		return (isBlackKing(piece) || (piece == BK_ROOK) || (piece == BK_KNIGHT) || (piece == BK_BISHOP)
-				|| (piece == BK_QUEEN) || (piece == BK_PAWN) || (piece == BK_PAWN_ENPASS));
+		return isBlackKing(piece) || (piece == BK_ROOK) || (piece == BK_KNIGHT) || (piece == BK_BISHOP)
+				|| (piece == BK_QUEEN) || (piece == BK_PAWN) || (piece == BK_PAWN_ENPASS);
 	}
 	
 	/**
-	 * Returns true if the vector contains in any way the east direction vector.
+	 * Returns true if the vector contains in any way the east 1 direction vector.
 	 * 
 	 * @param vector int to test
-	 * @return <code>true</code> if this vector contains east; <code>false</code>
+	 * @return <code>true</code> if this vector contains east 1 vector; <code>false</code>
 	 *         otherwise.
 	 */
-	public static boolean containsEastDirection(int vector) {
-		return (vector == EAST_1) || (vector == EAST_2) || (vector == EAST_3) || (vector == NORTH_1_EAST_1) || (vector == SOUTH_1_EAST_1);
+	public static boolean containsEast1Direction(int vector) {
+		return (vector == EAST_1) || (vector == NORTH_1_EAST_1) || (vector == SOUTH_1_EAST_1);
 	}
 	
 	/**
-	 * Returns true if the vector contains in any way the east direction vector.
+	 * Returns true if the vector contains in any way the west 1 direction vector.
 	 * 
 	 * @param vector int to test
-	 * @return <code>true</code> if this vector contains east; <code>false</code>
+	 * @return <code>true</code> if this vector contains west 1 vector; <code>false</code>
 	 *         otherwise.
 	 */
-	public static boolean containsWestDirection(int vector) {
-		return (vector == WEST_1) || (vector == WEST_2) || (vector == WEST_3) || (vector == WEST_4) 
-				|| (vector == NORTH_1_WEST_1) || (vector == SOUTH_1_WEST_1);
+	public static boolean containsWest1Direction(int vector) {
+		return (vector == WEST_1) || (vector == NORTH_1_WEST_1) || (vector == SOUTH_1_WEST_1);
+	}
+	
+	/**
+	 * Returns true if the vector contains in any way the east 2 direction vector.
+	 * 
+	 * @param vector int to test
+	 * @return <code>true</code> if this vector contains east 2 vector; <code>false</code>
+	 *         otherwise.
+	 */
+	public static boolean containsEast2Direction(int vector) {
+		return (vector == EAST_2) || (vector == (NORTH_1 + EAST_2)) || (vector == (SOUTH_1 + EAST_2));
+	}
+
+	
+	/**
+	 * Returns true if the vector contains in any way the west 2 direction vector.
+	 * 
+	 * @param vector int to test
+	 * @return <code>true</code> if this vector contains west 2 vector; <code>false</code>
+	 *         otherwise.
+	 */
+	public static boolean containsWest2Direction(int vector) {
+		return (vector == WEST_2) || (vector == (NORTH_1 + WEST_2)) || (vector == (SOUTH_1 + WEST_2));
 	}
 
 }

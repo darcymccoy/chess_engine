@@ -251,9 +251,11 @@ public class Board {
 	 */
 	public static boolean hasExceededAnEdge(int sqr, int vector) {
 		if ((sqr < A8_SQR) || (sqr > H1_SQR))
-			return false;
-		return (Chess.containsEastDirection(vector) && isFileHSqr(sqr + Chess.WEST_1))
-				|| (Chess.containsWestDirection(vector) && isFileASqr(sqr + Chess.EAST_1));
+			return true;
+		return (Chess.containsEast1Direction(vector) && isFileHSqr(sqr + Chess.WEST_1))
+				|| (Chess.containsWest1Direction(vector) && isFileASqr(sqr + Chess.EAST_1))
+				|| (Chess.containsEast1Direction(vector) && (isFileHSqr(sqr + Chess.WEST_2) || isFileGSqr(sqr + Chess.WEST_2)))
+				|| (Chess.containsWest2Direction(vector) && (isFileASqr(sqr + Chess.EAST_2) || isFileBSqr(sqr + Chess.EAST_2)));
 	}
 	
 	/**
