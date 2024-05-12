@@ -144,6 +144,23 @@ public class Board {
 	}
 
 	/**
+	 * Returns the board laid out in a 8x8 grid.
+	 * 
+	 * @return String representation of the squares of the board 
+	 */
+	@Override
+	public String toString() {
+		String printBoard = "";
+		for (int i = 0; i < sqrs.length(); i++) {
+			printBoard += getSqr(i) + " ";
+			if (Board.isFileHSqr(i)) {
+				printBoard += "\n";
+			}
+		}
+		return printBoard;
+	}
+	
+	/**
 	 * Returns true if there is no piece at this square.
 	 *
 	 * @param sqr int value of the square

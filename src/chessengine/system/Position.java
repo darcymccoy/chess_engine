@@ -589,13 +589,7 @@ public class Position {
 		} else {
 			printPosition = "Black to move:\n";
 		}
-
-		for (int i = 0; i < board.getSqrs().length(); i++) {
-			printPosition += getSqr(i) + " ";
-			if (Board.isFileHSqr(i)) {
-				printPosition += "\n";
-			}
-		}
+		printPosition += board.toString();
 		return printPosition;
 	}
 
@@ -615,14 +609,14 @@ public class Position {
 	}
 
 	/**
-	 * @return String, the board as 64 characters starting from square A8
+	 * @return the Board object
 	 */
 	public Board getBoard() {
 		return board;
 	}
 
 	/**
-	 * @param board <code>String</code>, the new board
+	 * @param board the Board
 	 */
 	public void setBoard(Board board) {
 		this.board = board;

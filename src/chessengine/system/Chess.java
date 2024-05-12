@@ -267,7 +267,6 @@ public final class Chess {
 	public static boolean containsEast2Direction(int vector) {
 		return (vector == EAST_2) || (vector == (NORTH_1 + EAST_2)) || (vector == (SOUTH_1 + EAST_2));
 	}
-
 	
 	/**
 	 * Returns true if the vector contains in any way the west 2 direction vector.
