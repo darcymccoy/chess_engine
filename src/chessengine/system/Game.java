@@ -1,5 +1,6 @@
 package chessengine.system;
 
+import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
@@ -16,7 +17,7 @@ public abstract class Game {
 	private Position currentPosition;
 	
 	/** The moves that have previously been made in this game. */
-	private Move[] movesMade;
+	private LinkedList<Move> movesMade;
 	
 	/** Whether this game is currently being played. */
 	protected boolean inGame;
@@ -32,7 +33,7 @@ public abstract class Game {
 	 * no moves have been made and the game hasn't been started.
 	 */
 	public Game() {
-		this(new Position(), new Move[0], false);
+		this(new Position(), new LinkedList<Move>(), false);
 	}
 
 	/**
@@ -40,10 +41,10 @@ public abstract class Game {
 	 * the game is currently.
 	 * 
 	 * @param currentPosition the <code>Position</code> that the game will start from
-	 * @param movesMade integer array for the moves that have already been made
+	 * @param movesMade <code>LinkedList</code> for the moves that have already been made
 	 * @param inGame <code>boolean</code> whether the game is currently being played
 	 */
-	public Game(Position currentPosition, Move[] movesMade, boolean inGame) {
+	public Game(Position currentPosition, LinkedList<Move> movesMade, boolean inGame) {
 		this.currentPosition = currentPosition;
 		this.movesMade = movesMade;
 		this.inGame = inGame;
@@ -52,7 +53,7 @@ public abstract class Game {
 	/**
 	 * Copy constructor.
 	 * 
-	 * @param otherGame the <code>Game</code> to be copy
+	 * @param otherGame the <code>Game</code> to copy
 	 */
 	public Game(Game otherGame) {
 		this(otherGame.currentPosition, otherGame.movesMade, otherGame.inGame);
@@ -84,9 +85,9 @@ public abstract class Game {
 	 */
 	public void letEngineMakeMove() {
 		try {
-			Move engineMove = engine.findTopMoveDepth3(currentPosition);
+			Move engineMove = engine.findTopMove(currentPosition);
 			currentPosition.makeMove(engineMove);
-			addMoveToMovesMade(engineMove);
+			movesMade.add(engineMove);
 		} catch (NoLegalMovesException e) {
 			stopGame();
 		}
@@ -118,7 +119,7 @@ public abstract class Game {
 			
 			if (currentPosition.isLegalMove(userMove)) {
 				currentPosition.makeMove(userMove);
-				addMoveToMovesMade(userMove);
+				movesMade.add(userMove);
 				break;
 			} else {
 				System.out.println("This isn't a legal move. Try again.");
@@ -148,21 +149,6 @@ public abstract class Game {
 	}
 	
 	/**
-	 * Adds a move to the end of movesMade.
-	 * 
-	 * @param move the <code>Move</code> to be added to the moves that have been made in this game
-	 */
-	public void addMoveToMovesMade(Move move) {
-		Move[] newMovesMade = new Move[movesMade.length + 1];
-		
-		for (int i = 0; i < movesMade.length; i++) {
-			newMovesMade[i] = movesMade[i];
-		}
-		newMovesMade[newMovesMade.length - 1] = move;
-		movesMade = newMovesMade;
-	}
-	
-	/**
 	 * Closes the scanner object.
 	 */
 	public void closeScanner() {
@@ -177,8 +163,8 @@ public abstract class Game {
 	public String toString() {
 		String printGame = currentPosition.toString() + "\n";
 
-		for (int i = 0; i < movesMade.length; i++) {
-			printGame += movesMade[i].toString() + " ";
+		for (int i = 0; i < movesMade.size(); i++) {
+			printGame += movesMade.get(i).toString() + " ";
 			if (((i + 1) % 2) == 0)
 				printGame += "\n";
 		}
