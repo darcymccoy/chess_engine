@@ -149,30 +149,47 @@ public class Engine {
 		return topMove;
 	}
 	
-	/**
-	 * Returns the top move (as decided by the engine) for a position. 
-	 * The engine searches to a hard coded depth of 1. 
-	 * If no legal moves are found, a {@code NoLegalMovesException} will be thrown.
-	 * 
-	 * @param currentPosition the <code>Position</code> to be searched for the top move
-	 * @return <code>Move</code> the top move
-	 * @throws NoLegalMovesException if there are no legal moves in the position
-	 */
-	public Move findTopMoveDepth1(Position currentPosition) throws NoLegalMovesException {
+	public Move findTopMove(Position position) throws NoLegalMovesException {
 		Move topMove = null;
-		int topMoveEvaluation = 10000;
-		LinkedList<Move> legalMovesDepth1 = currentPosition.findLegalMoves();
-		
-		for (int i = 0; i < legalMovesDepth1.size(); i++) {
-			Position tempPositionDepth1 = currentPosition.clone();
-			tempPositionDepth1.makeMove(legalMovesDepth1.get(i));
-			
-			if (evaluatePosition(tempPositionDepth1) < topMoveEvaluation) {
-				topMove = legalMovesDepth1.get(i);
-				topMoveEvaluation = evaluatePosition(tempPositionDepth1);
+		int topMoveMaxReply = Integer.MAX_VALUE;
+		LinkedList<Move> legalMoves = position.findLegalMoves();
+		for (Move move : legalMoves) {
+			Position tempPosition = position.clone();
+			tempPosition.makeMove(move);
+			int maxReply = 0;
+			try {
+				maxReply = findMaxReplyToMinimumDepth(tempPosition, 2);
+			} catch (NoLegalMovesException e) {
+
+			}
+			if (maxReply < topMoveMaxReply) {
+				topMoveMaxReply = maxReply;
+				topMove = move;
 			}
 		}
 		return topMove;
+	}
+	
+	private int findMaxReplyToMinimumDepth(Position position, int depth) throws NoLegalMovesException {
+		int maxReply = 0;
+		LinkedList<Move> legalMoves = position.findLegalMoves();
+		for (Move move : legalMoves) {
+			Position tempPosition = position.clone();
+			tempPosition.makeMove(move);
+			int testMaxReply = 0;
+			if (depth > 0) {
+				try {
+					testMaxReply = findMaxReplyToMinimumDepth(tempPosition, depth - 1);
+				} catch (NoLegalMovesException e) {
+					
+				}
+			} else {
+				testMaxReply = evaluatePosition(tempPosition);
+			}
+			if (testMaxReply < maxReply)
+				maxReply = testMaxReply;
+		}
+		return maxReply;
 	}
 	
 	/**

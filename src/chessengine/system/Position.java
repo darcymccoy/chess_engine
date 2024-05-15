@@ -43,7 +43,7 @@ public class Position {
 	 * @param otherPosition the <code>Position</code> to copy
 	 */
 	public Position(Position otherPosition) {
-		this(otherPosition.whiteToPlay, otherPosition.board);
+		this(otherPosition.whiteToPlay, otherPosition.board.clone());
 	}
 
 	/**
@@ -66,7 +66,6 @@ public class Position {
 	public LinkedList<Move> findLegalMoves() throws NoLegalMovesException {
 		LinkedList<Move> pseudoLegalMoves = findPseudoLegalMoves();
 		LinkedList<Move> legalMoves = new LinkedList<>();
-
 		for (Move move : pseudoLegalMoves) {
 			if (!isSelfCheckMove(move) && !(move.isCastling() && isCheck())) {
 				legalMoves.add(move);
@@ -265,9 +264,8 @@ public class Position {
 			int testSqr = knightSqr + testVector;
 			if (Board.hasExceededAnEdge(testSqr, testVector))
 				continue;
-			else if (isOtherColorAtSqr(testSqr) || board.isEmptySqr(testSqr)) {
+			else if (isOtherColorAtSqr(testSqr) || board.isEmptySqr(testSqr))
 				knightMoves.add(new Move(getSqr(knightSqr), knightSqr, testSqr, getSqr(testSqr)));
-			}
 		}
 		return knightMoves;
 	}
@@ -515,7 +513,7 @@ public class Position {
 		Position tempPosition = clone();
 		tempPosition.makeMove(move);
 		return tempPosition.isAttackedSqr(tempPosition.board.findKingSqr(!tempPosition.whiteToPlay), tempPosition.whiteToPlay)
-				|| (move.isCastling() && tempPosition.isAttackedSqr(((move.getStartSqr()) + (move.getEndSqr())) / 2,
+				|| (move.isCastling() && tempPosition.isAttackedSqr((move.getStartSqr() + move.getEndSqr()) / 2,
 						tempPosition.whiteToPlay));
 	}
 

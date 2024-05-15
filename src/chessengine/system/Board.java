@@ -59,6 +59,25 @@ public class Board {
 	}
 	
 	/**
+	 * Copy constructor.
+	 * 
+	 * @param otherBoard the <code>Board</code> to copy
+	 */
+	public Board(Board otherBoard) {
+		this(otherBoard.sqrs);
+	}
+	
+	/**
+	 * Returns a copy of this board.
+	 *
+	 * @return <code>Board</code> that is a copy of this
+	 */
+	@Override
+	public Board clone() {
+		return new Board(this);
+	}
+	
+	/**
 	 * Returns the contents of a square.
 	 *
 	 * @param sqr int value the square
@@ -271,7 +290,7 @@ public class Board {
 			return true;
 		return (Chess.containsEast1Direction(vector) && isFileHSqr(sqr + Chess.WEST_1))
 				|| (Chess.containsWest1Direction(vector) && isFileASqr(sqr + Chess.EAST_1))
-				|| (Chess.containsEast1Direction(vector) && (isFileHSqr(sqr + Chess.WEST_2) || isFileGSqr(sqr + Chess.WEST_2)))
+				|| (Chess.containsEast2Direction(vector) && (isFileHSqr(sqr + Chess.WEST_2) || isFileGSqr(sqr + Chess.WEST_2)))
 				|| (Chess.containsWest2Direction(vector) && (isFileASqr(sqr + Chess.EAST_2) || isFileBSqr(sqr + Chess.EAST_2)));
 	}
 	
