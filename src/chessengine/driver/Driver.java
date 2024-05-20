@@ -3,7 +3,7 @@ package chessengine.driver;
 import java.util.Scanner;
 import chessengine.system.Engine;
 import chessengine.system.EngineVsEngine;
-import chessengine.system.Position;
+import chessengine.system.UserVsEngine;
 
 /**
  * Driver class for a chess engine designed to be able to play 
@@ -26,7 +26,7 @@ public class Driver {
 		boolean insideLoop = true;
 		
 		
-		EngineVsEngine game1 = new EngineVsEngine();
+		UserVsEngine game1 = new UserVsEngine();
 		game1.play();
 		game1.closeScanner();
 		

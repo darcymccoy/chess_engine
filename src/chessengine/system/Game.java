@@ -85,7 +85,7 @@ public abstract class Game {
 	 */
 	public void letEngineMakeMove() {
 		try {
-			Move engineMove = engine.findTopMove(currentPosition);
+			Move engineMove = engine.findTopMoveDepth3(currentPosition);
 			currentPosition.makeMove(engineMove);
 			movesMade.add(engineMove);
 		} catch (NoLegalMovesException e) {

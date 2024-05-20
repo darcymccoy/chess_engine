@@ -82,81 +82,15 @@ public class Position {
 	 * Updates isWhiteToPlay and the board so that the move has been played.
 	 * Accounts for castling, en passant and promotion.
 	 *
-	 * @param move the move to be made
+	 * @param move the <code>Move</code> to be made
 	 */
 	public void makeMove(Move move) {
-		char pieceToPut = move.getPiece();
-
-		if (move.isKingsideCastling()) {
-			board.setSqr(getSqr(move.getEndSqr() + Chess.EAST_1), move.getEndSqr() + Chess.WEST_1);
-			board.setSqr(Chess.EMPTY, move.getEndSqr() + Chess.EAST_1);
-		} else if (move.isQueensideCastling()) {
-			board.setSqr(getSqr(move.getEndSqr() + Chess.WEST_2), move.getEndSqr() + Chess.EAST_1);
-			board.setSqr(Chess.EMPTY, move.getEndSqr() + Chess.WEST_2);
-		} else if (move.isEnPassant()) {
-
-			if (whiteToPlay) {
-				board.setSqr(Chess.EMPTY, move.getEndSqr() + Chess.SOUTH_1);
-			} else {
-				board.setSqr(Chess.EMPTY, move.getEndSqr() + Chess.NORTH_1);
-			}
-
-		} else if (move.isPromotion()) {
-			pieceToPut = move.getPromoteTo();
-		}
-		if (isAllowsEnPassant(move)) {
-			if (whiteToPlay) {
-				pieceToPut = Chess.WH_PAWN_ENPASS;
-			} else {
-				pieceToPut = Chess.BK_PAWN_ENPASS;
-			}
-		}
-		if ((move.getPiece() == Chess.WH_KING_CASTLE_BOTH_SIDES) || (move.getPiece() == Chess.WH_KING_CASTLE_KINGSIDE)
-				|| (move.getPiece() == Chess.WH_KING_CASTLE_QUEENSIDE)) {
-			// Updating white king for castling ability for king moves
-			pieceToPut = Chess.WH_KING;
-		} else if ((move.getPiece() == Chess.BK_KING_CASTLE_BOTH_SIDES)
-				|| (move.getPiece() == Chess.BK_KING_CASTLE_KINGSIDE)
-				|| (move.getPiece() == Chess.BK_KING_CASTLE_QUEENSIDE)) {
-			// Updating black king for castling ability for king moves
-			pieceToPut = Chess.BK_KING;
-		} else {
-			// Updating king castling ability for non-king moves
-			board.updateKingCastlingAbility(move);
-		}
-		
-		board.removeEnPassantAbility();
-		board.setSqr(Chess.EMPTY, move.getStartSqr());
-		board.setSqr(pieceToPut, move.getEndSqr());
+		board.updateRookForCastlingMove(move);
+		board.updateCapturedPawnForEnPassantMove(move);
+		board.removeEnPassantCapturability();
+		board.updateStartSqrContents(move);
+		board.updateEndSqrContents(move);
 		whiteToPlay = !whiteToPlay;
-	}
-	
-	/**
-	 * Returns true if the move puts a pawn into a position where it can be captured
-	 * en passant.
-	 * 
-	 * @param move the Move to be tested
-	 * @return <code>true</code> if the move is a pawn advancing 2 squares and
-	 *         allowing itself to be captured en passant;
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isAllowsEnPassant(Move move) {
-		if ((move.getPiece() == Chess.WH_PAWN) || (move.getPiece() == Chess.BK_PAWN)) {
-	        char east1SqrContents = 0;
-	        char west1SqrContents = 0;
-	        
-	        if (!Board.isFileHSqr(move.getEndSqr())) {
-	            east1SqrContents = getSqr(move.getEndSqr() + Chess.EAST_1);
-	        }
-	        if (!Board.isFileASqr(move.getEndSqr())) {
-	            west1SqrContents = getSqr(move.getEndSqr() + Chess.WEST_1);
-	        }
-	        return (((move.getStartSqr() + Chess.NORTH_2) == move.getEndSqr())
-	                && ((east1SqrContents == Chess.BK_PAWN) || (west1SqrContents == Chess.BK_PAWN)))
-	                || (((move.getStartSqr() + Chess.SOUTH_2) == move.getEndSqr())
-	                && ((east1SqrContents == Chess.WH_PAWN) || (west1SqrContents == Chess.WH_PAWN)));
-	    }
-	    return false;
 	}
 
 	/**

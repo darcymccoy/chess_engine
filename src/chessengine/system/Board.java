@@ -88,7 +88,7 @@ public class Board {
 	}
 	
 	/**
-	 * Updates this square on the board to either empty or to the piece that is
+	 * Sets this square on the board to either empty or to the piece that is
 	 * passed.
 	 *
 	 * @param charToPut character representing the piece or an empty square
@@ -102,7 +102,7 @@ public class Board {
 	 * Updates the board so that pawns that could have been captured en passant
 	 * become regular pawns.
 	 */
-	public void removeEnPassantAbility() {
+	public void removeEnPassantCapturability() {
 		for (int i = 0; i < sqrs.length(); i++) {
 			if (getSqr(i) == Chess.WH_PAWN_ENPASS) {
 				setSqr(Chess.WH_PAWN, i);
@@ -113,11 +113,41 @@ public class Board {
 	}
 	
 	/**
+	 * Updates the board so that the rook portion of a castling move has been made.
+	 * 
+	 * @param move the <code>Move</code> to update for
+	 */
+	public void updateRookForCastlingMove(Move move) {
+		if (move.isKingsideCastling()) {
+			setSqr(getSqr(move.getEndSqr() + Chess.EAST_1), move.getEndSqr() + Chess.WEST_1);
+			setSqr(Chess.EMPTY, move.getEndSqr() + Chess.EAST_1);
+		} else if (move.isQueensideCastling()) {
+			setSqr(getSqr(move.getEndSqr() + Chess.WEST_2), move.getEndSqr() + Chess.EAST_1);
+			setSqr(Chess.EMPTY, move.getEndSqr() + Chess.WEST_2);
+		}
+	}
+	
+	/**
+	 * Updates the board so that the pawn capturing portion of an en passant move has been made.
+	 * This is notable because the capturing pawn won't end up on the square of the pawn it is capturing.
+	 * 
+	 * @param move the <code>Move</code> to update for
+	 */
+	public void updateCapturedPawnForEnPassantMove(Move move) {
+		if (move.isEnPassant()) {
+			if (move.getPiece() == Chess.WH_PAWN)
+				setSqr(Chess.EMPTY, move.getEndSqr() + Chess.SOUTH_1);
+			else
+				setSqr(Chess.EMPTY, move.getEndSqr() + Chess.NORTH_1);
+		}
+	}
+	
+	/**
 	 * Updates the king's castling ability for non king moves.
 	 *
-	 * @param move the move that the (non king) piece is making
+	 * @param move the <code>Move</code> that the (non king) piece is making
 	 */
-	public void updateKingCastlingAbility(Move move) {
+	private void updateKingCastlingAbilityForNonKingMove(Move move) {
 		// Updating white king for castling ability
 		if ((getSqr(E1_SQR) == Chess.WH_KING_CASTLE_BOTH_SIDES)
 				&& ((move.getStartSqr() == H1_SQR) || (move.getEndSqr() == H1_SQR))) {
@@ -128,7 +158,7 @@ public class Board {
 		} else if (((getSqr(E1_SQR) == Chess.WH_KING_CASTLE_KINGSIDE)
 				&& ((move.getStartSqr() == H1_SQR) || (move.getEndSqr() == H1_SQR)))
 				|| ((getSqr(E1_SQR) == Chess.WH_KING_CASTLE_QUEENSIDE)
-						&& (((move.getStartSqr()) == A1_SQR) || (move.getEndSqr() == A1_SQR)))) {
+						&& ((move.getStartSqr() == A1_SQR) || (move.getEndSqr() == A1_SQR)))) {
 			setSqr(Chess.WH_KING, E1_SQR);
 		}
 		// Updating black king for castling ability
@@ -144,6 +174,58 @@ public class Board {
 						&& ((move.getStartSqr() == A8_SQR) || (move.getEndSqr() == A8_SQR)))) {
 			setSqr(Chess.BK_KING, E8_SQR);
 		}
+	}
+	
+	/**
+	 * Updates the square that the piece originated from to be empty.
+	 * 
+	 * @param move the <code>Move</code> to update for
+	 */
+	public void updateStartSqrContents(Move move) {
+		setSqr(Chess.EMPTY, move.getStartSqr());
+	}
+	
+	/**
+	 * Updates the square on the board that the piece ends for a <code>Move</code>.
+	 * 
+	 * @param move the <code>Move</code> to update for
+	 */
+	public void updateEndSqrContents(Move move) {
+		char pieceToPut = move.getPiece();
+		if (move.isPromotion()) {
+			pieceToPut = move.getPromoteTo();
+		} else if (isAllowsEnPassant(move)) {
+			if (move.getPiece() == Chess.WH_PAWN) {
+				pieceToPut = Chess.WH_PAWN_ENPASS;
+			} else {
+				pieceToPut = Chess.BK_PAWN_ENPASS;
+			}
+		}
+		pieceToPut = updateKingCastlingAbility(move, pieceToPut);
+		setSqr(pieceToPut, move.getEndSqr());
+	}
+
+	/**
+	 * Updates both kings castling abilities for king and non king moves.
+	 * 
+	 * @param move the <code>Move</code> to update for
+	 * @param pieceToPut the character being put at the end square for this move
+	 * @return Either the original piece being put at the end square or the updated king
+	 */
+	private char updateKingCastlingAbility(Move move, char pieceToPut) {
+		if ((move.getPiece() == Chess.WH_KING_CASTLE_BOTH_SIDES) || (move.getPiece() == Chess.WH_KING_CASTLE_KINGSIDE)
+				|| (move.getPiece() == Chess.WH_KING_CASTLE_QUEENSIDE)) {
+			// Updating white king for castling ability for king moves
+			pieceToPut = Chess.WH_KING;
+		} else if ((move.getPiece() == Chess.BK_KING_CASTLE_BOTH_SIDES)
+				|| (move.getPiece() == Chess.BK_KING_CASTLE_KINGSIDE)
+				|| (move.getPiece() == Chess.BK_KING_CASTLE_QUEENSIDE)) {
+			// Updating black king for castling ability for king moves
+			pieceToPut = Chess.BK_KING;
+		} else {
+			updateKingCastlingAbilityForNonKingMove(move);
+		}
+		return pieceToPut;
 	}
 	
 	/**
@@ -180,6 +262,34 @@ public class Board {
 	}
 	
 	/**
+	 * Returns true if the move puts a pawn into a position where it can be captured
+	 * en passant.
+	 * 
+	 * @param move the Move to be tested
+	 * @return <code>true</code> if the move is a pawn advancing 2 squares and
+	 *         allowing itself to be captured en passant;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean isAllowsEnPassant(Move move) {
+		if ((move.getPiece() == Chess.WH_PAWN) || (move.getPiece() == Chess.BK_PAWN)) {
+	        char east1SqrContents = 0;
+	        char west1SqrContents = 0;
+	        
+	        if (!Board.isFileHSqr(move.getEndSqr())) {
+	            east1SqrContents = getSqr(move.getEndSqr() + Chess.EAST_1);
+	        }
+	        if (!Board.isFileASqr(move.getEndSqr())) {
+	            west1SqrContents = getSqr(move.getEndSqr() + Chess.WEST_1);
+	        }
+	        return (((move.getStartSqr() + Chess.NORTH_2) == move.getEndSqr())
+	                && ((east1SqrContents == Chess.BK_PAWN) || (west1SqrContents == Chess.BK_PAWN)))
+	                || (((move.getStartSqr() + Chess.SOUTH_2) == move.getEndSqr())
+	                && ((east1SqrContents == Chess.WH_PAWN) || (west1SqrContents == Chess.WH_PAWN)));
+	    }
+	    return false;
+	}
+	
+	/**
 	 * Returns true if there is no piece at this square.
 	 *
 	 * @param sqr int value of the square
@@ -189,6 +299,7 @@ public class Board {
 	public boolean isEmptySqr(int sqr) {
 		return getSqr(sqr) == Chess.EMPTY;
 	}
+	
 	/**
 	 * Returns true if the square is on the 1st rank of the board.
 	 * 
