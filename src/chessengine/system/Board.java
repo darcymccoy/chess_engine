@@ -301,6 +301,34 @@ public class Board {
 	}
 	
 	/**
+	 * Returns true if this vector put this square over the edge of the board.
+	 * 
+	 * @param sqr int index of the square to be tested
+	 * @param vector the direction vector that was used to find test square 
+	 * @return <code>true</code> if this square has gone over any of the edges of the board; <code>false</code>
+	 *         otherwise.
+	 */
+	public static boolean hasExceededAnEdge(int sqr, int vector) {
+		if (!isOnTheBoard(sqr))
+			return true;
+		return (Chess.containsEast1Direction(vector) && isFileHSqr(sqr + Chess.WEST_1))
+				|| (Chess.containsWest1Direction(vector) && isFileASqr(sqr + Chess.EAST_1))
+				|| (Chess.containsEast2Direction(vector) && (isFileHSqr(sqr + Chess.WEST_2) || isFileGSqr(sqr + Chess.WEST_2)))
+				|| (Chess.containsWest2Direction(vector) && (isFileASqr(sqr + Chess.EAST_2) || isFileBSqr(sqr + Chess.EAST_2)));
+	}
+	
+	/**
+	 * Returns true if this square is on the board.
+	 * 
+	 * @param sqr int index of the square to be tested
+	 * @return <code>true</code> if this square is one of the 64 squares on the board; <code>false</code>
+	 *         otherwise.
+	 */
+	public static boolean isOnTheBoard(int sqr) {
+		return (sqr >= A8_SQR) && (sqr <= H1_SQR);
+	}
+	
+	/**
 	 * Returns true if the square is on the 1st rank of the board.
 	 * 
 	 * @param sqr int value of the square
@@ -386,23 +414,6 @@ public class Board {
 	 */
 	public static boolean isFileHSqr(int sqr) {
 		return (sqr + Chess.EAST_1) % 8 == 0;
-	}
-	
-	/**
-	 * Returns true if this vector put this square over the edge of the board.
-	 * 
-	 * @param sqr the square to be tested
-	 * @param vector the direction vector that was used to find test square 
-	 * @return <code>true</code> if this square has gone over any of the edges of the board; <code>false</code>
-	 *         otherwise.
-	 */
-	public static boolean hasExceededAnEdge(int sqr, int vector) {
-		if ((sqr < A8_SQR) || (sqr > H1_SQR))
-			return true;
-		return (Chess.containsEast1Direction(vector) && isFileHSqr(sqr + Chess.WEST_1))
-				|| (Chess.containsWest1Direction(vector) && isFileASqr(sqr + Chess.EAST_1))
-				|| (Chess.containsEast2Direction(vector) && (isFileHSqr(sqr + Chess.WEST_2) || isFileGSqr(sqr + Chess.WEST_2)))
-				|| (Chess.containsWest2Direction(vector) && (isFileASqr(sqr + Chess.EAST_2) || isFileBSqr(sqr + Chess.EAST_2)));
 	}
 	
 	/**

@@ -102,8 +102,7 @@ public class Position {
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean isLegalMove(Move testMove) {
-		if ((testMove.getStartSqr() <= Board.H1_SQR) && (testMove.getEndSqr() <= Board.H1_SQR)
-				&& (testMove.getStartSqr() >= Board.A8_SQR) && (testMove.getEndSqr() >= Board.A8_SQR)) {
+		if (Board.isOnTheBoard(testMove.getStartSqr()) && Board.isOnTheBoard(testMove.getEndSqr())) {
 			LinkedList<Move> tempMoves = findPseudoLegalPieceMoves(testMove.getPiece(), testMove.getStartSqr());
 			for (Move move : tempMoves) {
 				if (move.equals(testMove)) {
@@ -325,7 +324,7 @@ public class Position {
 	 */
 	private LinkedList<Move> findStraightPawnMoves(int pawnSqr, int movementVector) {
 		LinkedList<Move> straightPawnMoves = new LinkedList<>();
-		for (int testSqr = (pawnSqr + movementVector), i = 0; ((testSqr <= Board.H1_SQR) && (testSqr >= Board.A8_SQR))
+		for (int testSqr = (pawnSqr + movementVector), i = 0; (Board.isOnTheBoard(testSqr))
 				&& i < 2; testSqr += movementVector, i++) {
 			if (board.isEmptySqr(testSqr)) {
 				straightPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, testSqr, getSqr(testSqr)));
