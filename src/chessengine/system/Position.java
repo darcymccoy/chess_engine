@@ -198,7 +198,7 @@ public class Position {
 			if (Board.hasExceededAnEdge(testSqr, testVector))
 				continue;
 			else if (isOtherColorAtSqr(testSqr) || board.isEmptySqr(testSqr))
-				knightMoves.add(new Move(getSqr(knightSqr), knightSqr, testSqr, getSqr(testSqr)));
+				knightMoves.addAll(board.constructMove(knightSqr, testSqr));
 		}
 		return knightMoves;
 	}
@@ -221,7 +221,7 @@ public class Position {
 			if (Board.hasExceededAnEdge(testSqr, testVector))
 				continue;
 			else if (isOtherColorAtSqr(testSqr) || board.isEmptySqr(testSqr))
-				kingMoves.add(new Move(piece, kingSqr, testSqr, getSqr(testSqr)));
+				kingMoves.addAll(board.constructMove(kingSqr, testSqr));
 		}
 		kingMoves.addAll(findCastlingKingMoves(piece, kingSqr));
 		return kingMoves;
@@ -242,7 +242,7 @@ public class Position {
 				|| (((piece == Chess.BK_KING_CASTLE_BOTH_SIDES) || (piece == Chess.BK_KING_CASTLE_KINGSIDE))
 						&& (getSqr(kingSqr + Chess.EAST_3) == Chess.BK_ROOK)))
 				&& (board.isEmptySqr(kingSqr + Chess.EAST_1)) && (board.isEmptySqr(kingSqr + Chess.EAST_2))) {
-			castlingKingMoves.add(new Move(piece, kingSqr, kingSqr + Chess.EAST_2, getSqr(kingSqr + Chess.EAST_2)));
+			castlingKingMoves.addAll(board.constructMove(kingSqr, kingSqr + Chess.EAST_2));
 		}
 		// Queenside castling
 		if (((((piece == Chess.WH_KING_CASTLE_BOTH_SIDES) || (piece == Chess.WH_KING_CASTLE_QUEENSIDE))
@@ -251,7 +251,7 @@ public class Position {
 						&& (getSqr(kingSqr + Chess.WEST_4) == Chess.BK_ROOK)))
 				&& (board.isEmptySqr(kingSqr + Chess.WEST_1)) && (board.isEmptySqr(kingSqr + Chess.WEST_2))
 				&& (board.isEmptySqr(kingSqr + Chess.WEST_3))) {
-			castlingKingMoves.add(new Move(piece, kingSqr, kingSqr + Chess.WEST_2, getSqr(kingSqr + Chess.WEST_2)));
+			castlingKingMoves.addAll(board.constructMove(kingSqr, kingSqr + Chess.WEST_2));
 		}
 		return castlingKingMoves;
 	}
@@ -307,7 +307,7 @@ public class Position {
 			if ((isOtherColorAtSqr(testSqr))
 					|| ((getSqr(pawnSqr + captureVector) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
 					|| ((getSqr(pawnSqr + captureVector) == Chess.WH_PAWN_ENPASS) && !whiteToPlay))
-				diagonalPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, testSqr, getSqr(testSqr)));
+				diagonalPawnMoves.addAll(board.constructMove(pawnSqr, testSqr));
 		}
 		return diagonalPawnMoves;
 	}
@@ -323,10 +323,9 @@ public class Position {
 	 */
 	private LinkedList<Move> findStraightPawnMoves(int pawnSqr, int movementVector) {
 		LinkedList<Move> straightPawnMoves = new LinkedList<>();
-		for (int testSqr = (pawnSqr + movementVector), i = 0; (Board.isOnTheBoard(testSqr))
-				&& i < 2; testSqr += movementVector, i++) {
+		for (int testSqr = (pawnSqr + movementVector), i = 0; Board.isOnTheBoard(testSqr) && i < 2; testSqr += movementVector, i++) {
 			if (board.isEmptySqr(testSqr)) {
-				straightPawnMoves.add(new Move(getSqr(pawnSqr), pawnSqr, testSqr, getSqr(testSqr)));
+				straightPawnMoves.addAll(board.constructMove(pawnSqr, testSqr));
 			} else {
 				break;
 			}
@@ -350,9 +349,9 @@ public class Position {
 		for (int testVector : testVectors) {
 			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr, testVector); testSqr += testVector) {
 				if (board.isEmptySqr(testSqr)) {
-					straightMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
+					straightMoves.addAll(board.constructMove(pieceSqr, testSqr));
 				} else if (isOtherColorAtSqr(testSqr)) {
-					straightMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
+					straightMoves.addAll(board.constructMove(pieceSqr, testSqr));
 					break;
 				} else {
 					break;
@@ -378,9 +377,9 @@ public class Position {
 		for (int testVector : testVectors) {
 			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr, testVector); testSqr += testVector) {
 				if (board.isEmptySqr(testSqr)) {
-					diagonalMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
+					diagonalMoves.addAll(board.constructMove(pieceSqr, testSqr));
 				} else if (isOtherColorAtSqr(testSqr)) {
-					diagonalMoves.add(new Move(getSqr(pieceSqr), pieceSqr, testSqr, getSqr(testSqr)));
+					diagonalMoves.addAll(board.constructMove(pieceSqr, testSqr));
 					break;
 				} else {
 					break;

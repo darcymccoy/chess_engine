@@ -38,7 +38,7 @@ public class Move {
 	 * @param endSqrContents character at the square that the piece ends on
 	 */
 	public Move(char piece, int startSqr, int endSqr, char endSqrContents) {
-		this(piece, startSqr, endSqr, Chess.EMPTY, endSqrContents);
+		this(piece, startSqr, endSqr, endSqrContents, Chess.EMPTY);
 	}
 
 	/**
@@ -142,10 +142,10 @@ public class Move {
 	 */
 	@Override
 	public String toString() {
-		if (promoteTo == Chess.EMPTY) {
-			return Integer.toString(startSqr) + Integer.toString(endSqr);
+		if (isPromotion()) {
+			return Integer.toString(startSqr) + Integer.toString(endSqr) + "=" + promoteTo;
 		} else {
-			return startSqr + endSqr + "=" + promoteTo;
+			return Integer.toString(startSqr) + Integer.toString(endSqr);
 		}
 	}
 
