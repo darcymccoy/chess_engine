@@ -54,7 +54,7 @@ public class Move {
 	 *                  <code>'-'</code>.
 	 * @param endSqrContents character at the square that the piece ends on
 	 */
-	public Move(char piece, int startSqr, int endSqr, char promoteTo, char endSqrContents) {
+	public Move(char piece, int startSqr, int endSqr, char endSqrContents, char promoteTo) {
 		this.piece = piece;
 		this.startSqr = startSqr;
 		this.endSqr = endSqr;
@@ -68,7 +68,7 @@ public class Move {
 	 * @param otherMove the <code>Move</code> to copy
 	 */
 	public Move(Move otherMove) {
-		this(otherMove.piece, otherMove.startSqr, otherMove.endSqr, otherMove.promoteTo);
+		this(otherMove.piece, otherMove.startSqr, otherMove.endSqr, otherMove.endSqrContents, otherMove.promoteTo);
 	}
 
 	/**

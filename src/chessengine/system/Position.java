@@ -71,7 +71,7 @@ public class Position {
 				legalMoves.add(move);
 			}
 		}
-		if (legalMoves.size() == 0) {
+		if (legalMoves.isEmpty()) {
 			throw new NoLegalMovesException("There are no legal moves for the current player in this position");
 		} else {
 			return legalMoves;
@@ -287,7 +287,6 @@ public class Position {
 		}
 		pawnMoves.addAll(findStraightPawnMoves(pawnSqr, movementVector));
 		pawnMoves.addAll(findDiagonalPawnMoves(pawnSqr, movementVector));
-		pawnMoves = addPromoteTypes(pawnMoves);
 		return pawnMoves;
 	}
 
@@ -333,39 +332,6 @@ public class Position {
 			}
 		}
 		return straightPawnMoves;
-	}
-
-	/**
-	 * Returns the moves with the piece that is being promoted to set for each
-	 * promotion move. This will clone each promotion move 4 times and set the
-	 * corresponding promotion piece for each of those cloned moves.
-	 *
-	 * @param pawnMoves LinkedList of moves to have the promotion pieces moves added
-	 * @return <code>LinkedList</code> with all the non promotion moves and the set
-	 *         promotion moves
-	 */
-	private LinkedList<Move> addPromoteTypes(LinkedList<Move> pawnMoves) {
-		LinkedList<Move> newMoves = new LinkedList<>();
-		int numberOfMoves = 0;
-		char[] promoteTypes;
-		if (whiteToPlay) {
-			promoteTypes = Chess.WH_PROMOTING_TYPES;
-		} else {
-			promoteTypes = Chess.BK_PROMOTING_TYPES;
-		}
-
-		for (int i = 0; i < pawnMoves.size(); i++, numberOfMoves++) {
-			newMoves.add(pawnMoves.get(i));
-			if (newMoves.get(i).isPromotion()) {
-				newMoves.remove(numberOfMoves);
-				for (char promoteType : promoteTypes) {
-					newMoves.add(pawnMoves.get(i).clone());
-					newMoves.get(numberOfMoves++).setPromoteTo(promoteType);
-				}
-				numberOfMoves--;
-			}
-		}
-		return newMoves;
 	}
 
 	/**
