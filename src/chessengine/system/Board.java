@@ -335,12 +335,25 @@ public class Board {
 	/**
 	 * Returns true if there is no piece at this square.
 	 *
-	 * @param sqr int value of the square
+	 * @param sqr int index of the square to test
 	 * @return <code>true</code> if this square has no piece on it;
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean isEmptySqr(int sqr) {
 		return getSqr(sqr) == Chess.EMPTY;
+	}
+	
+	/**
+	 * Returns true if there is a piece at this square that can be captured by the color to play.
+	 * 
+	 * @param sqr int index of the square to test
+	 * @param whiteToPlay boolean whether white is to play
+	 * @return <code>true</code> if this square has a piece that can currently be captured;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean isCapturableSqr(int sqr, boolean whiteToPlay) {
+		return (whiteToPlay && Chess.isBlackPiece(getSqr(sqr))) 
+				|| (!whiteToPlay && Chess.isWhitePiece(getSqr(sqr)));
 	}
 	
 	/**

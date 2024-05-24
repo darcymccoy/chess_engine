@@ -125,7 +125,7 @@ public class Position {
 		LinkedList<Move> pseudoLegalMoves = new LinkedList<>();
 
 		for (int i = 0; i < board.getSqrs().length(); i++) {
-			if (board.isEmptySqr(i) || isOtherColorAtSqr(i)) {
+			if (isMovableSqr(i)) {
 				continue;
 			}
 			pseudoLegalMoves.addAll(findPseudoLegalPieceMoves(getSqr(i), i));
@@ -197,7 +197,7 @@ public class Position {
 			int testSqr = knightSqr + testVector;
 			if (Board.hasExceededAnEdge(testSqr, testVector))
 				continue;
-			else if (isOtherColorAtSqr(testSqr) || board.isEmptySqr(testSqr))
+			else if (isMovableSqr(testSqr))
 				knightMoves.addAll(board.constructMove(knightSqr, testSqr));
 		}
 		return knightMoves;
@@ -220,7 +220,7 @@ public class Position {
 			int testSqr = kingSqr + testVector;
 			if (Board.hasExceededAnEdge(testSqr, testVector))
 				continue;
-			else if (isOtherColorAtSqr(testSqr) || board.isEmptySqr(testSqr))
+			else if (isMovableSqr(testSqr))
 				kingMoves.addAll(board.constructMove(kingSqr, testSqr));
 		}
 		kingMoves.addAll(findCastlingKingMoves(piece, kingSqr));
@@ -304,7 +304,7 @@ public class Position {
 			int testSqr = pawnSqr + captureVector + movementVector;
 			if (Board.hasExceededAnEdge(testSqr, captureVector))
 				continue;
-			if ((isOtherColorAtSqr(testSqr))
+			if ((board.isCapturableSqr(testSqr, whiteToPlay))
 					|| ((getSqr(pawnSqr + captureVector) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
 					|| ((getSqr(pawnSqr + captureVector) == Chess.WH_PAWN_ENPASS) && !whiteToPlay))
 				diagonalPawnMoves.addAll(board.constructMove(pawnSqr, testSqr));
@@ -350,7 +350,7 @@ public class Position {
 			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr, testVector); testSqr += testVector) {
 				if (board.isEmptySqr(testSqr)) {
 					straightMoves.addAll(board.constructMove(pieceSqr, testSqr));
-				} else if (isOtherColorAtSqr(testSqr)) {
+				} else if (board.isCapturableSqr(testSqr, whiteToPlay)) {
 					straightMoves.addAll(board.constructMove(pieceSqr, testSqr));
 					break;
 				} else {
@@ -378,7 +378,7 @@ public class Position {
 			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr, testVector); testSqr += testVector) {
 				if (board.isEmptySqr(testSqr)) {
 					diagonalMoves.addAll(board.constructMove(pieceSqr, testSqr));
-				} else if (isOtherColorAtSqr(testSqr)) {
+				} else if (board.isCapturableSqr(testSqr, whiteToPlay)) {
 					diagonalMoves.addAll(board.constructMove(pieceSqr, testSqr));
 					break;
 				} else {
@@ -446,19 +446,15 @@ public class Position {
 	}
 
 	/**
-	 * Returns true if the piece at this square is the opposite color of the color
-	 * who is to play.
-	 *
-	 * @param sqr int value of the square
-	 * @return <code>true</code> if there is a piece of the opposite color at this
-	 *         square; <code>false</code> otherwise.
+	 * Returns true if this square can be moved to because it's empty or has
+	 * a capturable piece.
+	 * 
+	 * @param sqr int index of the square to test
+	 * @return <code>true</code> if this square is empty or has a piece that can be captured;
+	 *         <code>false</code> otherwise.
 	 */
-	public boolean isOtherColorAtSqr(int sqr) {
-		if (whiteToPlay) {
-			return Chess.isBlackPiece(getSqr(sqr));
-		} else {
-			return Chess.isWhitePiece(getSqr(sqr));
-		}
+	private boolean isMovableSqr(int sqr) {
+		return board.isEmptySqr(sqr) || board.isCapturableSqr(sqr, whiteToPlay);
 	}
 
 	/**
