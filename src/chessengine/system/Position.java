@@ -324,13 +324,12 @@ public class Position {
 	 */
 	private LinkedList<Move> findStraightPawnMoves(int pawnSqr, int movementVector) {
 		LinkedList<Move> straightPawnMoves = new LinkedList<>();
-		for (int testSqr = (pawnSqr + movementVector), i = 0; Board.isOnTheBoard(testSqr) && i < 2; testSqr += movementVector, i++) {
-			if (board.isEmptySqr(testSqr)) {
-				straightPawnMoves.addAll(board.constructMove(pawnSqr, testSqr));
-			} else {
-				break;
-			}
-		}
+		int testSqr = pawnSqr + movementVector;
+		if (board.isEmptySqr(testSqr))
+			straightPawnMoves.addAll(board.constructMove(pawnSqr, testSqr));
+		testSqr += movementVector;
+		if (board.pawnCanMove2SqrsAhead(pawnSqr, movementVector))
+			straightPawnMoves.addAll(board.constructMove(pawnSqr, testSqr));
 		return straightPawnMoves;
 	}
 

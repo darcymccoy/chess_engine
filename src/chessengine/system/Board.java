@@ -275,6 +275,23 @@ public class Board {
 	}
 	
 	/**
+	 * Returns true if the pawn is on its starting square and the 2 squares ahead are empty.
+	 * 
+	 * @param pawnSqr int index of the square that the pawn is on
+	 * @param movementVector int direction vector of the pawn's movement
+	 * @return <code>true</code> if this pawn can make the special 2 square move;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean pawnCanMove2SqrsAhead(int pawnSqr, int movementVector) {
+		if (hasExceededAnEdge(pawnSqr + movementVector + movementVector, movementVector))
+			return false;
+		if (!isEmptySqr(pawnSqr + movementVector) || !isEmptySqr(pawnSqr + movementVector + movementVector))
+			return false;
+		return ((getSqr(pawnSqr) == Chess.WH_PAWN) && (isRank2Sqr(pawnSqr)))
+				|| ((getSqr(pawnSqr) == Chess.BK_PAWN) && (isRank7Sqr(pawnSqr)));
+	}
+	
+	/**
 	 * Returns a new <code>Move</code> in a <code>LinkedList</code>. The <code>LinkedList</code>
 	 * allows this function to return promotion moves as 4 distinct moves (one for each type of promotion).
 	 * 
