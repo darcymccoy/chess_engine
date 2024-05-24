@@ -42,6 +42,9 @@ public class Board {
 	/** The index of the H1 square on the board. */
 	public static final int H1_SQR = 63;
 	
+	/** The width of the board in number of squares */
+	public static final int WIDTH = 8;
+	
 	/** The squares of the board stored as a 64 character <code>String</code>. */
 	private String sqrs;
 
@@ -333,7 +336,7 @@ public class Board {
 	 * Returns true if the move puts a pawn into a position where it can be captured
 	 * en passant.
 	 * 
-	 * @param move the Move to be tested
+	 * @param move the Move to test
 	 * @return <code>true</code> if the move is a pawn advancing 2 squares and
 	 *         allowing itself to be captured en passant;
 	 *         <code>false</code> otherwise.
@@ -384,7 +387,7 @@ public class Board {
 	/**
 	 * Returns true if this vector put this square over the edge of the board.
 	 * 
-	 * @param sqr int index of the square to be tested
+	 * @param sqr int index of the square to test
 	 * @param vector the direction vector that was used to find test square 
 	 * @return <code>true</code> if this square has gone over any of the edges of the board; <code>false</code>
 	 *         otherwise.
@@ -461,7 +464,7 @@ public class Board {
 	 *         otherwise.
 	 */
 	public static boolean isFileASqr(int sqr) {
-		return sqr % 8 == 0;
+		return sqr % WIDTH == 0;
 	}
 
 	/**
@@ -472,7 +475,7 @@ public class Board {
 	 *         otherwise.
 	 */
 	public static boolean isFileBSqr(int sqr) {
-		return (sqr + Chess.WEST_1) % 8 == 0;
+		return (sqr + Chess.WEST_1) % WIDTH == 0;
 	}
 
 	/**
@@ -483,7 +486,7 @@ public class Board {
 	 *         otherwise.
 	 */
 	public static boolean isFileGSqr(int sqr) {
-		return (sqr + Chess.EAST_2) % 8 == 0;
+		return (sqr + Chess.EAST_2) % WIDTH == 0;
 	}
 
 	/**
@@ -494,7 +497,7 @@ public class Board {
 	 *         otherwise.
 	 */
 	public static boolean isFileHSqr(int sqr) {
-		return (sqr + Chess.EAST_1) % 8 == 0;
+		return (sqr + Chess.EAST_1) % WIDTH == 0;
 	}
 	
 	/**

@@ -130,7 +130,7 @@ public class Move {
 	 */
 	public boolean isEnPassant() {
 		return ((piece == Chess.WH_PAWN) || (piece == Chess.BK_PAWN)) && 
-				(endSqrContents == Chess.EMPTY) && ((startSqr % 8) != (endSqr % 8));
+				(endSqrContents == Chess.EMPTY) && ((startSqr % Board.WIDTH) != (endSqr % Board.WIDTH));
 	}
 
 	/**
@@ -166,7 +166,7 @@ public class Move {
 			return false;
 		Move other = (Move) obj;
 		return (piece == other.piece) && (endSqr == other.endSqr) && (promoteTo == other.promoteTo)
-				&& (startSqr == other.startSqr);
+				&& (startSqr == other.startSqr) && (endSqrContents == other.endSqrContents);
 	}
 
 	/**
