@@ -1,6 +1,7 @@
 package chessengine.system;
 
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 /**
  * Stores the information of a single chess board.
@@ -243,9 +244,33 @@ public class Board {
 				return i;
 			}
 		}
-		return -1;
+		throw new NoSuchElementException("King couldn't be found");
 	}
-
+	
+	/**
+	 * Returns true if there is a king with the ability to castle kingside on this square.
+	 * 
+	 * @param sqr int index of the square to test
+	 * @return <code>true</code> if there is a king that can castle kingside on this square;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean isKingsideCastleableKingAtSqr(int sqr) {
+		return (getSqr(sqr) == Chess.WH_KING_CASTLE_BOTH_SIDES) || (getSqr(sqr) == Chess.WH_KING_CASTLE_KINGSIDE)
+				|| (getSqr(sqr) == Chess.BK_KING_CASTLE_BOTH_SIDES) || (getSqr(sqr) == Chess.BK_KING_CASTLE_KINGSIDE);
+	}
+	
+	/**
+	 * Returns true if there is a king with the ability to castle queenside on this square.
+	 * 
+	 * @param sqr int index of the square to test
+	 * @return <code>true</code> if there is a king that can castle queenside on this square;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean isQueensideCastleableKingAtSqr(int sqr) {
+		return (getSqr(sqr) == Chess.WH_KING_CASTLE_BOTH_SIDES) || (getSqr(sqr) == Chess.WH_KING_CASTLE_QUEENSIDE)
+				|| (getSqr(sqr) == Chess.BK_KING_CASTLE_BOTH_SIDES) || (getSqr(sqr) == Chess.BK_KING_CASTLE_QUEENSIDE);
+	}
+	
 	/**
 	 * Returns a new <code>Move</code> in a <code>LinkedList</code>. The <code>LinkedList</code>
 	 * allows this function to return promotion moves as 4 distinct moves (one for each type of promotion).

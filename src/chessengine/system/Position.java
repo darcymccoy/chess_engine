@@ -67,7 +67,7 @@ public class Position {
 		LinkedList<Move> pseudoLegalMoves = findPseudoLegalMoves();
 		LinkedList<Move> legalMoves = new LinkedList<>();
 		for (Move move : pseudoLegalMoves) {
-			if (!isSelfCheckMove(move) && !(move.isCastling() && isCheck())) {
+			if (!isSelfCheckMove(move)) {
 				legalMoves.add(move);
 			}
 		}
@@ -106,7 +106,7 @@ public class Position {
 			LinkedList<Move> tempMoves = findPseudoLegalPieceMoves(testMove.getPiece(), testMove.getStartSqr());
 			for (Move move : tempMoves) {
 				if (move.equals(testMove)) {
-					return !isSelfCheckMove(testMove) && !(testMove.isCastling() && isCheck());
+					return !isSelfCheckMove(testMove);
 				}
 			}
 		}
@@ -211,46 +211,47 @@ public class Position {
 	 *         king
 	 */
 	public LinkedList<Move> findKingMoves(int kingSqr) {
-		char piece = getSqr(kingSqr);
 		LinkedList<Move> kingMoves = new LinkedList<>();
+		kingMoves.addAll(findNormalKingMoves(kingSqr));
+		if (!isCheck())
+			kingMoves.addAll(findCastlingKingMoves(kingSqr));
+		return kingMoves;
+	}
+	
+	/**
+	 * Returns the standard (non castling) moves that the king can make.
+	 * 
+	 * @param kingSqr int index of the square the king is on
+	 * @return <code>LinkedList</code> the non castling moves that the king can make
+	 */
+	private LinkedList<Move> findNormalKingMoves(int kingSqr) {
+		LinkedList<Move> normalKingMoves = new LinkedList<>();
 		int[] testVectors = { Chess.NORTH_1, Chess.NORTH_1_EAST_1, Chess.EAST_1, Chess.SOUTH_1_EAST_1, Chess.SOUTH_1,
 				Chess.SOUTH_1_WEST_1, Chess.WEST_1, Chess.NORTH_1_WEST_1 };
-
 		for (int testVector : testVectors) {
 			int testSqr = kingSqr + testVector;
 			if (Board.hasExceededAnEdge(testSqr, testVector))
 				continue;
 			else if (isMovableSqr(testSqr))
-				kingMoves.addAll(board.constructMove(kingSqr, testSqr));
+				normalKingMoves.addAll(board.constructMove(kingSqr, testSqr));
 		}
-		kingMoves.addAll(findCastlingKingMoves(piece, kingSqr));
-		return kingMoves;
+		return normalKingMoves;
 	}
 	
 	/**
 	 * Returns the castling moves that king can make.
 	 * 
-	 * @param piece character representing the king
 	 * @param kingSqr int index of the square the king is on
 	 * @return <code>LinkedList</code> the castling moves that the king can make
 	 */
-	private LinkedList<Move> findCastlingKingMoves(char piece, int kingSqr){
+	private LinkedList<Move> findCastlingKingMoves(int kingSqr){
 		LinkedList<Move> castlingKingMoves = new LinkedList<>();
-		// Kingside castling
-		if (((((piece == Chess.WH_KING_CASTLE_BOTH_SIDES) || (piece == Chess.WH_KING_CASTLE_KINGSIDE))
-				&& (getSqr(kingSqr + Chess.EAST_3) == Chess.WH_ROOK))
-				|| (((piece == Chess.BK_KING_CASTLE_BOTH_SIDES) || (piece == Chess.BK_KING_CASTLE_KINGSIDE))
-						&& (getSqr(kingSqr + Chess.EAST_3) == Chess.BK_ROOK)))
-				&& (board.isEmptySqr(kingSqr + Chess.EAST_1)) && (board.isEmptySqr(kingSqr + Chess.EAST_2))) {
+		if (board.isKingsideCastleableKingAtSqr(kingSqr) && 
+				board.isEmptySqr(kingSqr + Chess.EAST_1) && board.isEmptySqr(kingSqr + Chess.EAST_2)) {
 			castlingKingMoves.addAll(board.constructMove(kingSqr, kingSqr + Chess.EAST_2));
 		}
-		// Queenside castling
-		if (((((piece == Chess.WH_KING_CASTLE_BOTH_SIDES) || (piece == Chess.WH_KING_CASTLE_QUEENSIDE))
-				&& (getSqr(kingSqr + Chess.WEST_4) == Chess.WH_ROOK))
-				|| (((piece == Chess.BK_KING_CASTLE_BOTH_SIDES) || (piece == Chess.BK_KING_CASTLE_QUEENSIDE))
-						&& (getSqr(kingSqr + Chess.WEST_4) == Chess.BK_ROOK)))
-				&& (board.isEmptySqr(kingSqr + Chess.WEST_1)) && (board.isEmptySqr(kingSqr + Chess.WEST_2))
-				&& (board.isEmptySqr(kingSqr + Chess.WEST_3))) {
+		if (board.isQueensideCastleableKingAtSqr(kingSqr) && board.isEmptySqr(kingSqr + Chess.WEST_1) 
+				&& board.isEmptySqr(kingSqr + Chess.WEST_2) && board.isEmptySqr(kingSqr + Chess.WEST_3)) {
 			castlingKingMoves.addAll(board.constructMove(kingSqr, kingSqr + Chess.WEST_2));
 		}
 		return castlingKingMoves;
