@@ -85,12 +85,20 @@ public abstract class Game {
 	 */
 	public void letEngineMakeMove() {
 		try {
-			Move engineMove = engine.findTopMoveDepth3(currentPosition);
-			currentPosition.makeMove(engineMove);
-			movesMade.add(engineMove);
+			makeGameMove(engine.findTopMoveDepth3(currentPosition));
 		} catch (NoLegalMovesException e) {
 			stopGame();
 		}
+	}
+	
+	/**
+	 * Makes a move on the current game position.
+	 * 
+	 * @param move the <code>Move</code> to be made
+	 */
+	private void makeGameMove(Move move) {
+		currentPosition.makeMove(move);
+		movesMade.add(move);
 	}
 	
 	/**
@@ -107,9 +115,7 @@ public abstract class Game {
 				int endSqr = scanner.nextInt();
 				userMove = new Move(currentPosition.getSqr(startSqr), startSqr, endSqr, currentPosition.getSqr(endSqr));
 				if (userMove.isPromotion()) {
-					System.out.print("Enter the piece you're promoting to "
-							+ "(r, b, n or q; uppercase for white, lowercase for black");
-					userMove.setPromoteTo(scanner.next().charAt(0));
+					letUserChoosePromotionType(userMove);
 				}
 			} catch(RuntimeException e) {
 				scanner.nextLine();
@@ -118,13 +124,23 @@ public abstract class Game {
 			}
 			
 			if (currentPosition.isLegalMove(userMove)) {
-				currentPosition.makeMove(userMove);
-				movesMade.add(userMove);
+				makeGameMove(userMove);
 				break;
 			} else {
 				System.out.println("This isn't a legal move. Try again.");
 			}
 		}
+	}
+
+	/**
+	 * Allows the user to set the piece they want to promote to.
+	 * 
+	 * @param userMove the <code>Move</code> to have its promotion type set
+	 */
+	private void letUserChoosePromotionType(Move userMove) {
+		System.out.print("Enter the piece you're promoting to "
+				+ "('r', 'b', 'n' or 'q'); uppercase for white, lowercase for black: ");
+		userMove.setPromoteTo(scanner.next().charAt(0));
 	}
 	
 	/**

@@ -171,7 +171,7 @@ public class Engine {
 	}
 	
 	private int findMaxReplyToMinimumDepth(Position position, int depth) throws NoLegalMovesException {
-		int maxReply = 0;
+		int maxReply = Integer.MAX_VALUE;
 		LinkedList<Move> legalMoves = position.findLegalMoves();
 		for (Move move : legalMoves) {
 			Position tempPosition = position.clone();

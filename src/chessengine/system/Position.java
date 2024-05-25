@@ -102,13 +102,12 @@ public class Position {
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean isLegalMove(Move testMove) {
-		if (Board.isOnTheBoard(testMove.getStartSqr()) && Board.isOnTheBoard(testMove.getEndSqr())) {
-			LinkedList<Move> tempMoves = findPseudoLegalPieceMoves(testMove.getPiece(), testMove.getStartSqr());
-			for (Move move : tempMoves) {
-				if (move.equals(testMove)) {
-					return !isSelfCheckMove(testMove);
-				}
-			}
+		if (!Board.isOnTheBoard(testMove.getStartSqr()) || !Board.isOnTheBoard(testMove.getEndSqr()))
+			return false;
+		LinkedList<Move> tempMoves = findPseudoLegalPieceMoves(testMove.getPiece(), testMove.getStartSqr());
+		for (Move move : tempMoves) {
+			if (move.equals(testMove))
+				return !isSelfCheckMove(testMove);
 		}
 		return false;
 	}
