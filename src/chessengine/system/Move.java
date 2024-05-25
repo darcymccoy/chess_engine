@@ -82,6 +82,16 @@ public class Move {
 	}
 	
 	/**
+	 * Returns true if this move captures a piece.
+	 * 
+	 * @return <code>true</code> if this move is capturing an opposing piece; <code>false</code>
+	 *         otherwise.
+	 */
+	public boolean isCapture() {
+		return isEnPassant() || (endSqrContents != Chess.EMPTY);
+	}
+	
+	/**
 	 * Returns true if this move is promotion.
 	 * 
 	 * @return <code>true</code> if this move is a pawn promoting;
