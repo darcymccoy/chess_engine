@@ -186,7 +186,7 @@ public final class Chess {
 	
 	/** Character representations of the pieces that black pawns can promote to. */
 	public static final char[] BK_PROMOTING_TYPES = {BK_KNIGHT, BK_BISHOP, BK_ROOK, BK_QUEEN};
-
+	
 	/**
 	 * Returns true if the piece is the white king.
 	 * 

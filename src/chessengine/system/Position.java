@@ -212,7 +212,7 @@ public class Position {
 	public LinkedList<Move> findKingMoves(int kingSqr) {
 		LinkedList<Move> kingMoves = new LinkedList<>();
 		kingMoves.addAll(findNormalKingMoves(kingSqr));
-		if (!isCheck())
+		//if (!isCheck())
 			kingMoves.addAll(findCastlingKingMoves(kingSqr));
 		return kingMoves;
 	}
@@ -482,6 +482,18 @@ public class Position {
 		}
 		printPosition += board.toString();
 		return printPosition;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Position other = (Position) obj;
+		return board.equals(other.board) && (whiteToPlay == other.whiteToPlay);
 	}
 
 	/**

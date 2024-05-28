@@ -12,6 +12,9 @@ import java.util.LinkedList;
  * @since 1.0
  */
 public class Engine {
+	
+	private static final int MAX_DEPTH = 0;
+	
 	/** Pawn values based on location (each integer corresponds to a square on the board). */
 	private static final int[] PAWN_VALUES = {0, 0, 0, 0, 0, 0, 0, 0, 
 			140, 140, 140, 140, 140, 140, 140, 140, 
@@ -158,7 +161,7 @@ public class Engine {
 			tempPosition.makeMove(move);
 			int maxReply = 0;
 			try {
-				maxReply = findMaxReplyToMinimumDepth(tempPosition, 2);
+				maxReply = findMaxReplyToMinimumDepth(tempPosition, 0);
 			} catch (NoLegalMovesException e) {
 
 			}
@@ -171,20 +174,21 @@ public class Engine {
 	}
 	
 	private int findMaxReplyToMinimumDepth(Position position, int depth) throws NoLegalMovesException {
+		
+		if (depth == MAX_DEPTH)
+			return evaluatePosition(position);
+		
 		int maxReply = Integer.MAX_VALUE;
 		LinkedList<Move> legalMoves = position.findLegalMoves();
 		for (Move move : legalMoves) {
 			Position tempPosition = position.clone();
 			tempPosition.makeMove(move);
 			int testMaxReply = 0;
-			if (depth > 0) {
-				try {
-					testMaxReply = findMaxReplyToMinimumDepth(tempPosition, depth - 1);
-				} catch (NoLegalMovesException e) {
-					
-				}
-			} else {
-				testMaxReply = evaluatePosition(tempPosition);
+
+			try {
+				testMaxReply = findMaxReplyToMinimumDepth(tempPosition, depth + 1);
+			} catch (NoLegalMovesException e) {
+
 			}
 			if (testMaxReply < maxReply)
 				maxReply = testMaxReply;

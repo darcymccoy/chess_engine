@@ -13,6 +13,12 @@ import java.util.Scanner;
  */
 public abstract class Game {
 	
+	/** <code>Scanner</code> to get user input. */
+	private static Scanner scanner = new Scanner(System.in);
+	
+	/** The chess engine which can play against a user or against itself. */
+	private static Engine engine = new Engine();
+	
 	/** The current position in this game. */
 	private Position currentPosition;
 	
@@ -21,19 +27,15 @@ public abstract class Game {
 	
 	/** Whether this game is currently being played. */
 	protected boolean inGame;
-	
-	/** <code>Scanner</code> to get user input. */
-	private static Scanner scanner = new Scanner(System.in);
-	
-	/** The chess engine which can play against a user or against itself. */
-	private static Engine engine = new Engine();
 
+	private DrawRules drawRules;
+	
 	/**
 	 * Default constructor (Standard starting position, 
 	 * no moves have been made and the game hasn't been started.
 	 */
 	public Game() {
-		this(new Position(), new LinkedList<Move>(), false);
+		this(new Position(), new LinkedList<Move>(), false, new DrawRules());
 	}
 
 	/**
@@ -44,19 +46,11 @@ public abstract class Game {
 	 * @param movesMade <code>LinkedList</code> for the moves that have already been made
 	 * @param inGame <code>boolean</code> whether the game is currently being played
 	 */
-	public Game(Position currentPosition, LinkedList<Move> movesMade, boolean inGame) {
+	public Game(Position currentPosition, LinkedList<Move> movesMade, boolean inGame, DrawRules drawRules) {
 		this.currentPosition = currentPosition;
 		this.movesMade = movesMade;
 		this.inGame = inGame;
-	}
-	
-	/**
-	 * Copy constructor.
-	 * 
-	 * @param otherGame the <code>Game</code> to copy
-	 */
-	public Game(Game otherGame) {
-		this(otherGame.currentPosition, otherGame.movesMade, otherGame.inGame);
+		this.drawRules = drawRules;
 	}
 	
 	/**
@@ -85,7 +79,7 @@ public abstract class Game {
 	 */
 	public void letEngineMakeMove() {
 		try {
-			makeGameMove(engine.findTopMoveDepth3(currentPosition));
+			makeGameMove(engine.findTopMove(currentPosition));
 		} catch (NoLegalMovesException e) {
 			stopGame();
 		}
@@ -99,6 +93,8 @@ public abstract class Game {
 	private void makeGameMove(Move move) {
 		currentPosition.makeMove(move);
 		movesMade.add(move);
+		if (drawRules.isDraw(movesMade, currentPosition))
+			stopGame();
 	}
 	
 	/**
@@ -184,6 +180,8 @@ public abstract class Game {
 			if (((i + 1) % 2) == 0)
 				printGame += "\n";
 		}
+		if (drawRules.isDraw(movesMade, currentPosition))
+			printGame += drawRules.getMessage();
 		return printGame;
 	}
 	

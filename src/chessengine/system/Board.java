@@ -333,23 +333,6 @@ public class Board {
 	}
 	
 	/**
-	 * Returns the board laid out in a 8x8 grid.
-	 * 
-	 * @return String representation of the squares of the board 
-	 */
-	@Override
-	public String toString() {
-		String printBoard = "";
-		for (int i = 0; i < sqrs.length(); i++) {
-			printBoard += getSqr(i) + " ";
-			if (Board.isFileHSqr(i)) {
-				printBoard += "\n";
-			}
-		}
-		return printBoard;
-	}
-	
-	/**
 	 * Returns true if the move puts a pawn into a position where it can be captured
 	 * en passant.
 	 * 
@@ -401,6 +384,35 @@ public class Board {
 				|| (!whiteToPlay && Chess.isWhitePiece(getSqr(sqr)));
 	}
 	
+	/**
+	 * Returns the board laid out in a 8x8 grid.
+	 * 
+	 * @return String representation of the squares of the board 
+	 */
+	@Override
+	public String toString() {
+		String printBoard = "";
+		for (int i = 0; i < sqrs.length(); i++) {
+			printBoard += getSqr(i) + " ";
+			if (Board.isFileHSqr(i)) {
+				printBoard += "\n";
+			}
+		}
+		return printBoard;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Board other = (Board) obj;
+		return sqrs.equals(other.sqrs);
+	}
+
 	/**
 	 * Returns true if this vector put this square over the edge of the board.
 	 * 
