@@ -1,0 +1,6 @@
+/chessengine/
+# Eclipse
+.classpath
+.project
+.settings/
+/bin
