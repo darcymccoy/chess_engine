@@ -1,7 +1,9 @@
 package chessengine.system;
 
+import java.io.Serial;
+
 /**
- * Custom exception that is thrown whenever an attempt
+ * Exception that is thrown whenever an attempt
  * is made to find moves when there are no legal moves to make.
  * 
  * @author Darcy McCoy
@@ -9,8 +11,10 @@ package chessengine.system;
  * @since 1.0
  */
 public class NoLegalMovesException extends Exception {
-	/** The serial version. */
-	private static final long serialVersionUID = 1L;
+
+	/** Version number. */
+	@Serial
+	private static final long serialVersionUID = -8809432195921500767L;
 
 	/**
 	 * Constructs a <code>NoLegalMovesException</code> without a message.
