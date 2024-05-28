@@ -4,7 +4,7 @@ import java.io.Serial;
 
 /**
  * Exception that is thrown whenever an attempt
- * is made to find moves when there are no legal moves to make.
+ * to find the legal moves in a position is made when there are none.
  * 
  * @author Darcy McCoy
  * @version %I%

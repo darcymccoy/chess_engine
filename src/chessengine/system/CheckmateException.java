@@ -6,7 +6,10 @@ package chessengine.system;
 import java.io.Serial;
 
 /**
- * Exception that is thrown whenever an attempt to find
+ * Exception that is thrown whenever a color has no legal moves and that color's king is attacked.
+ * 
+ * @author Darcy McCoy
+ * @since 1.0
  */
 public class CheckmateException extends NoLegalMovesException {
 
