@@ -63,21 +63,34 @@ public class Position {
 	 * @throws NoLegalMovesException if the color to play has no legal moves in this
 	 *                               <code>Position</code>
 	 */
-	public LinkedList<Move> findLegalMoves() throws NoLegalMovesException {
+	public LinkedList<Move> findLegalMoves() throws CheckmateException, StalemateException {
 		LinkedList<Move> pseudoLegalMoves = findPseudoLegalMoves();
 		LinkedList<Move> legalMoves = new LinkedList<>();
 		for (Move move : pseudoLegalMoves) {
-			if (!isSelfCheckMove(move)) {
+			if (!isSelfCheckMove(move) && !(move.isCastling() && isCheck())) {
 				legalMoves.add(move);
 			}
 		}
-		if (legalMoves.isEmpty()) {
-			throw new NoLegalMovesException("There are no legal moves for the current player in this position");
-		} else {
-			return legalMoves;
-		}
+		testForNoLegalMoves(legalMoves);
+		return legalMoves;
 	}
 
+	/**
+	 * Throws the appropriate exception if there are 0 legal moves for the color to play. 
+	 * 
+	 * @param legalMoves <code>LinkedList</code> of the legal moves in this position
+	 * @throws CheckmateException if the king is checked and there are 0 legal moves
+	 * @throws StalemateException if the king is not checked and there are 0 legal moves
+	 */
+	private void testForNoLegalMoves(LinkedList<Move> legalMoves) throws CheckmateException, StalemateException  {
+		if (legalMoves.isEmpty()) {
+			if (isCheck())
+				throw new CheckmateException();
+			 else
+				throw new StalemateException();
+		}
+	}
+	
 	/**
 	 * Updates isWhiteToPlay and the board so that the move has been played.
 	 * Accounts for castling, en passant and promotion.
@@ -212,8 +225,7 @@ public class Position {
 	public LinkedList<Move> findKingMoves(int kingSqr) {
 		LinkedList<Move> kingMoves = new LinkedList<>();
 		kingMoves.addAll(findNormalKingMoves(kingSqr));
-		//if (!isCheck())
-			kingMoves.addAll(findCastlingKingMoves(kingSqr));
+		kingMoves.addAll(findCastlingKingMoves(kingSqr));
 		return kingMoves;
 	}
 	
