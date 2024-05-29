@@ -60,8 +60,8 @@ public class Position {
 	 * Returns all legal moves that the color to move can make.
 	 *
 	 * @return <code>LinkedList</code> of the legal moves found in this position
-	 * @throws NoLegalMovesException if the color to play has no legal moves in this
-	 *                               <code>Position</code>
+	 * @throws CheckmateException if the king is checked and there are 0 legal moves
+	 * @throws StalemateException if the king is not checked and there are 0 legal moves
 	 */
 	public LinkedList<Move> findLegalMoves() throws CheckmateException, StalemateException {
 		LinkedList<Move> pseudoLegalMoves = findPseudoLegalMoves();
@@ -107,20 +107,20 @@ public class Position {
 	}
 
 	/**
-	 * Returns true when the move is legal for this position. Can test impossible
+	 * Returns true if the move is legal for this position. Can test impossible
 	 * and pseudo legal moves.
 	 *
 	 * @param testMove the move to be tested
 	 * @return <code>true</code> if the move is legal for this position;
 	 *         <code>false</code> otherwise.
+	 * @throws CheckmateException if the king is checked and there are 0 legal moves
+	 * @throws StalemateException if the king is not checked and there are 0 legal moves
 	 */
-	public boolean isLegalMove(Move testMove) {
-		if (!Board.isOnTheBoard(testMove.getStartSqr()) || !Board.isOnTheBoard(testMove.getEndSqr()))
-			return false;
-		LinkedList<Move> tempMoves = findPseudoLegalPieceMoves(testMove.getPiece(), testMove.getStartSqr());
-		for (Move move : tempMoves) {
+	public boolean isLegalMove(Move testMove) throws CheckmateException, StalemateException {
+		LinkedList<Move> legalMoves = findLegalMoves();
+		for (Move move : legalMoves) {
 			if (move.equals(testMove))
-				return !isSelfCheckMove(testMove);
+				return true;
 		}
 		return false;
 	}
