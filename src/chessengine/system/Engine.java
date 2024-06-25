@@ -152,7 +152,7 @@ public class Engine {
 		return topMove;
 	}
 	
-	public Move findTopMove(Position position) throws NoLegalMovesException {
+	public Move findTopMove(Position position) throws CheckmateException, StalemateException {
 		Move topMove = null;
 		int topMoveMaxReply = Integer.MAX_VALUE;
 		LinkedList<Move> legalMoves = position.findLegalMoves();

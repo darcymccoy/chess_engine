@@ -1,6 +1,3 @@
-/**
- * 
- */
 package chessengine.system;
 
 import java.io.Serial;

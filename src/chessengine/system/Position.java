@@ -82,7 +82,7 @@ public class Position {
 	 * @throws CheckmateException if the king is checked and there are 0 legal moves
 	 * @throws StalemateException if the king is not checked and there are 0 legal moves
 	 */
-	private void testForNoLegalMoves(LinkedList<Move> legalMoves) throws CheckmateException, StalemateException  {
+	public void testForNoLegalMoves(LinkedList<Move> legalMoves) throws CheckmateException, StalemateException {
 		if (legalMoves.isEmpty()) {
 			if (isCheck())
 				throw new CheckmateException();
@@ -106,6 +106,28 @@ public class Position {
 		whiteToPlay = !whiteToPlay;
 	}
 
+	/**
+	 * 
+	 * @param startSqr
+	 * @param endSqr
+	 * @return
+	 * @throws CheckmateException
+	 * @throws StalemateException
+	 * @throws IllegalMoveException
+	 */
+	public Move constructUserMove(int startSqr, int endSqr) throws CheckmateException, StalemateException, IllegalMoveException{
+		if (!Board.isOnTheBoard(startSqr) || !Board.isOnTheBoard(endSqr))
+			throw new IllegalMoveException("This is an illegal move");
+		Move userMove = board.constructNonPawnMove(startSqr, endSqr);
+		if (userMove.isPromotion()) {
+			if (whiteToPlay)
+				userMove.setPromoteTo(Chess.WH_PAWN);
+			else
+				userMove.setPromoteTo(Chess.BK_PAWN);
+		}
+		return userMove;
+	}
+	
 	/**
 	 * Returns true if the move is legal for this position. Can test impossible
 	 * and pseudo legal moves.
@@ -210,7 +232,7 @@ public class Position {
 			if (Board.hasExceededAnEdge(testSqr, testVector))
 				continue;
 			else if (isMovableSqr(testSqr))
-				knightMoves.addAll(board.constructMove(knightSqr, testSqr));
+				knightMoves.add(board.constructNonPawnMove(knightSqr, testSqr));
 		}
 		return knightMoves;
 	}
@@ -244,7 +266,7 @@ public class Position {
 			if (Board.hasExceededAnEdge(testSqr, testVector))
 				continue;
 			else if (isMovableSqr(testSqr))
-				normalKingMoves.addAll(board.constructMove(kingSqr, testSqr));
+				normalKingMoves.add(board.constructNonPawnMove(kingSqr, testSqr));
 		}
 		return normalKingMoves;
 	}
@@ -259,11 +281,11 @@ public class Position {
 		LinkedList<Move> castlingKingMoves = new LinkedList<>();
 		if (board.isKingsideCastleableKingAtSqr(kingSqr) && 
 				board.isEmptySqr(kingSqr + Chess.EAST_1) && board.isEmptySqr(kingSqr + Chess.EAST_2)) {
-			castlingKingMoves.addAll(board.constructMove(kingSqr, kingSqr + Chess.EAST_2));
+			castlingKingMoves.add(board.constructNonPawnMove(kingSqr, kingSqr + Chess.EAST_2));
 		}
 		if (board.isQueensideCastleableKingAtSqr(kingSqr) && board.isEmptySqr(kingSqr + Chess.WEST_1) 
 				&& board.isEmptySqr(kingSqr + Chess.WEST_2) && board.isEmptySqr(kingSqr + Chess.WEST_3)) {
-			castlingKingMoves.addAll(board.constructMove(kingSqr, kingSqr + Chess.WEST_2));
+			castlingKingMoves.add(board.constructNonPawnMove(kingSqr, kingSqr + Chess.WEST_2));
 		}
 		return castlingKingMoves;
 	}
@@ -319,7 +341,7 @@ public class Position {
 			if ((board.isCapturableSqr(testSqr, whiteToPlay))
 					|| ((getSqr(pawnSqr + captureVector) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
 					|| ((getSqr(pawnSqr + captureVector) == Chess.WH_PAWN_ENPASS) && !whiteToPlay))
-				diagonalPawnMoves.addAll(board.constructMove(pawnSqr, testSqr));
+				diagonalPawnMoves.addAll(board.constructPawnMove(pawnSqr, testSqr));
 		}
 		return diagonalPawnMoves;
 	}
@@ -337,10 +359,10 @@ public class Position {
 		LinkedList<Move> straightPawnMoves = new LinkedList<>();
 		int testSqr = pawnSqr + movementVector;
 		if (board.isEmptySqr(testSqr))
-			straightPawnMoves.addAll(board.constructMove(pawnSqr, testSqr));
+			straightPawnMoves.addAll(board.constructPawnMove(pawnSqr, testSqr));
 		testSqr += movementVector;
 		if (board.pawnCanMove2SqrsAhead(pawnSqr, movementVector))
-			straightPawnMoves.addAll(board.constructMove(pawnSqr, testSqr));
+			straightPawnMoves.addAll(board.constructPawnMove(pawnSqr, testSqr));
 		return straightPawnMoves;
 	}
 
@@ -360,9 +382,9 @@ public class Position {
 		for (int testVector : testVectors) {
 			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr, testVector); testSqr += testVector) {
 				if (board.isEmptySqr(testSqr)) {
-					straightMoves.addAll(board.constructMove(pieceSqr, testSqr));
+					straightMoves.add(board.constructNonPawnMove(pieceSqr, testSqr));
 				} else if (board.isCapturableSqr(testSqr, whiteToPlay)) {
-					straightMoves.addAll(board.constructMove(pieceSqr, testSqr));
+					straightMoves.add(board.constructNonPawnMove(pieceSqr, testSqr));
 					break;
 				} else {
 					break;
@@ -388,9 +410,9 @@ public class Position {
 		for (int testVector : testVectors) {
 			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr, testVector); testSqr += testVector) {
 				if (board.isEmptySqr(testSqr)) {
-					diagonalMoves.addAll(board.constructMove(pieceSqr, testSqr));
+					diagonalMoves.add(board.constructNonPawnMove(pieceSqr, testSqr));
 				} else if (board.isCapturableSqr(testSqr, whiteToPlay)) {
-					diagonalMoves.addAll(board.constructMove(pieceSqr, testSqr));
+					diagonalMoves.add(board.constructNonPawnMove(pieceSqr, testSqr));
 					break;
 				} else {
 					break;

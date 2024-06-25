@@ -13,11 +13,20 @@ import java.util.Scanner;
  */
 public abstract class Game {
 	
+	/** After 100 plies without a pawn move or capture a game is drawn. In chess this is known as the 50 move rule. */
+	private static final int PLY_MAX_FOR_50_MOVE_RULE = 100;
+	
+	/** If 2 other positions are exactly the same as the current one, a game is drawn by threefold repetition. */
+	private static final int THREEFOLD_LIMIT = 2;
+	
 	/** <code>Scanner</code> to get user input. */
 	private static Scanner scanner = new Scanner(System.in);
 	
 	/** The chess engine which can play against a user or against itself. */
-	private static Engine engine = new Engine();
+	private static final Engine engine = new Engine();
+	
+	/** Whether this game is currently being played. */
+	protected boolean inGame;
 	
 	/** The current position in this game. */
 	private Position currentPosition;
@@ -25,32 +34,40 @@ public abstract class Game {
 	/** The moves that have previously been made in this game. */
 	private LinkedList<Move> movesMade;
 	
-	/** Whether this game is currently being played. */
-	protected boolean inGame;
-
-	private DrawRules drawRules;
+	/** The message to display the draw type. */
+	private String message;
 	
 	/**
-	 * Default constructor (Standard starting position, 
-	 * no moves have been made and the game hasn't been started.
+	 * Default constructor (standard starting position and the game hasn't been started.
 	 */
 	public Game() {
-		this(new Position(), new LinkedList<Move>(), false, new DrawRules());
+		this(false, new Position(), new LinkedList<Move>());
 	}
 
 	/**
-	 * Parameterized constructor to set the current position, the moves that have been made and whether 
-	 * the game is currently.
+	 * Parameterized constructor to set up a game from any position other than the standard starting position.
 	 * 
+	 * @param inGame <code>boolean</code> whether the game is currently being played
 	 * @param currentPosition the <code>Position</code> that the game will start from
 	 * @param movesMade <code>LinkedList</code> for the moves that have already been made
-	 * @param inGame <code>boolean</code> whether the game is currently being played
 	 */
-	public Game(Position currentPosition, LinkedList<Move> movesMade, boolean inGame, DrawRules drawRules) {
+	public Game(boolean inGame, Position currentPosition, LinkedList<Move> movesMade) {
+		this.inGame = inGame;
 		this.currentPosition = currentPosition;
 		this.movesMade = movesMade;
-		this.inGame = inGame;
-		this.drawRules = drawRules;
+		this.message = "";
+	}
+	
+	/**
+	 * Makes a move on the current game position.
+	 * 
+	 * @param move the <code>Move</code> to be made
+	 */
+	public void addGameMove(Move move) {
+		currentPosition.makeMove(move);
+		movesMade.add(move);
+		if (isDraw())
+			stopGame();
 	}
 	
 	/**
@@ -73,28 +90,17 @@ public abstract class Game {
 	}
 	
 	/**
-	 * Finds the best move according to the engine and 
-	 * makes that move on the current position.
+	 * Adds the engines move to the game documentation.
 	 * If there are no legal moves then the game is ended.
 	 */
 	public void letEngineMakeMove() {
 		try {
-			makeGameMove(engine.findTopMove(currentPosition));
-		} catch (NoLegalMovesException e) {
-			stopGame();
+			addGameMove(engine.findTopMove(currentPosition));
+		} catch (CheckmateException e) {
+			e.printStackTrace();
+		} catch (StalemateException e) {
+			e.printStackTrace();
 		}
-	}
-	
-	/**
-	 * Makes a move on the current game position.
-	 * 
-	 * @param move the <code>Move</code> to be made
-	 */
-	private void makeGameMove(Move move) {
-		currentPosition.makeMove(move);
-		movesMade.add(move);
-		if (drawRules.isDraw(movesMade, currentPosition))
-			stopGame();
 	}
 	
 	/**
@@ -109,34 +115,22 @@ public abstract class Game {
 				int startSqr = scanner.nextInt();
 				System.out.print("Enter the ending square of your move: ");
 				int endSqr = scanner.nextInt();
-				userMove = new Move(currentPosition.getSqr(startSqr), startSqr, endSqr, currentPosition.getSqr(endSqr));
-				if (userMove.isPromotion()) {
-					letUserChoosePromotionType(userMove);
+				userMove = currentPosition.constructUserMove(startSqr, endSqr);
+				if (currentPosition.isLegalMove(userMove)) {
+					addGameMove(userMove);
+					break;
+				} else {
+					System.out.println("This isn't a legal move. Try again.");
 				}
-			} catch(RuntimeException e) {
+			} catch(RuntimeException | IllegalMoveException e) {
 				scanner.nextLine();
 				System.out.println("This isn't a legal move. Try again.");
-				continue;
-			}
-			
-			if (currentPosition.isLegalMove(userMove)) {
-				makeGameMove(userMove);
-				break;
-			} else {
-				System.out.println("This isn't a legal move. Try again.");
+			} catch (CheckmateException e) {
+				e.printStackTrace();
+			} catch (StalemateException e) {
+				e.printStackTrace();
 			}
 		}
-	}
-
-	/**
-	 * Allows the user to set the piece they want to promote to.
-	 * 
-	 * @param userMove the <code>Move</code> to have its promotion type set
-	 */
-	private void letUserChoosePromotionType(Move userMove) {
-		System.out.print("Enter the piece you're promoting to "
-				+ "('r', 'b', 'n' or 'q'); uppercase for white, lowercase for black: ");
-		userMove.setPromoteTo(scanner.next().charAt(0));
 	}
 	
 	/**
@@ -161,27 +155,75 @@ public abstract class Game {
 	}
 	
 	/**
+	 * Returns true if the game is drawn by threefold repetition, 50 move, or insufficient material rules.
+	 * 
+	 * @return <code>true</code> if this game is a draw by one of the special rules;
+	 *         <code>false</code> otherwise.
+	 */
+	public boolean isDraw() {
+		return isInsufficientMaterialDraw() || isThreefoldDraw() || is50MoveDraw();
+	}
+	
+	/**
+	 * Returns true if the game is drawn by the insufficient material rule.
+	 * 
+	 * @return <code>true</code> if neither color has enough material to checkmate;
+	 *         <code>false</code> otherwise.
+	 */
+	private boolean isInsufficientMaterialDraw() {
+		return false;// To be written
+	}
+	
+	/**
+	 * Returns true if the game is drawn by threefold repetition.
+	 * 
+	 * @return <code>true</code> if the same position has been reached 3 times;
+	 *         <code>false</code> otherwise.
+	 */
+	private boolean isThreefoldDraw() {
+		int equalPositionsCount = 0;
+		Position tempPosition = new Position();
+		for (Move move : movesMade) {
+			if (tempPosition.equals(currentPosition))
+				equalPositionsCount++;
+			tempPosition.makeMove(move);
+		}
+		return equalPositionsCount >= THREEFOLD_LIMIT;
+	}
+	
+	/**
+	 * Returns true if the game is drawn by the 50 move rule.
+	 * 
+	 * @return <code>true</code> if 50 moves without a capture or pawn move have been made;
+	 *         <code>false</code> otherwise.
+	 */
+	private boolean is50MoveDraw() {
+		if (movesMade.size() < PLY_MAX_FOR_50_MOVE_RULE)
+			return false;
+		for (int i = 1; i < PLY_MAX_FOR_50_MOVE_RULE; i++) {
+			Move move = movesMade.get(movesMade.size() - i);
+			if (move.isCapture() || (move.getPiece() == Chess.WH_PAWN) || (move.getPiece() == Chess.BK_PAWN))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * Closes the scanner object.
 	 */
 	public void closeScanner() {
 		scanner.close();
 	}
 	
-	/**
-	 * Returns a string with the current position and the moves made.
-	 * 
-	 * @return String representation of the current position and the moves made
-	 */
+	@Override
 	public String toString() {
 		String printGame = currentPosition.toString() + "\n";
-
 		for (int i = 0; i < movesMade.size(); i++) {
 			printGame += movesMade.get(i).toString() + " ";
 			if (((i + 1) % 2) == 0)
 				printGame += "\n";
 		}
-		if (drawRules.isDraw(movesMade, currentPosition))
-			printGame += drawRules.getMessage();
+		printGame += message;
 		return printGame;
 	}
 	

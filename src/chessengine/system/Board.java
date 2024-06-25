@@ -292,14 +292,25 @@ public class Board {
 	}
 	
 	/**
-	 * Returns a new <code>Move</code> in a <code>LinkedList</code>. The <code>LinkedList</code>
-	 * allows this function to return promotion moves as 4 distinct moves (one for each type of promotion).
+	 * Returns a new <code>Move</code>.
 	 * 
 	 * @param startSqr int index of the square that the piece originated from
 	 * @param endSqr int index of the square that the piece ends on
+	 * @return the new <code>Move</code>
+	 */
+	public Move constructNonPawnMove(int startSqr, int endSqr) {
+		return new Move(getSqr(startSqr), startSqr, endSqr, getSqr(endSqr));
+	}
+	
+	/**
+	 * Returns a new pawn <code>Move</code> in a <code>LinkedList</code>. The <code>LinkedList</code>
+	 * allows this function to return promotion moves as 4 distinct moves (one for each type of promotion).
+	 * 
+	 * @param startSqr int index of the square that the pawn originated from
+	 * @param endSqr int index of the square that the pawn ends on
 	 * @return the <code>LinkedList</code> with the new <code>Move</code> inside
 	 */
-	public LinkedList<Move> constructMove(int startSqr, int endSqr) {
+	public LinkedList<Move> constructPawnMove(int startSqr, int endSqr) {
 		LinkedList<Move> moveInList = new LinkedList<>();
 		Move move = new Move(getSqr(startSqr), startSqr, endSqr, getSqr(endSqr));
 		if (move.isPromotion()) {
