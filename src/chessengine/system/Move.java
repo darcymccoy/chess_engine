@@ -119,7 +119,7 @@ public class Move {
 	 *         otherwise.
 	 */
 	public boolean isKingsideCastling() {
-		return (Chess.isWhiteKing(piece) || Chess.isBlackKing(piece)) && (startSqr == (endSqr + Chess.WEST_2));
+		return ((piece == Chess.WH_KING) || (piece == Chess.BK_KING)) && (startSqr == (endSqr + Chess.WEST_2));
 	}
 	
 	/**
@@ -129,7 +129,7 @@ public class Move {
 	 *         otherwise.
 	 */
 	public boolean isQueensideCastling() {
-		return (Chess.isWhiteKing(piece) || Chess.isBlackKing(piece)) && (startSqr == (endSqr + Chess.EAST_2));
+		return ((piece == Chess.WH_KING) || (piece == Chess.BK_KING)) && (startSqr == (endSqr + Chess.EAST_2));
 	}
 
 	/**

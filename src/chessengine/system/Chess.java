@@ -92,124 +92,60 @@ public final class Chess {
 	 */
 	public static final int NORTH_1_WEST_1 = -9;
 
-	/** Character representations of an empty square. */
+	/** Character representation of an empty square. */
 	public static final char EMPTY = '-';
 
-	/** Character representations of the white pawn. */
+	/** Character representation of the white pawn. */
 	public static final char WH_PAWN = 'P';
 
 	/**
-	 * Character representations of the white pawn that can be captured en passant.
+	 * Character representation of the white pawn that can be captured en passant.
 	 */
 	public static final char WH_PAWN_ENPASS = 'E';
 
-	/** Character representations of the white knight. */
+	/** Character representation of the white knight. */
 	public static final char WH_KNIGHT = 'N';
 
-	/** Character representations of the white bishop. */
+	/** Character representation of the white bishop. */
 	public static final char WH_BISHOP = 'B';
 
-	/** Character representations of the white rook. */
+	/** Character representation of the white rook. */
 	public static final char WH_ROOK = 'R';
 
-	/** Character representations of the white queen. */
+	/** Character representation of the white queen. */
 	public static final char WH_QUEEN = 'Q';
 
-	/**
-	 * Character representations of the white king that does not have any castling
-	 * rights.
-	 */
+	/** Character representation of the white king. */
 	public static final char WH_KING = 'K';
 
-	/**
-	 * Character representations of the white king that can castle on either side.
-	 */
-	public static final char WH_KING_CASTLE_BOTH_SIDES = '5';
-
-	/**
-	 * Character representations of the white king that can only castle on the
-	 * kingside.
-	 */
-	public static final char WH_KING_CASTLE_KINGSIDE = '4';
-
-	/**
-	 * Character representations of the white king that can only castle on the
-	 * queenside.
-	 */
-	public static final char WH_KING_CASTLE_QUEENSIDE = '3';
-
-	/** Character representations of the black pawn. */
+	/** Character representation of the black pawn. */
 	public static final char BK_PAWN = 'p';
 
 	/**
-	 * Character representations of the black pawn that can be captured en passant.
+	 * Character representation of the black pawn that can be captured en passant.
 	 */
 	public static final char BK_PAWN_ENPASS = 'e';
 
-	/** Character representations of the black knight. */
+	/** Character representation of the black knight. */
 	public static final char BK_KNIGHT = 'n';
 
-	/** Character representations of the black bishop. */
+	/** Character representation of the black bishop. */
 	public static final char BK_BISHOP = 'b';
 
-	/** Character representations of the black rook. */
+	/** Character representation of the black rook. */
 	public static final char BK_ROOK = 'r';
 
-	/** Character representations of the black queen. */
+	/** Character representation of the black queen. */
 	public static final char BK_QUEEN = 'q';
 
-	/**
-	 * Character representations of the black king that does not have any castling
-	 * rights.
-	 */
+	/** Character representation of the black king. */
 	public static final char BK_KING = 'k';
-
-	/**
-	 * Character representations of the black king that can castle on either side.
-	 */
-	public static final char BK_KING_CASTLE_BOTH_SIDES = '2';
-
-	/**
-	 * Character representations of the black king that can only castle on the
-	 * kingside.
-	 */
-	public static final char BK_KING_CASTLE_KINGSIDE = '1';
-
-	/**
-	 * Character representations of the black king that can only castle on the
-	 * queenside.
-	 */
-	public static final char BK_KING_CASTLE_QUEENSIDE = '0';
 	
 	/** Character representations of the pieces that white pawns can promote to. */
 	public static final char[] WH_PROMOTING_TYPES = {WH_KNIGHT, WH_BISHOP, WH_ROOK, WH_QUEEN};
 	
 	/** Character representations of the pieces that black pawns can promote to. */
 	public static final char[] BK_PROMOTING_TYPES = {BK_KNIGHT, BK_BISHOP, BK_ROOK, BK_QUEEN};
-	
-	/**
-	 * Returns true if the piece is the white king.
-	 * 
-	 * @param piece character corresponding to the piece to test
-	 * @return <code>true</code> if this piece is the white king; <code>false</code>
-	 *         otherwise.
-	 */
-	public static boolean isWhiteKing(char piece) {
-		return (piece == WH_KING_CASTLE_BOTH_SIDES) || (piece == WH_KING_CASTLE_KINGSIDE)
-				|| (piece == WH_KING_CASTLE_QUEENSIDE) || (piece == WH_KING);
-	}
-
-	/**
-	 * Returns true if the piece is the black king.
-	 * 
-	 * @param piece character corresponding to the piece to test
-	 * @return <code>true</code> if this piece is the black king; <code>false</code>
-	 *         otherwise.
-	 */
-	public static boolean isBlackKing(char piece) {
-		return (piece == BK_KING_CASTLE_BOTH_SIDES) || (piece == BK_KING_CASTLE_KINGSIDE)
-				|| (piece == BK_KING_CASTLE_QUEENSIDE) || (piece == BK_KING);
-	}
 
 	/**
 	 * Returns true if the piece is white.
@@ -219,7 +155,7 @@ public final class Chess {
 	 *         otherwise.
 	 */
 	public static boolean isWhitePiece(char piece) {
-		return isWhiteKing(piece) || (piece == WH_ROOK) || (piece == WH_KNIGHT) || (piece == WH_BISHOP)
+		return piece == WH_KING || (piece == WH_ROOK) || (piece == WH_KNIGHT) || (piece == WH_BISHOP)
 				|| (piece == WH_QUEEN) || (piece == WH_PAWN) || (piece == WH_PAWN_ENPASS);
 	}
 
@@ -231,7 +167,7 @@ public final class Chess {
 	 *         otherwise.
 	 */
 	public static boolean isBlackPiece(char piece) {
-		return isBlackKing(piece) || (piece == BK_ROOK) || (piece == BK_KNIGHT) || (piece == BK_BISHOP)
+		return piece == BK_KING || (piece == BK_ROOK) || (piece == BK_KNIGHT) || (piece == BK_BISHOP)
 				|| (piece == BK_QUEEN) || (piece == BK_PAWN) || (piece == BK_PAWN_ENPASS);
 	}
 	

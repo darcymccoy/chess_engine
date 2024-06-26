@@ -13,6 +13,9 @@ import java.util.LinkedList;
  */
 public class Engine {
 	
+	/** the <code>Position</code> to be searched for the top move */
+	Position position;
+	
 	private static final int MAX_DEPTH = 0;
 	
 	/** Pawn values based on location (each integer corresponds to a square on the board). */
@@ -96,9 +99,19 @@ public class Engine {
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000};
 	
 	/**
-	 * Default constructor.
+	 * Class constructor that sets this engine to search the standard starting position.
 	 */
 	public Engine() {
+		this(new Position());
+	}
+	
+	/**
+	 * Class constructor to set the position to search.
+	 * 
+	 * @param position <code>Position</code> to be searched for the top move
+	 */
+	public Engine(Position position) {
+		this.position = position;
 	}
 	
 	/**
@@ -106,20 +119,19 @@ public class Engine {
 	 * The engine searches to a hard coded depth of 3. 
 	 * If no legal moves are found, a {@code NoLegalMovesException} will be thrown.
 	 * 
-	 * @param currentPosition the <code>Position</code> to be searched for the top move
 	 * @return <code>Move</code> the top move
 	 * @throws NoLegalMovesException if there are no legal moves in the position
 	 */
-	public Move findTopMoveDepth3(Position currentPosition) throws NoLegalMovesException {
+	public Move findTopMoveDepth3() throws NoLegalMovesException {
 		Move topMove = null;
 		int topMoveMaxReply = 1000000;
 		int maxReplyDepth1 = -1000000;
 		int maxReplyDepth2 = 1000000;
 		
-		LinkedList<Move> legalMovesDepth1 = currentPosition.findLegalMoves();
+		LinkedList<Move> legalMovesDepth1 = position.findLegalMoves();
 		for (int i = 0; i < legalMovesDepth1.size(); i++) {
 			maxReplyDepth1 = -1000000;
-			Position tempPositionDepth1 = currentPosition.clone();
+			Position tempPositionDepth1 = position.clone();
 			tempPositionDepth1.makeMove(legalMovesDepth1.get(i));
 			
 			LinkedList<Move> legalMovesDepth2 = tempPositionDepth1.findLegalMoves();
@@ -133,9 +145,9 @@ public class Engine {
 					Position tempPositionDepth3 = tempPositionDepth2.clone();
 					tempPositionDepth3.makeMove(legalMovesDepth3.get(k));
 					
-					int evaluationDepth3 = evaluatePosition(tempPositionDepth3) 
-							+ getMovePenalties(tempPositionDepth3, legalMovesDepth3.get(k))
-							+ getMoveBonuses(tempPositionDepth3, legalMovesDepth3.get(k));
+					int evaluationDepth3 = evaluatePosition() 
+							+ getMovePenalties(legalMovesDepth3.get(k))
+							+ getMoveBonuses(legalMovesDepth3.get(k));
 					if (evaluationDepth3 < maxReplyDepth2)
 						maxReplyDepth2 = evaluationDepth3;
 				}
@@ -152,7 +164,7 @@ public class Engine {
 		return topMove;
 	}
 	
-	public Move findTopMove(Position position) throws CheckmateException, StalemateException {
+	public Move findTopMove() throws CheckmateException, StalemateException {
 		Move topMove = null;
 		int topMoveMaxReply = Integer.MAX_VALUE;
 		LinkedList<Move> legalMoves = position.findLegalMoves();
@@ -161,7 +173,7 @@ public class Engine {
 			tempPosition.makeMove(move);
 			int maxReply = 0;
 			try {
-				maxReply = findMaxReplyToMinimumDepth(tempPosition, 0);
+				maxReply = findMaxReplyToMinimumDepth(0);
 			} catch (NoLegalMovesException e) {
 
 			}
@@ -173,10 +185,10 @@ public class Engine {
 		return topMove;
 	}
 	
-	private int findMaxReplyToMinimumDepth(Position position, int depth) throws NoLegalMovesException {
+	private int findMaxReplyToMinimumDepth(int depth) throws NoLegalMovesException {
 		
 		if (depth == MAX_DEPTH)
-			return evaluatePosition(position);
+			return evaluatePosition();
 		
 		int maxReply = Integer.MAX_VALUE;
 		LinkedList<Move> legalMoves = position.findLegalMoves();
@@ -186,7 +198,7 @@ public class Engine {
 			int testMaxReply = 0;
 
 			try {
-				testMaxReply = findMaxReplyToMinimumDepth(tempPosition, depth + 1);
+				testMaxReply = findMaxReplyToMinimumDepth(depth + 1);
 			} catch (NoLegalMovesException e) {
 
 			}
@@ -202,11 +214,10 @@ public class Engine {
 	 * of a pawns value. For example, conventionally a bishop is worth 3 points, but in a centipawn 
 	 * system a bishop is worth 300.
 	 * 
-	 * @param position the <code>Position</code> to be evaluated from the perspective of the color who is to play
 	 * @return <code>int</code> that will be positive if the position is better for the color who is to play; 
 	 * 			negative otherwise
 	 */
-	public int evaluatePosition(Position position) {
+	public int evaluatePosition() {
 		int positionEvaluation = 0;
 		for (int i = 0; i < position.getBoard().getSqrs().length(); i++) {
 			positionEvaluation += getPieceValue(position.getSqr(i), i);
@@ -221,12 +232,11 @@ public class Engine {
 	 * Returns the penalties for a move (that has been played on the position). This integer is from the 
 	 * perspective of the color who is to play after the move has been made.
 	 * 
-	 * @param position the <code>Position</code> after the move has been made on it
 	 * @param move the <code>Move</code> to have it's penalties calculated
 	 * @return <code>int</code> total of the penalties that the move incurred
 	 * @see chessengine.Engine#getMoveBonuses
 	 */
-	public int getMovePenalties(Position position, Move move) {
+	public int getMovePenalties(Move move) {
 		int penalties = 0;
 		if (position.isAttackedSqr(move.getEndSqr(), position.isWhiteToPlay()))
 			penalties += 10;
@@ -241,12 +251,11 @@ public class Engine {
 	 * This negative integer represents that the move aided the color making it and put the opposing 
 	 * color into a worse position.
 	 * 
-	 * @param position the <code>Position</code> after the move has been made on it
 	 * @param move the <code>Move</code> to have it's bonuses calculated
 	 * @return <code>int</code> total of the bonuses that the move incurred
 	 * @see chessengine.Engine#getMovePenalties
 	 */
-	public int getMoveBonuses(Position position, Move move) {
+	public int getMoveBonuses(Move move) {
 		int bonuses = 0;
 		if (position.isCheck())
 			bonuses -= 15;
@@ -289,14 +298,8 @@ public class Engine {
 		case 'q':
 			return QUEEN_VALUES[QUEEN_VALUES.length - 1 - sqr] * -1;
 		case 'K':
-		case '5':
-		case '4':
-		case '3':
 			return KING_VALUES[sqr];
 		case 'k':
-		case '2':
-		case '1':
-		case '0':
 			return KING_VALUES[KING_VALUES.length - 1 - sqr] * -1;
 		default:
 			return 0;

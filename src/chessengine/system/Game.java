@@ -20,10 +20,10 @@ public abstract class Game {
 	private static final int THREEFOLD_LIMIT = 2;
 	
 	/** <code>Scanner</code> to get user input. */
-	private static Scanner scanner = new Scanner(System.in);
+	private static final Scanner scanner = new Scanner(System.in);
 	
 	/** The chess engine which can play against a user or against itself. */
-	private static final Engine engine = new Engine();
+	private Engine engine;
 	
 	/** Whether this game is currently being played. */
 	protected boolean inGame;
@@ -56,6 +56,7 @@ public abstract class Game {
 		this.currentPosition = currentPosition;
 		this.movesMade = movesMade;
 		this.message = "";
+		this.engine = new Engine(currentPosition);
 	}
 	
 	/**
@@ -95,7 +96,7 @@ public abstract class Game {
 	 */
 	public void letEngineMakeMove() {
 		try {
-			addGameMove(engine.findTopMove(currentPosition));
+			addGameMove(engine.findTopMove());
 		} catch (CheckmateException e) {
 			e.printStackTrace();
 		} catch (StalemateException e) {

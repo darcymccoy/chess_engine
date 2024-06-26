@@ -52,7 +52,7 @@ public class Board {
 	 * Default constructor that sets the squares to the standard starting chess position.
 	 */
 	public Board() {
-		this("rnbq2bnr" + "pppppppp" + "--------" + "--------" + "--------" + "--------" + "PPPPPPPP" + "RNBQ5BNR");
+		this("rnbqkbnr" + "pppppppp" + "--------" + "--------" + "--------" + "--------" + "PPPPPPPP" + "RNBQKBNR");
 	}
 	
 	/**
@@ -149,40 +149,6 @@ public class Board {
 	}
 	
 	/**
-	 * Updates the king's castling ability for non king moves.
-	 *
-	 * @param move the <code>Move</code> that the (non king) piece is making
-	 */
-	private void updateKingCastlingAbilityForNonKingMove(Move move) {
-		// Updating white king for castling ability
-		if ((getSqr(E1_SQR) == Chess.WH_KING_CASTLE_BOTH_SIDES)
-				&& ((move.getStartSqr() == H1_SQR) || (move.getEndSqr() == H1_SQR))) {
-			setSqr(Chess.WH_KING_CASTLE_QUEENSIDE, E1_SQR);
-		} else if ((getSqr(E1_SQR) == Chess.WH_KING_CASTLE_BOTH_SIDES)
-				&& ((move.getStartSqr() == A1_SQR) || (move.getEndSqr() == A1_SQR))) {
-			setSqr(Chess.WH_KING_CASTLE_KINGSIDE, E1_SQR);
-		} else if (((getSqr(E1_SQR) == Chess.WH_KING_CASTLE_KINGSIDE)
-				&& ((move.getStartSqr() == H1_SQR) || (move.getEndSqr() == H1_SQR)))
-				|| ((getSqr(E1_SQR) == Chess.WH_KING_CASTLE_QUEENSIDE)
-						&& ((move.getStartSqr() == A1_SQR) || (move.getEndSqr() == A1_SQR)))) {
-			setSqr(Chess.WH_KING, E1_SQR);
-		}
-		// Updating black king for castling ability
-		if ((getSqr(E8_SQR) == Chess.BK_KING_CASTLE_BOTH_SIDES)
-				&& ((move.getStartSqr() == H8_SQR) || (move.getEndSqr() == H8_SQR))) {
-			setSqr(Chess.BK_KING_CASTLE_QUEENSIDE, E8_SQR);
-		} else if ((getSqr(E8_SQR) == Chess.BK_KING_CASTLE_BOTH_SIDES)
-				&& ((move.getStartSqr() == A8_SQR) || (move.getEndSqr() == A8_SQR))) {
-			setSqr(Chess.BK_KING_CASTLE_KINGSIDE, E8_SQR);
-		} else if (((getSqr(E8_SQR) == Chess.BK_KING_CASTLE_KINGSIDE)
-				&& ((move.getStartSqr() == H8_SQR) || (move.getEndSqr() == H8_SQR)))
-				|| ((getSqr(E8_SQR) == Chess.BK_KING_CASTLE_QUEENSIDE)
-						&& ((move.getStartSqr() == A8_SQR) || (move.getEndSqr() == A8_SQR)))) {
-			setSqr(Chess.BK_KING, E8_SQR);
-		}
-	}
-	
-	/**
 	 * Updates the square that the piece originated from to be empty.
 	 * 
 	 * @param move the <code>Move</code> to update for
@@ -207,31 +173,7 @@ public class Board {
 				pieceToPut = Chess.BK_PAWN_ENPASS;
 			}
 		}
-		pieceToPut = updateKingCastlingAbility(move, pieceToPut);
 		setSqr(pieceToPut, move.getEndSqr());
-	}
-
-	/**
-	 * Updates both kings castling abilities for king and non king moves.
-	 * 
-	 * @param move the <code>Move</code> to update for
-	 * @param pieceToPut the character being put at the end square for this move
-	 * @return Either the original piece being put at the end square or the updated king
-	 */
-	private char updateKingCastlingAbility(Move move, char pieceToPut) {
-		if ((move.getPiece() == Chess.WH_KING_CASTLE_BOTH_SIDES) || (move.getPiece() == Chess.WH_KING_CASTLE_KINGSIDE)
-				|| (move.getPiece() == Chess.WH_KING_CASTLE_QUEENSIDE)) {
-			// Updating white king for castling ability for king moves
-			pieceToPut = Chess.WH_KING;
-		} else if ((move.getPiece() == Chess.BK_KING_CASTLE_BOTH_SIDES)
-				|| (move.getPiece() == Chess.BK_KING_CASTLE_KINGSIDE)
-				|| (move.getPiece() == Chess.BK_KING_CASTLE_QUEENSIDE)) {
-			// Updating black king for castling ability for king moves
-			pieceToPut = Chess.BK_KING;
-		} else {
-			updateKingCastlingAbilityForNonKingMove(move);
-		}
-		return pieceToPut;
 	}
 	
 	/**
@@ -243,35 +185,11 @@ public class Board {
 	 */
 	public int findKingSqr(boolean findWhiteKing) {
 		for (int i = 0; i < sqrs.length(); i++) {
-			if ((findWhiteKing && Chess.isWhiteKing(getSqr(i))) || (!findWhiteKing && Chess.isBlackKing(getSqr(i)))) {
+			if ((findWhiteKing && (getSqr(i) == Chess.WH_KING)) || (!findWhiteKing && (getSqr(i) == Chess.BK_KING))) {
 				return i;
 			}
 		}
 		throw new NoSuchElementException("King couldn't be found");
-	}
-	
-	/**
-	 * Returns true if there is a king with the ability to castle kingside on this square.
-	 * 
-	 * @param sqr int index of the square to test
-	 * @return <code>true</code> if there is a king that can castle kingside on this square;
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isKingsideCastleableKingAtSqr(int sqr) {
-		return (getSqr(sqr) == Chess.WH_KING_CASTLE_BOTH_SIDES) || (getSqr(sqr) == Chess.WH_KING_CASTLE_KINGSIDE)
-				|| (getSqr(sqr) == Chess.BK_KING_CASTLE_BOTH_SIDES) || (getSqr(sqr) == Chess.BK_KING_CASTLE_KINGSIDE);
-	}
-	
-	/**
-	 * Returns true if there is a king with the ability to castle queenside on this square.
-	 * 
-	 * @param sqr int index of the square to test
-	 * @return <code>true</code> if there is a king that can castle queenside on this square;
-	 *         <code>false</code> otherwise.
-	 */
-	public boolean isQueensideCastleableKingAtSqr(int sqr) {
-		return (getSqr(sqr) == Chess.WH_KING_CASTLE_BOTH_SIDES) || (getSqr(sqr) == Chess.WH_KING_CASTLE_QUEENSIDE)
-				|| (getSqr(sqr) == Chess.BK_KING_CASTLE_BOTH_SIDES) || (getSqr(sqr) == Chess.BK_KING_CASTLE_QUEENSIDE);
 	}
 	
 	/**

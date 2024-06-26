@@ -17,24 +17,28 @@ public class Position {
 
 	/** The information of a physical board for the chess position */
 	private Board board;
+	
+	/** The castling rights of both colors */
+	private CastlingRights castlingRights;
 
 	/**
-	 * Default constructor (standard starting chess position, white is to play).
+	 * Default constructor for the standard starting chess position.
 	 */
 	public Position() {
-		this(true, new Board());
+		this(true, new Board(), new CastlingRights());
 	}
 
 	/**
 	 * Parameterized constructor specifying the board and which color is to play.
 	 *
 	 * @param whiteToPlay boolean whether white is currently to play
-	 * @param board       string 64 characters long where each character is a square
-	 *                    on the board starting from A8 and moving left and down
+	 * @param board       the Board of a chess position
+	 * @param castlingRights the CastlingRights of both colors
 	 */
-	public Position(boolean whiteToPlay, Board board) {
+	public Position(boolean whiteToPlay, Board board, CastlingRights castlingRights) {
 		this.whiteToPlay = whiteToPlay;
 		this.board = board;
+		this.castlingRights = castlingRights;
 	}
 
 	/**
@@ -43,7 +47,7 @@ public class Position {
 	 * @param otherPosition the <code>Position</code> to copy
 	 */
 	public Position(Position otherPosition) {
-		this(otherPosition.whiteToPlay, otherPosition.board.clone());
+		this(otherPosition.whiteToPlay, otherPosition.board.clone(), otherPosition.castlingRights.clone());
 	}
 
 	/**
@@ -103,17 +107,19 @@ public class Position {
 		board.removeEnPassantCapturability();
 		board.updateStartSqrContents(move);
 		board.updateEndSqrContents(move);
+		castlingRights.updateRightsForMove(move);
 		whiteToPlay = !whiteToPlay;
 	}
 
 	/**
+	 * Returns a new user move.
 	 * 
-	 * @param startSqr
-	 * @param endSqr
-	 * @return
-	 * @throws CheckmateException
-	 * @throws StalemateException
-	 * @throws IllegalMoveException
+	 * @param startSqr index of the square that the move start from
+	 * @param endSqr index of the square that the move ends on
+	 * @return a <code>Move<code> that the user is making
+	 * @throws CheckmateException if the king is checked and there are 0 legal moves
+	 * @throws StalemateException if the king is not checked and there are 0 legal moves
+	 * @throws IllegalMoveException if the user is attempting to make an illegal move
 	 */
 	public Move constructUserMove(int startSqr, int endSqr) throws CheckmateException, StalemateException, IllegalMoveException{
 		if (!Board.isOnTheBoard(startSqr) || !Board.isOnTheBoard(endSqr))
@@ -199,12 +205,6 @@ public class Position {
 		case Chess.BK_QUEEN:
 			return findQueenMoves(pieceSqr);
 
-		case Chess.BK_KING_CASTLE_QUEENSIDE:
-		case Chess.BK_KING_CASTLE_KINGSIDE:
-		case Chess.BK_KING_CASTLE_BOTH_SIDES:
-		case Chess.WH_KING_CASTLE_QUEENSIDE:
-		case Chess.WH_KING_CASTLE_KINGSIDE:
-		case Chess.WH_KING_CASTLE_BOTH_SIDES:
 		case Chess.BK_KING:
 		case Chess.WH_KING:
 			return findKingMoves(pieceSqr);
@@ -279,11 +279,11 @@ public class Position {
 	 */
 	private LinkedList<Move> findCastlingKingMoves(int kingSqr){
 		LinkedList<Move> castlingKingMoves = new LinkedList<>();
-		if (board.isKingsideCastleableKingAtSqr(kingSqr) && 
+		if (castlingRights.kingCanCastleKingside(kingSqr) && 
 				board.isEmptySqr(kingSqr + Chess.EAST_1) && board.isEmptySqr(kingSqr + Chess.EAST_2)) {
 			castlingKingMoves.add(board.constructNonPawnMove(kingSqr, kingSqr + Chess.EAST_2));
 		}
-		if (board.isQueensideCastleableKingAtSqr(kingSqr) && board.isEmptySqr(kingSqr + Chess.WEST_1) 
+		if (castlingRights.kingCanCastleQueenside(kingSqr) && board.isEmptySqr(kingSqr + Chess.WEST_1) 
 				&& board.isEmptySqr(kingSqr + Chess.WEST_2) && board.isEmptySqr(kingSqr + Chess.WEST_3)) {
 			castlingKingMoves.add(board.constructNonPawnMove(kingSqr, kingSqr + Chess.WEST_2));
 		}

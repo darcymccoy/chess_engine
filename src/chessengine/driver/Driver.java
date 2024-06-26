@@ -9,13 +9,9 @@ import chessengine.system.UserVsEngine;
  * an entire game of chess against a human
  * 
  * @author Darcy McCoy
- * @version "%I%"
  * @since 1.0
  */
 public class Driver {
-	/**
-	 * @param args 
-	 */
 	public static void main(String[] args) {
 		Scanner userInput = new Scanner(System.in);
 		
