@@ -18,7 +18,7 @@ public class Move {
 
 	/** The square on the board that the piece ends on. */
 	private int endSqr;
-	
+
 	/** The character at the square that the piece ends on */
 	private char endSqrContents;
 
@@ -32,9 +32,11 @@ public class Move {
 	 * Class constructor specifying the piece, start and end squares of this move.
 	 * This can construct every move except for pawns promoting.
 	 * 
-	 * @param piece    character representing the piece that is making this move
-	 * @param startSqr integer square on the board that the piece originated on
-	 * @param endSqr   integer square on the board that the piece ends on
+	 * @param piece          character representing the piece that is making this
+	 *                       move
+	 * @param startSqr       integer square on the board that the piece originated
+	 *                       on
+	 * @param endSqr         integer square on the board that the piece ends on
 	 * @param endSqrContents character at the square that the piece ends on
 	 */
 	public Move(char piece, int startSqr, int endSqr, char endSqrContents) {
@@ -46,12 +48,14 @@ public class Move {
 	 * being promoted to. This should only be called externally when used to
 	 * construct moves that are pawns promoting.
 	 * 
-	 * @param piece     character representing the piece that is making this move
-	 * @param startSqr  integer square on the board that the piece originated on
-	 * @param endSqr    integer square on the board that the piece ends on
-	 * @param promoteTo character representing the piece that the pawn promotes to.
-	 *                  If this move isn't promotion, then this will be
-	 *                  <code>'-'</code>.
+	 * @param piece          character representing the piece that is making this
+	 *                       move
+	 * @param startSqr       integer square on the board that the piece originated
+	 *                       on
+	 * @param endSqr         integer square on the board that the piece ends on
+	 * @param promoteTo      character representing the piece that the pawn promotes
+	 *                       to. If this move isn't promotion, then this will be
+	 *                       <code>'-'</code>.
 	 * @param endSqrContents character at the square that the piece ends on
 	 */
 	public Move(char piece, int startSqr, int endSqr, char endSqrContents, char promoteTo) {
@@ -61,7 +65,7 @@ public class Move {
 		this.promoteTo = promoteTo;
 		this.endSqrContents = endSqrContents;
 	}
-	
+
 	/**
 	 * Copy constructor.
 	 * 
@@ -80,17 +84,17 @@ public class Move {
 	public Move clone() {
 		return new Move(this);
 	}
-	
+
 	/**
 	 * Returns true if this move captures a piece.
 	 * 
-	 * @return <code>true</code> if this move is capturing an opposing piece; <code>false</code>
-	 *         otherwise.
+	 * @return <code>true</code> if this move is capturing an opposing piece;
+	 *         <code>false</code> otherwise.
 	 */
 	public boolean isCapture() {
 		return isEnPassant() || (endSqrContents != Chess.EMPTY);
 	}
-	
+
 	/**
 	 * Returns true if this move is promotion.
 	 * 
@@ -111,22 +115,22 @@ public class Move {
 	public boolean isCastling() {
 		return isKingsideCastling() || isQueensideCastling();
 	}
-	
+
 	/**
 	 * Returns true if this move is castling on the kingside of the board.
 	 * 
-	 * @return <code>true</code> if this move is a king castling on the kingside; <code>false</code>
-	 *         otherwise.
+	 * @return <code>true</code> if this move is a king castling on the kingside;
+	 *         <code>false</code> otherwise.
 	 */
 	public boolean isKingsideCastling() {
 		return ((piece == Chess.WH_KING) || (piece == Chess.BK_KING)) && (startSqr == (endSqr + Chess.WEST_2));
 	}
-	
+
 	/**
 	 * Returns true if this move is castling on the queenside of the board.
 	 * 
-	 * @return <code>true</code> if this move is a king castling on the queenside; <code>false</code>
-	 *         otherwise.
+	 * @return <code>true</code> if this move is a king castling on the queenside;
+	 *         <code>false</code> otherwise.
 	 */
 	public boolean isQueensideCastling() {
 		return ((piece == Chess.WH_KING) || (piece == Chess.BK_KING)) && (startSqr == (endSqr + Chess.EAST_2));
@@ -139,8 +143,8 @@ public class Move {
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean isEnPassant() {
-		return ((piece == Chess.WH_PAWN) || (piece == Chess.BK_PAWN)) && 
-				(endSqrContents == Chess.EMPTY) && ((startSqr % Board.WIDTH) != (endSqr % Board.WIDTH));
+		return ((piece == Chess.WH_PAWN) || (piece == Chess.BK_PAWN)) && (endSqrContents == Chess.EMPTY)
+				&& ((startSqr % Board.WIDTH) != (endSqr % Board.WIDTH));
 	}
 
 	/**

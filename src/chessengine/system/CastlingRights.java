@@ -123,4 +123,18 @@ public class CastlingRights {
 		return ((kingSquare == Board.E1_SQR) && whiteCanQueenside) || 
 				((kingSquare == Board.E8_SQR) && blackCanQueenside);
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CastlingRights other = (CastlingRights) obj;
+		return blackCanKingside == other.blackCanKingside && blackCanQueenside == other.blackCanQueenside
+				&& whiteCanKingside == other.whiteCanKingside && whiteCanQueenside == other.whiteCanQueenside;
+	}
+	
 }

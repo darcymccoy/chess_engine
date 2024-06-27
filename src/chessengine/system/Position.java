@@ -110,6 +110,11 @@ public class Position {
 		castlingRights.updateRightsForMove(move);
 		whiteToPlay = !whiteToPlay;
 	}
+	
+	public void undoMove(Move move) {
+		
+		whiteToPlay = !whiteToPlay;
+	}
 
 	/**
 	 * Returns a new user move.
@@ -527,7 +532,7 @@ public class Position {
 		if (getClass() != obj.getClass())
 			return false;
 		Position other = (Position) obj;
-		return board.equals(other.board) && (whiteToPlay == other.whiteToPlay);
+		return (whiteToPlay == other.whiteToPlay) && board.equals(other.board) && castlingRights.equals(other.castlingRights);
 	}
 
 	/**
