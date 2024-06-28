@@ -13,13 +13,13 @@ import java.util.LinkedList;
  */
 public class Engine {
 	
-	/** the <code>Position</code> to be searched for the top move */
+	/** <code>Position</code> to be searched for the top move. */
 	Position position;
 	
 	private static final int MAX_DEPTH = 0;
 	
 	/** Pawn values based on location (each integer corresponds to a square on the board). */
-	private static final int[] PAWN_VALUES = {0, 0, 0, 0, 0, 0, 0, 0, 
+	public static final int[] PAWN_VALUES = {0, 0, 0, 0, 0, 0, 0, 0, 
 			140, 140, 140, 140, 140, 140, 140, 140, 
 			110, 110, 110, 120, 120, 110, 110, 110, 
 			100, 100, 100, 120, 120, 100, 100, 100, 
@@ -29,7 +29,7 @@ public class Engine {
 			0, 0, 0, 0, 0, 0, 0, 0};
 	
 	/** Rook values based on location (each integer corresponds to a square on the board). */
-	private static final int[] ROOK_VALUES = {500, 500, 500, 500, 500, 500, 500, 500, 
+	public static final int[] ROOK_VALUES = {500, 500, 500, 500, 500, 500, 500, 500, 
 			500, 500, 500, 500, 500, 500, 500, 500, 
 			500, 500, 500, 500, 500, 500, 500, 500, 
 			500, 500, 500, 500, 500, 500, 500, 500, 
@@ -39,7 +39,7 @@ public class Engine {
 			500, 500, 500, 519, 520, 505, 500, 500,};
 	
 	/** Knight values based on location (each integer corresponds to a square on the board). */
-	private static final int[] KNIGHT_VALUES = {200, 220, 220, 220, 220, 220, 220, 200, 
+	public static final int[] KNIGHT_VALUES = {200, 220, 220, 220, 220, 220, 220, 200, 
 			200, 270, 300, 300, 300, 300, 270, 200, 
 			200, 250, 320, 320, 320, 320, 250, 200, 
 			200, 250, 310, 326, 326, 310, 250, 200, 
@@ -49,7 +49,7 @@ public class Engine {
 			100, 225, 215, 215, 215, 215, 225, 100};
 	
 	/** Bishop values based on location (each integer corresponds to a square on the board). */
-	private static final int[] BISHOP_VALUES = {280, 280, 280, 280, 280, 280, 280, 280, 
+	public static final int[] BISHOP_VALUES = {280, 280, 280, 280, 280, 280, 280, 280, 
 			280, 310, 310, 310, 310, 310, 310, 280, 
 			280, 315, 315, 315, 315, 315, 315, 280, 
 			290, 320, 320, 320, 320, 320, 320, 290, 
@@ -59,7 +59,7 @@ public class Engine {
 			280, 280, 280, 280, 280, 280, 280, 280};
 	
 	/** Queen values based on location (each integer corresponds to a square on the board). */
-	private static final int[] QUEEN_VALUES = {900, 900, 900, 900, 900, 900, 900, 900,
+	public static final int[] QUEEN_VALUES = {900, 900, 900, 900, 900, 900, 900, 900,
 			900, 900, 900, 900, 900, 900, 900, 900,
 			900, 900, 900, 900, 900, 900, 900, 900,
 			900, 900, 900, 900, 900, 900, 900, 900,
@@ -69,7 +69,7 @@ public class Engine {
 			900, 900, 900, 900, 900, 900, 900, 900};
 	
 	/** King values based on location (each integer corresponds to a square on the board). */
-	private static final int[] KING_VALUES = {100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
+	public static final int[] KING_VALUES = {100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
@@ -79,7 +79,7 @@ public class Engine {
 			100000, 100040, 100030, 100000, 100000, 100000, 100040, 100000};
 	
 	/** Pawn endgame values based on location (each integer corresponds to a square on the board). */
-	private static final int[] PAWN_ENDGAME_VALUES = {0, 0, 0, 0, 0, 0, 0, 0, 
+	public static final int[] PAWN_ENDGAME_VALUES = {0, 0, 0, 0, 0, 0, 0, 0, 
 			160, 160, 160, 160, 160, 160, 160, 160, 
 			140, 135, 130, 130, 130, 130, 135, 140, 
 			120, 120, 120, 120, 120, 120, 120, 120, 
@@ -89,7 +89,7 @@ public class Engine {
 			0, 0, 0, 0, 0, 0, 0, 0};
 	
 	/** King endgame values based on location (each integer corresponds to a square on the board). */
-	private static final int[] KING_ENDGAME_VALUES = {100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
+	public static final int[] KING_ENDGAME_VALUES = {100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 
 			100000, 100010, 100010, 100010, 100010, 100010, 100010, 100000, 
 			100000, 100010, 100030, 100030, 100030, 100030, 100010, 100000, 
 			100000, 100010, 100030, 100040, 100040, 100030, 100010, 100000, 
@@ -145,9 +145,7 @@ public class Engine {
 					Position tempPositionDepth3 = tempPositionDepth2.clone();
 					tempPositionDepth3.makeMove(legalMovesDepth3.get(k));
 					
-					int evaluationDepth3 = evaluatePosition() 
-							+ getMovePenalties(legalMovesDepth3.get(k))
-							+ getMoveBonuses(legalMovesDepth3.get(k));
+					int evaluationDepth3 = position.evaluate();
 					if (evaluationDepth3 < maxReplyDepth2)
 						maxReplyDepth2 = evaluationDepth3;
 				}
@@ -188,7 +186,7 @@ public class Engine {
 	private int findMaxReplyToMinimumDepth(int depth) throws NoLegalMovesException {
 		
 		if (depth == MAX_DEPTH)
-			return evaluatePosition();
+			return position.evaluate();
 		
 		int maxReply = Integer.MAX_VALUE;
 		LinkedList<Move> legalMoves = position.findLegalMoves();
@@ -206,103 +204,5 @@ public class Engine {
 				maxReply = testMaxReply;
 		}
 		return maxReply;
-	}
-	
-	/**
-	 * Returns an integer which is an evaluation of the position
-	 * from the perspective of the color who is to play (in centipawns). A centipawn is one one-hundredth
-	 * of a pawns value. For example, conventionally a bishop is worth 3 points, but in a centipawn 
-	 * system a bishop is worth 300.
-	 * 
-	 * @return <code>int</code> that will be positive if the position is better for the color who is to play; 
-	 * 			negative otherwise
-	 */
-	public int evaluatePosition() {
-		int positionEvaluation = 0;
-		for (int i = 0; i < position.getBoard().getSqrs().length(); i++) {
-			positionEvaluation += getPieceValue(position.getSqr(i), i);
-		}
-		if (position.isWhiteToPlay())
-			return positionEvaluation;
-		else
-			return positionEvaluation * -1;
-	}
-	
-	/**
-	 * Returns the penalties for a move (that has been played on the position). This integer is from the 
-	 * perspective of the color who is to play after the move has been made.
-	 * 
-	 * @param move the <code>Move</code> to have it's penalties calculated
-	 * @return <code>int</code> total of the penalties that the move incurred
-	 * @see chessengine.Engine#getMoveBonuses
-	 */
-	public int getMovePenalties(Move move) {
-		int penalties = 0;
-		if (position.isAttackedSqr(move.getEndSqr(), position.isWhiteToPlay()))
-			penalties += 10;
-		return penalties;
-	}
-	
-	/**
-	 * Returns the bonuses for a move (that has been played on the position). This integer is from the 
-	 * perspective of the color who is to play after the move has been made. For example, 
-	 * a move which puts the opposing king into check is (generally) bad for the 
-	 * checked color so, for this move, some negative integer would be added to the bonus total.
-	 * This negative integer represents that the move aided the color making it and put the opposing 
-	 * color into a worse position.
-	 * 
-	 * @param move the <code>Move</code> to have it's bonuses calculated
-	 * @return <code>int</code> total of the bonuses that the move incurred
-	 * @see chessengine.Engine#getMovePenalties
-	 */
-	public int getMoveBonuses(Move move) {
-		int bonuses = 0;
-		if (position.isCheck())
-			bonuses -= 15;
-		if (position.isAttackedSqr(move.getEndSqr(), !position.isWhiteToPlay()))
-			bonuses -= 10;
-		return bonuses;
-	}
-	
-	/**
-	 * Returns an integer based on the type and location of a piece (in centipawns).
-	 * This integer is positive if the piece is white and negative if black.
-	 * 
-	 * 
-	 * @param piece a character representing the piece of the piece value to be returned
-	 * @param sqr int value of the square the piece is on in the current position
-	 * @return an integer which is the value of the piece based on type and location
-	 */
-	public int getPieceValue(char piece, int sqr) {
-		switch (piece) {
-		case 'P':
-		case 'E':
-			return PAWN_VALUES[sqr];
-		case 'p':
-		case 'e':
-			return PAWN_VALUES[PAWN_VALUES.length - 1 - sqr] * -1;
-		case 'R':
-			return ROOK_VALUES[sqr];
-		case 'r':
-			return ROOK_VALUES[ROOK_VALUES.length - 1 - sqr] * -1;
-		case 'N':
-			return KNIGHT_VALUES[sqr];
-		case 'n':
-			return KNIGHT_VALUES[KNIGHT_VALUES.length - 1 - sqr] * -1;
-		case 'B':
-			return BISHOP_VALUES[sqr];
-		case 'b':
-			return BISHOP_VALUES[BISHOP_VALUES.length - 1 - sqr] * -1;
-		case 'Q':
-			return QUEEN_VALUES[sqr];
-		case 'q':
-			return QUEEN_VALUES[QUEEN_VALUES.length - 1 - sqr] * -1;
-		case 'K':
-			return KING_VALUES[sqr];
-		case 'k':
-			return KING_VALUES[KING_VALUES.length - 1 - sqr] * -1;
-		default:
-			return 0;
-		}
 	}
 }

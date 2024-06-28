@@ -73,11 +73,6 @@ public class Board {
 		this(otherBoard.sqrs);
 	}
 	
-	/**
-	 * Returns a copy of this board.
-	 *
-	 * @return <code>Board</code> that is a copy of this
-	 */
 	@Override
 	public Board clone() {
 		return new Board(this);
@@ -174,6 +169,56 @@ public class Board {
 			}
 		}
 		setSqr(pieceToPut, move.getEndSqr());
+	}
+	
+	public int getTotalPieceValues() {
+		int totalPieceValues = 0;
+		for (int i = 0; i < sqrs.length(); i++) {
+			totalPieceValues += getPieceValue(getSqr(i), i);
+		}
+		return totalPieceValues;
+	}
+	
+	/**
+	 * Returns an integer based on the type and location of a piece (in centipawns).
+	 * This integer is positive if the piece is white and negative if black.
+	 * 
+	 * 
+	 * @param piece character representing the piece
+	 * @param sqr int index of the square the piece is on
+	 * @return an integer which is the value of the piece based on type and location
+	 */
+	public int getPieceValue(char piece, int sqr) {
+		switch (piece) {
+		case Chess.WH_PAWN:
+		case Chess.WH_PAWN_ENPASS:
+			return Engine.PAWN_VALUES[sqr];
+		case Chess.BK_PAWN:
+		case Chess.BK_PAWN_ENPASS:
+			return Engine.PAWN_VALUES[Engine.PAWN_VALUES.length - 1 - sqr] * -1;
+		case Chess.WH_ROOK:
+			return Engine.ROOK_VALUES[sqr];
+		case Chess.BK_ROOK:
+			return Engine.ROOK_VALUES[Engine.ROOK_VALUES.length - 1 - sqr] * -1;
+		case Chess.WH_KNIGHT:
+			return Engine.KNIGHT_VALUES[sqr];
+		case Chess.BK_KNIGHT:
+			return Engine.KNIGHT_VALUES[Engine.KNIGHT_VALUES.length - 1 - sqr] * -1;
+		case Chess.WH_BISHOP:
+			return Engine.BISHOP_VALUES[sqr];
+		case Chess.BK_BISHOP:
+			return Engine.BISHOP_VALUES[Engine.BISHOP_VALUES.length - 1 - sqr] * -1;
+		case Chess.WH_QUEEN:
+			return Engine.QUEEN_VALUES[sqr];
+		case Chess.BK_QUEEN:
+			return Engine.QUEEN_VALUES[Engine.QUEEN_VALUES.length - 1 - sqr] * -1;
+		case Chess.WH_KING:
+			return Engine.KING_VALUES[sqr];
+		case Chess.BK_KING:
+			return Engine.KING_VALUES[Engine.KING_VALUES.length - 1 - sqr] * -1;
+		default:
+			return 0;
+		}
 	}
 	
 	/**
@@ -456,20 +501,6 @@ public class Board {
 	 */
 	public static boolean isFileHSqr(int sqr) {
 		return (sqr + Chess.EAST_1) % WIDTH == 0;
-	}
-	
-	/**
-	 * @return the squares
-	 */
-	public String getSqrs() {
-		return sqrs;
-	}
-
-	/**
-	 * @param sqrs the squares to set
-	 */
-	public void setSqrs(String sqrs) {
-		this.sqrs = sqrs;
 	}
 	
 }

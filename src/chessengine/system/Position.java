@@ -17,7 +17,7 @@ public class Position {
 
 	/** The information of a physical board for the chess position */
 	private Board board;
-	
+
 	/** The castling rights of both colors */
 	private CastlingRights castlingRights;
 
@@ -31,8 +31,8 @@ public class Position {
 	/**
 	 * Parameterized constructor specifying the board and which color is to play.
 	 *
-	 * @param whiteToPlay boolean whether white is currently to play
-	 * @param board       the Board of a chess position
+	 * @param whiteToPlay    boolean whether white is currently to play
+	 * @param board          the Board of a chess position
 	 * @param castlingRights the CastlingRights of both colors
 	 */
 	public Position(boolean whiteToPlay, Board board, CastlingRights castlingRights) {
@@ -65,7 +65,8 @@ public class Position {
 	 *
 	 * @return <code>LinkedList</code> of the legal moves found in this position
 	 * @throws CheckmateException if the king is checked and there are 0 legal moves
-	 * @throws StalemateException if the king is not checked and there are 0 legal moves
+	 * @throws StalemateException if the king is not checked and there are 0 legal
+	 *                            moves
 	 */
 	public LinkedList<Move> findLegalMoves() throws CheckmateException, StalemateException {
 		LinkedList<Move> pseudoLegalMoves = findPseudoLegalMoves();
@@ -80,21 +81,23 @@ public class Position {
 	}
 
 	/**
-	 * Throws the appropriate exception if there are 0 legal moves for the color to play. 
+	 * Throws the appropriate exception if there are 0 legal moves for the color to
+	 * play.
 	 * 
 	 * @param legalMoves <code>LinkedList</code> of the legal moves in this position
 	 * @throws CheckmateException if the king is checked and there are 0 legal moves
-	 * @throws StalemateException if the king is not checked and there are 0 legal moves
+	 * @throws StalemateException if the king is not checked and there are 0 legal
+	 *                            moves
 	 */
 	public void testForNoLegalMoves(LinkedList<Move> legalMoves) throws CheckmateException, StalemateException {
 		if (legalMoves.isEmpty()) {
 			if (isCheck())
 				throw new CheckmateException();
-			 else
+			else
 				throw new StalemateException();
 		}
 	}
-	
+
 	/**
 	 * Updates isWhiteToPlay and the board so that the move has been played.
 	 * Accounts for castling, en passant and promotion.
@@ -110,23 +113,43 @@ public class Position {
 		castlingRights.updateRightsForMove(move);
 		whiteToPlay = !whiteToPlay;
 	}
-	
+
 	public void undoMove(Move move) {
-		
+		// To be finished
 		whiteToPlay = !whiteToPlay;
+	}
+
+	/**
+	 * Returns an integer which is an evaluation of the position from the
+	 * perspective of the color who is to play (in centipawns). A centipawn is one
+	 * one-hundredth of a pawns value.
+	 * 
+	 * @return <code>int</code> that will be positive if the position is better for
+	 *         the color who is to play; negative otherwise
+	 */
+	public int evaluate() {
+		int positionEvaluation = board.getTotalPieceValues();
+		if (whiteToPlay)
+			return positionEvaluation;
+		else
+			return positionEvaluation * -1;
 	}
 
 	/**
 	 * Returns a new user move.
 	 * 
 	 * @param startSqr index of the square that the move start from
-	 * @param endSqr index of the square that the move ends on
+	 * @param endSqr   index of the square that the move ends on
 	 * @return a <code>Move<code> that the user is making
-	 * @throws CheckmateException if the king is checked and there are 0 legal moves
-	 * @throws StalemateException if the king is not checked and there are 0 legal moves
-	 * @throws IllegalMoveException if the user is attempting to make an illegal move
+	 * @throws CheckmateException   if the king is checked and there are 0 legal
+	 *                              moves
+	 * @throws StalemateException   if the king is not checked and there are 0 legal
+	 *                              moves
+	 * @throws IllegalMoveException if the user is attempting to make an illegal
+	 *                              move
 	 */
-	public Move constructUserMove(int startSqr, int endSqr) throws CheckmateException, StalemateException, IllegalMoveException{
+	public Move constructUserMove(int startSqr, int endSqr)
+			throws CheckmateException, StalemateException, IllegalMoveException {
 		if (!Board.isOnTheBoard(startSqr) || !Board.isOnTheBoard(endSqr))
 			throw new IllegalMoveException("This is an illegal move");
 		Move userMove = board.constructNonPawnMove(startSqr, endSqr);
@@ -138,16 +161,17 @@ public class Position {
 		}
 		return userMove;
 	}
-	
+
 	/**
-	 * Returns true if the move is legal for this position. Can test impossible
-	 * and pseudo legal moves.
+	 * Returns true if the move is legal for this position. Can test impossible and
+	 * pseudo legal moves.
 	 *
 	 * @param testMove the move to be tested
 	 * @return <code>true</code> if the move is legal for this position;
 	 *         <code>false</code> otherwise.
 	 * @throws CheckmateException if the king is checked and there are 0 legal moves
-	 * @throws StalemateException if the king is not checked and there are 0 legal moves
+	 * @throws StalemateException if the king is not checked and there are 0 legal
+	 *                            moves
 	 */
 	public boolean isLegalMove(Move testMove) throws CheckmateException, StalemateException {
 		LinkedList<Move> legalMoves = findLegalMoves();
@@ -169,11 +193,11 @@ public class Position {
 	public LinkedList<Move> findPseudoLegalMoves() {
 		LinkedList<Move> pseudoLegalMoves = new LinkedList<>();
 
-		for (int i = 0; i < board.getSqrs().length(); i++) {
+		for (int i = 0; i < Board.H1_SQR; i++) {
 			if (isMovableSqr(i)) {
 				continue;
 			}
-			pseudoLegalMoves.addAll(findPseudoLegalPieceMoves(getSqr(i), i));
+			pseudoLegalMoves.addAll(findPseudoLegalPieceMoves(board.getSqr(i), i));
 		}
 		return pseudoLegalMoves;
 	}
@@ -189,9 +213,9 @@ public class Position {
 	public LinkedList<Move> findPseudoLegalPieceMoves(char piece, int pieceSqr) {
 		switch (piece) {
 		case Chess.WH_PAWN:
+		case Chess.WH_PAWN_ENPASS:
 		case Chess.BK_PAWN:
 		case Chess.BK_PAWN_ENPASS:
-		case Chess.WH_PAWN_ENPASS:
 			return findPawnMoves(pieceSqr);
 
 		case Chess.WH_ROOK:
@@ -210,8 +234,8 @@ public class Position {
 		case Chess.BK_QUEEN:
 			return findQueenMoves(pieceSqr);
 
-		case Chess.BK_KING:
 		case Chess.WH_KING:
+		case Chess.BK_KING:
 			return findKingMoves(pieceSqr);
 
 		default:
@@ -255,7 +279,7 @@ public class Position {
 		kingMoves.addAll(findCastlingKingMoves(kingSqr));
 		return kingMoves;
 	}
-	
+
 	/**
 	 * Returns the standard (non castling) moves that the king can make.
 	 * 
@@ -275,20 +299,20 @@ public class Position {
 		}
 		return normalKingMoves;
 	}
-	
+
 	/**
 	 * Returns the castling moves that king can make.
 	 * 
 	 * @param kingSqr int index of the square the king is on
 	 * @return <code>LinkedList</code> the castling moves that the king can make
 	 */
-	private LinkedList<Move> findCastlingKingMoves(int kingSqr){
+	private LinkedList<Move> findCastlingKingMoves(int kingSqr) {
 		LinkedList<Move> castlingKingMoves = new LinkedList<>();
-		if (castlingRights.kingCanCastleKingside(kingSqr) && 
-				board.isEmptySqr(kingSqr + Chess.EAST_1) && board.isEmptySqr(kingSqr + Chess.EAST_2)) {
+		if (castlingRights.kingCanCastleKingside(kingSqr) && board.isEmptySqr(kingSqr + Chess.EAST_1)
+				&& board.isEmptySqr(kingSqr + Chess.EAST_2)) {
 			castlingKingMoves.add(board.constructNonPawnMove(kingSqr, kingSqr + Chess.EAST_2));
 		}
-		if (castlingRights.kingCanCastleQueenside(kingSqr) && board.isEmptySqr(kingSqr + Chess.WEST_1) 
+		if (castlingRights.kingCanCastleQueenside(kingSqr) && board.isEmptySqr(kingSqr + Chess.WEST_1)
 				&& board.isEmptySqr(kingSqr + Chess.WEST_2) && board.isEmptySqr(kingSqr + Chess.WEST_3)) {
 			castlingKingMoves.add(board.constructNonPawnMove(kingSqr, kingSqr + Chess.WEST_2));
 		}
@@ -332,7 +356,7 @@ public class Position {
 	/**
 	 * Returns the pseudo legal moves that the pawn can capture on (diagonally).
 	 *
-	 * @param pawnSqr    int index of the square the pawn is on
+	 * @param pawnSqr        int index of the square the pawn is on
 	 * @param movementVector int direction vector of the pawn's movement
 	 * @return <code>LinkedList</code> the moves where the pawn can capture
 	 */
@@ -344,8 +368,8 @@ public class Position {
 			if (Board.hasExceededAnEdge(testSqr, captureVector))
 				continue;
 			if ((board.isCapturableSqr(testSqr, whiteToPlay))
-					|| ((getSqr(pawnSqr + captureVector) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
-					|| ((getSqr(pawnSqr + captureVector) == Chess.WH_PAWN_ENPASS) && !whiteToPlay))
+					|| ((board.getSqr(pawnSqr + captureVector) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
+					|| ((board.getSqr(pawnSqr + captureVector) == Chess.WH_PAWN_ENPASS) && !whiteToPlay))
 				diagonalPawnMoves.addAll(board.constructPawnMove(pawnSqr, testSqr));
 		}
 		return diagonalPawnMoves;
@@ -355,7 +379,7 @@ public class Position {
 	 * Returns the pseudo legal moves that the pawn can make for the 2 squares ahead
 	 * of it.
 	 *
-	 * @param pawnSqr    int index of the square the pawn is on
+	 * @param pawnSqr        int index of the square the pawn is on
 	 * @param movementVector int direction vector of the pawn's movement
 	 * @return <code>LinkedList</code> the moves that the pawn can make for the 2
 	 *         squares ahead of it
@@ -385,7 +409,8 @@ public class Position {
 		int[] testVectors = { Chess.NORTH_1, Chess.EAST_1, Chess.SOUTH_1, Chess.WEST_1 };
 
 		for (int testVector : testVectors) {
-			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr, testVector); testSqr += testVector) {
+			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr,
+					testVector); testSqr += testVector) {
 				if (board.isEmptySqr(testSqr)) {
 					straightMoves.add(board.constructNonPawnMove(pieceSqr, testSqr));
 				} else if (board.isCapturableSqr(testSqr, whiteToPlay)) {
@@ -413,7 +438,8 @@ public class Position {
 		int[] testVectors = { Chess.NORTH_1_EAST_1, Chess.SOUTH_1_EAST_1, Chess.SOUTH_1_WEST_1, Chess.NORTH_1_WEST_1 };
 
 		for (int testVector : testVectors) {
-			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr, testVector); testSqr += testVector) {
+			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr,
+					testVector); testSqr += testVector) {
 				if (board.isEmptySqr(testSqr)) {
 					diagonalMoves.add(board.constructNonPawnMove(pieceSqr, testSqr));
 				} else if (board.isCapturableSqr(testSqr, whiteToPlay)) {
@@ -448,7 +474,8 @@ public class Position {
 	public boolean isSelfCheckMove(Move move) {
 		Position tempPosition = clone();
 		tempPosition.makeMove(move);
-		return tempPosition.isAttackedSqr(tempPosition.board.findKingSqr(!tempPosition.whiteToPlay), tempPosition.whiteToPlay)
+		return tempPosition.isAttackedSqr(tempPosition.board.findKingSqr(!tempPosition.whiteToPlay),
+				tempPosition.whiteToPlay)
 				|| (move.isCastling() && tempPosition.isAttackedSqr((move.getStartSqr() + move.getEndSqr()) / 2,
 						tempPosition.whiteToPlay));
 	}
@@ -464,9 +491,9 @@ public class Position {
 	 */
 	public boolean isAttackedSqr(int sqr, boolean whiteIsAttacking) {
 		Position tempPosition = clone();
-		if ((Chess.isWhitePiece(getSqr(sqr)) || (board.isEmptySqr(sqr))) && whiteIsAttacking) {
+		if ((Chess.isWhitePiece(board.getSqr(sqr)) || (board.isEmptySqr(sqr))) && whiteIsAttacking) {
 			tempPosition.board.setSqr(Chess.BK_QUEEN, sqr);
-		} else if ((Chess.isBlackPiece(getSqr(sqr)) || (board.isEmptySqr(sqr))) && !whiteIsAttacking) {
+		} else if ((Chess.isBlackPiece(board.getSqr(sqr)) || (board.isEmptySqr(sqr))) && !whiteIsAttacking) {
 			tempPosition.board.setSqr(Chess.WH_QUEEN, sqr);
 		}
 
@@ -480,29 +507,19 @@ public class Position {
 				return true;
 			}
 		}
-		return (getSqr(sqr) == Chess.WH_PAWN_ENPASS) || (getSqr(sqr) == Chess.BK_PAWN_ENPASS);
+		return (board.getSqr(sqr) == Chess.WH_PAWN_ENPASS) || (board.getSqr(sqr) == Chess.BK_PAWN_ENPASS);
 	}
 
 	/**
-	 * Returns true if this square can be moved to because it's empty or has
-	 * a capturable piece.
+	 * Returns true if this square can be moved to because it's empty or has a
+	 * capturable piece.
 	 * 
 	 * @param sqr int index of the square to test
-	 * @return <code>true</code> if this square is empty or has a piece that can be captured;
-	 *         <code>false</code> otherwise.
+	 * @return <code>true</code> if this square is empty or has a piece that can be
+	 *         captured; <code>false</code> otherwise.
 	 */
 	private boolean isMovableSqr(int sqr) {
 		return board.isEmptySqr(sqr) || board.isCapturableSqr(sqr, whiteToPlay);
-	}
-
-	/**
-	 * Returns the contents of a square.
-	 *
-	 * @param sqr int value the square
-	 * @return character contents of the square
-	 */
-	public char getSqr(int sqr) {
-		return board.getSqr(sqr);
 	}
 
 	/**
@@ -532,36 +549,8 @@ public class Position {
 		if (getClass() != obj.getClass())
 			return false;
 		Position other = (Position) obj;
-		return (whiteToPlay == other.whiteToPlay) && board.equals(other.board) && castlingRights.equals(other.castlingRights);
-	}
-
-	/**
-	 * @return <code>true</code> if white is to play; <code>false</code> otherwise.
-	 */
-	public boolean isWhiteToPlay() {
-		return whiteToPlay;
-	}
-
-	/**
-	 * @param whiteToPlay <code>boolean</code> whether to set white as the color to
-	 *                    play
-	 */
-	public void setWhiteToPlay(boolean whiteToPlay) {
-		this.whiteToPlay = whiteToPlay;
-	}
-
-	/**
-	 * @return the Board object
-	 */
-	public Board getBoard() {
-		return board;
-	}
-
-	/**
-	 * @param board the Board
-	 */
-	public void setBoard(Board board) {
-		this.board = board;
+		return (whiteToPlay == other.whiteToPlay) && board.equals(other.board)
+				&& castlingRights.equals(other.castlingRights);
 	}
 
 }
