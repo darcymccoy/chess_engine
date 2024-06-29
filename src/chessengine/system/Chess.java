@@ -31,7 +31,7 @@ public final class Chess {
 	 * Direction vector for north east 1 square from white's perspective of the
 	 * board.
 	 */
-	public static final int NORTH_1_EAST_1 = -7;
+	public static final int NORTH_EAST_1 = -7;
 
 	/** Direction vector for east 1 square from white's perspective of the board. */
 	public static final int EAST_1 = 1;
@@ -50,7 +50,7 @@ public final class Chess {
 	 * Direction vector for south east 1 square from white's perspective of the
 	 * board.
 	 */
-	public static final int SOUTH_1_EAST_1 = 9;
+	public static final int SOUTH_EAST_1 = 9;
 
 	/**
 	 * Direction vector for south 1 square from white's perspective of the board.
@@ -66,7 +66,7 @@ public final class Chess {
 	 * Direction vector for south west 1 square from white's perspective of the
 	 * board.
 	 */
-	public static final int SOUTH_1_WEST_1 = 7;
+	public static final int SOUTH_WEST_1 = 7;
 
 	/** Direction vector for west 1 square from white's perspective of the board. */
 	public static final int WEST_1 = -1;
@@ -90,18 +90,13 @@ public final class Chess {
 	 * Direction vector for north west 1 square from white's perspective of the
 	 * board.
 	 */
-	public static final int NORTH_1_WEST_1 = -9;
+	public static final int NORTH_WEST_1 = -9;
 
 	/** Character representation of an empty square. */
 	public static final char EMPTY = '-';
 
 	/** Character representation of the white pawn. */
 	public static final char WH_PAWN = 'P';
-
-	/**
-	 * Character representation of the white pawn that can be captured en passant.
-	 */
-	public static final char WH_PAWN_ENPASS = 'E';
 
 	/** Character representation of the white knight. */
 	public static final char WH_KNIGHT = 'N';
@@ -120,11 +115,6 @@ public final class Chess {
 
 	/** Character representation of the black pawn. */
 	public static final char BK_PAWN = 'p';
-
-	/**
-	 * Character representation of the black pawn that can be captured en passant.
-	 */
-	public static final char BK_PAWN_ENPASS = 'e';
 
 	/** Character representation of the black knight. */
 	public static final char BK_KNIGHT = 'n';
@@ -156,7 +146,7 @@ public final class Chess {
 	 */
 	public static boolean isWhitePiece(char piece) {
 		return piece == WH_KING || (piece == WH_ROOK) || (piece == WH_KNIGHT) || (piece == WH_BISHOP)
-				|| (piece == WH_QUEEN) || (piece == WH_PAWN) || (piece == WH_PAWN_ENPASS);
+				|| (piece == WH_QUEEN) || (piece == WH_PAWN);
 	}
 
 	/**
@@ -168,7 +158,7 @@ public final class Chess {
 	 */
 	public static boolean isBlackPiece(char piece) {
 		return piece == BK_KING || (piece == BK_ROOK) || (piece == BK_KNIGHT) || (piece == BK_BISHOP)
-				|| (piece == BK_QUEEN) || (piece == BK_PAWN) || (piece == BK_PAWN_ENPASS);
+				|| (piece == BK_QUEEN) || (piece == BK_PAWN);
 	}
 	
 	/**
@@ -179,7 +169,7 @@ public final class Chess {
 	 *         otherwise.
 	 */
 	public static boolean containsEast1Direction(int vector) {
-		return (vector == EAST_1) || (vector == NORTH_1_EAST_1) || (vector == SOUTH_1_EAST_1);
+		return (vector == EAST_1) || (vector == NORTH_EAST_1) || (vector == SOUTH_EAST_1);
 	}
 	
 	/**
@@ -190,7 +180,7 @@ public final class Chess {
 	 *         otherwise.
 	 */
 	public static boolean containsWest1Direction(int vector) {
-		return (vector == WEST_1) || (vector == NORTH_1_WEST_1) || (vector == SOUTH_1_WEST_1);
+		return (vector == WEST_1) || (vector == NORTH_WEST_1) || (vector == SOUTH_WEST_1);
 	}
 	
 	/**

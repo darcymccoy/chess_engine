@@ -100,20 +100,6 @@ public class Board {
 	}
 	
 	/**
-	 * Updates the board so that pawns that could have been captured en passant
-	 * become regular pawns.
-	 */
-	public void removeEnPassantCapturability() {
-		for (int i = 0; i < sqrs.length(); i++) {
-			if (getSqr(i) == Chess.WH_PAWN_ENPASS) {
-				setSqr(Chess.WH_PAWN, i);
-			} else if (getSqr(i) == Chess.BK_PAWN_ENPASS) {
-				setSqr(Chess.BK_PAWN, i);
-			}
-		}
-	}
-	
-	/**
 	 * Updates the board so that the rook portion of a castling move has been made.
 	 * 
 	 * @param move the <code>Move</code> to update for
@@ -161,12 +147,6 @@ public class Board {
 		char pieceToPut = move.getPiece();
 		if (move.isPromotion()) {
 			pieceToPut = move.getPromoteTo();
-		} else if (isAllowsEnPassant(move)) {
-			if (move.getPiece() == Chess.WH_PAWN) {
-				pieceToPut = Chess.WH_PAWN_ENPASS;
-			} else {
-				pieceToPut = Chess.BK_PAWN_ENPASS;
-			}
 		}
 		setSqr(pieceToPut, move.getEndSqr());
 	}
@@ -191,10 +171,8 @@ public class Board {
 	public int getPieceValue(char piece, int sqr) {
 		switch (piece) {
 		case Chess.WH_PAWN:
-		case Chess.WH_PAWN_ENPASS:
 			return Engine.PAWN_VALUES[sqr];
 		case Chess.BK_PAWN:
-		case Chess.BK_PAWN_ENPASS:
 			return Engine.PAWN_VALUES[Engine.PAWN_VALUES.length - 1 - sqr] * -1;
 		case Chess.WH_ROOK:
 			return Engine.ROOK_VALUES[sqr];

@@ -21,24 +21,29 @@ public class Position {
 	/** The castling rights of both colors */
 	private CastlingRights castlingRights;
 
+	/** The en passant capturability of pawns */
+	private EnPassantRights enPassantRights;
+	
 	/**
 	 * Default constructor for the standard starting chess position.
 	 */
 	public Position() {
-		this(true, new Board(), new CastlingRights());
+		this(true, new Board(), new CastlingRights(), new EnPassantRights());
 	}
 
 	/**
 	 * Parameterized constructor specifying the board and which color is to play.
 	 *
-	 * @param whiteToPlay    boolean whether white is currently to play
-	 * @param board          the Board of a chess position
-	 * @param castlingRights the CastlingRights of both colors
+	 * @param whiteToPlay     boolean whether white is currently to play
+	 * @param board           the Board of a chess position
+	 * @param castlingRights  the CastlingRights of both colors
+	 * @param enPassantRights EnPassantRights for en passant capturability of pawns
 	 */
-	public Position(boolean whiteToPlay, Board board, CastlingRights castlingRights) {
+	public Position(boolean whiteToPlay, Board board, CastlingRights castlingRights, EnPassantRights enPassantRights) {
 		this.whiteToPlay = whiteToPlay;
 		this.board = board;
 		this.castlingRights = castlingRights;
+		this.enPassantRights = enPassantRights;
 	}
 
 	/**
@@ -47,7 +52,7 @@ public class Position {
 	 * @param otherPosition the <code>Position</code> to copy
 	 */
 	public Position(Position otherPosition) {
-		this(otherPosition.whiteToPlay, otherPosition.board.clone(), otherPosition.castlingRights.clone());
+		this(otherPosition.whiteToPlay, otherPosition.board.clone(), otherPosition.castlingRights.clone(), otherPosition.enPassantRights.clone());
 	}
 
 	/**
@@ -107,9 +112,13 @@ public class Position {
 	public void makeMove(Move move) {
 		board.updateRookForCastlingMove(move);
 		board.updateCapturedPawnForEnPassantMove(move);
-		board.removeEnPassantCapturability();
 		board.updateStartSqrContents(move);
 		board.updateEndSqrContents(move);
+		if (board.isAllowsEnPassant(move)) {
+			enPassantRights.setCapturableSqr(move.getEndSqr());
+		} else {
+			enPassantRights.removeCapturability();
+		}
 		castlingRights.updateRightsForMove(move);
 		whiteToPlay = !whiteToPlay;
 	}
@@ -213,9 +222,7 @@ public class Position {
 	public LinkedList<Move> findPseudoLegalPieceMoves(char piece, int pieceSqr) {
 		switch (piece) {
 		case Chess.WH_PAWN:
-		case Chess.WH_PAWN_ENPASS:
 		case Chess.BK_PAWN:
-		case Chess.BK_PAWN_ENPASS:
 			return findPawnMoves(pieceSqr);
 
 		case Chess.WH_ROOK:
@@ -288,8 +295,8 @@ public class Position {
 	 */
 	private LinkedList<Move> findNormalKingMoves(int kingSqr) {
 		LinkedList<Move> normalKingMoves = new LinkedList<>();
-		int[] testVectors = { Chess.NORTH_1, Chess.NORTH_1_EAST_1, Chess.EAST_1, Chess.SOUTH_1_EAST_1, Chess.SOUTH_1,
-				Chess.SOUTH_1_WEST_1, Chess.WEST_1, Chess.NORTH_1_WEST_1 };
+		int[] testVectors = { Chess.NORTH_1, Chess.NORTH_EAST_1, Chess.EAST_1, Chess.SOUTH_EAST_1, Chess.SOUTH_1,
+				Chess.SOUTH_WEST_1, Chess.WEST_1, Chess.NORTH_WEST_1 };
 		for (int testVector : testVectors) {
 			int testSqr = kingSqr + testVector;
 			if (Board.hasExceededAnEdge(testSqr, testVector))
@@ -367,9 +374,8 @@ public class Position {
 			int testSqr = pawnSqr + captureVector + movementVector;
 			if (Board.hasExceededAnEdge(testSqr, captureVector))
 				continue;
-			if ((board.isCapturableSqr(testSqr, whiteToPlay))
-					|| ((board.getSqr(pawnSqr + captureVector) == Chess.BK_PAWN_ENPASS) && whiteToPlay)
-					|| ((board.getSqr(pawnSqr + captureVector) == Chess.WH_PAWN_ENPASS) && !whiteToPlay))
+			if (board.isCapturableSqr(testSqr, whiteToPlay)
+					|| enPassantRights.isCapturableSqr(pawnSqr + captureVector))
 				diagonalPawnMoves.addAll(board.constructPawnMove(pawnSqr, testSqr));
 		}
 		return diagonalPawnMoves;
@@ -435,7 +441,7 @@ public class Position {
 	 */
 	public LinkedList<Move> findDiagonalMoves(int pieceSqr) {
 		LinkedList<Move> diagonalMoves = new LinkedList<>();
-		int[] testVectors = { Chess.NORTH_1_EAST_1, Chess.SOUTH_1_EAST_1, Chess.SOUTH_1_WEST_1, Chess.NORTH_1_WEST_1 };
+		int[] testVectors = { Chess.NORTH_EAST_1, Chess.SOUTH_EAST_1, Chess.SOUTH_WEST_1, Chess.NORTH_WEST_1 };
 
 		for (int testVector : testVectors) {
 			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr,
@@ -507,7 +513,7 @@ public class Position {
 				return true;
 			}
 		}
-		return (board.getSqr(sqr) == Chess.WH_PAWN_ENPASS) || (board.getSqr(sqr) == Chess.BK_PAWN_ENPASS);
+		return enPassantRights.isCapturableSqr(sqr);
 	}
 
 	/**
@@ -550,7 +556,7 @@ public class Position {
 			return false;
 		Position other = (Position) obj;
 		return (whiteToPlay == other.whiteToPlay) && board.equals(other.board)
-				&& castlingRights.equals(other.castlingRights);
+				&& castlingRights.equals(other.castlingRights) && enPassantRights.equals(other.enPassantRights);
 	}
 
 }
