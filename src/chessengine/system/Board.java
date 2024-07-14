@@ -7,7 +7,6 @@ import java.util.NoSuchElementException;
  * Stores the information of a single chess board.
  * 
  * @author Darcy McCoy
- * @version %I%
  * @since 1.0
  */
 public class Board {
@@ -151,6 +150,12 @@ public class Board {
 		setSqr(pieceToPut, move.getEndSqr());
 	}
 	
+	/**
+	 * Returns the total value of all the pieces on the board in centipawns. Black pieces have 
+	 * negative value, so this number represents which color has more piece value.
+	 * 
+	 * @return sum of the board pieces' values
+	 */
 	public int getTotalPieceValues() {
 		int totalPieceValues = 0;
 		for (int i = 0; i < sqrs.length(); i++) {
@@ -239,27 +244,8 @@ public class Board {
 	 * @param endSqr int index of the square that the piece ends on
 	 * @return the new <code>Move</code>
 	 */
-	public Move constructNonPawnMove(int startSqr, int endSqr) {
+	public Move constructNonPromotionMove(int startSqr, int endSqr) {
 		return new Move(getSqr(startSqr), startSqr, endSqr, getSqr(endSqr));
-	}
-	
-	/**
-	 * Returns a new pawn <code>Move</code> in a <code>LinkedList</code>. The <code>LinkedList</code>
-	 * allows this function to return promotion moves as 4 distinct moves (one for each type of promotion).
-	 * 
-	 * @param startSqr int index of the square that the pawn originated from
-	 * @param endSqr int index of the square that the pawn ends on
-	 * @return the <code>LinkedList</code> with the new <code>Move</code> inside
-	 */
-	public LinkedList<Move> constructPawnMove(int startSqr, int endSqr) {
-		LinkedList<Move> moveInList = new LinkedList<>();
-		Move move = new Move(getSqr(startSqr), startSqr, endSqr, getSqr(endSqr));
-		if (move.isPromotion()) {
-			return constructPromotionMove(move);
-		} else {
-			moveInList.add(move);
-			return moveInList;
-		}
 	}
 	
 	/**
@@ -269,7 +255,7 @@ public class Board {
 	 * @param move the <code>Move</code> which is promotion
 	 * @return the <code>LinkedList</code> with the promotion moves
 	 */
-	private LinkedList<Move> constructPromotionMove(Move move){
+	public LinkedList<Move> constructPromotionMove(Move move){
 		LinkedList<Move> moveInList = new LinkedList<>();
 		char[] promoteTypes;
 		if (move.getPiece() == Chess.WH_PAWN) {

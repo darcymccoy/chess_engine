@@ -8,7 +8,6 @@ import java.util.LinkedList;
  * be passed a legal chess position to return accurate results.
  * 
  * @author Darcy McCoy
- * @version %I%
  * @since 1.0
  */
 public class Engine {

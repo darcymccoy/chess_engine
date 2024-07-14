@@ -6,7 +6,6 @@ package chessengine.system;
  * piece.
  * 
  * @author Darcy McCoy
- * @version %I%
  * @since 1.0
  */
 public final class Chess {

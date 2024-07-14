@@ -5,7 +5,6 @@ package chessengine.system;
  * legal moves can be stored as a <code>Move</code> object.
  * 
  * @author Darcy McCoy
- * @version %I%
  * @since 1.0
  */
 public class Move {
@@ -28,6 +27,9 @@ public class Move {
 	 */
 	private char promoteTo;
 
+	/** The Position that this move is being played from */
+	private Position originalPosition;
+	
 	/**
 	 * Class constructor specifying the piece, start and end squares of this move.
 	 * This can construct every move except for pawns promoting.
@@ -40,7 +42,7 @@ public class Move {
 	 * @param endSqrContents character at the square that the piece ends on
 	 */
 	public Move(char piece, int startSqr, int endSqr, char endSqrContents) {
-		this(piece, startSqr, endSqr, endSqrContents, Chess.EMPTY);
+		this(piece, startSqr, endSqr, endSqrContents, Chess.EMPTY, null);
 	}
 
 	/**
@@ -57,13 +59,15 @@ public class Move {
 	 *                       to. If this move isn't promotion, then this will be
 	 *                       <code>'-'</code>.
 	 * @param endSqrContents character at the square that the piece ends on
+	 * @param originalPosition the Position that this move is played from
 	 */
-	public Move(char piece, int startSqr, int endSqr, char endSqrContents, char promoteTo) {
+	public Move(char piece, int startSqr, int endSqr, char endSqrContents, char promoteTo, Position originalPosition) {
 		this.piece = piece;
 		this.startSqr = startSqr;
 		this.endSqr = endSqr;
 		this.promoteTo = promoteTo;
 		this.endSqrContents = endSqrContents;
+		this.originalPosition = originalPosition;
 	}
 
 	/**
@@ -72,7 +76,7 @@ public class Move {
 	 * @param otherMove the <code>Move</code> to copy
 	 */
 	public Move(Move otherMove) {
-		this(otherMove.piece, otherMove.startSqr, otherMove.endSqr, otherMove.endSqrContents, otherMove.promoteTo);
+		this(otherMove.piece, otherMove.startSqr, otherMove.endSqr, otherMove.endSqrContents, otherMove.promoteTo, otherMove.originalPosition);
 	}
 
 	/**
@@ -180,7 +184,7 @@ public class Move {
 			return false;
 		Move other = (Move) obj;
 		return (piece == other.piece) && (endSqr == other.endSqr) && (promoteTo == other.promoteTo)
-				&& (startSqr == other.startSqr) && (endSqrContents == other.endSqrContents);
+				&& (startSqr == other.startSqr) && (endSqrContents == other.endSqrContents) && (originalPosition.equals(other.originalPosition));
 	}
 
 	/**
@@ -237,6 +241,20 @@ public class Move {
 	 */
 	public void setPromoteTo(char promoteTo) {
 		this.promoteTo = promoteTo;
+	}
+
+	/**
+	 * @return the originalPosition
+	 */
+	public Position getOriginalPosition() {
+		return originalPosition;
+	}
+
+	/**
+	 * @param originalPosition the originalPosition to set
+	 */
+	public void setOriginalPosition(Position originalPosition) {
+		this.originalPosition = originalPosition;
 	}
 
 }

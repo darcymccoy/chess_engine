@@ -7,7 +7,6 @@ import java.util.LinkedList;
  * legal moves that can be made in that position.
  *
  * @author Darcy McCoy
- * @version %I%
  * @since 1.0
  */
 public class Position {
@@ -124,8 +123,11 @@ public class Position {
 	}
 
 	public void undoMove(Move move) {
-		// To be finished
-		whiteToPlay = !whiteToPlay;
+		Position beforeMove = move.getOriginalPosition();
+		whiteToPlay = beforeMove.whiteToPlay;
+		board = beforeMove.board;
+		castlingRights = beforeMove.castlingRights;
+		enPassantRights = beforeMove.enPassantRights;
 	}
 
 	/**
@@ -161,14 +163,36 @@ public class Position {
 			throws CheckmateException, StalemateException, IllegalMoveException {
 		if (!Board.isOnTheBoard(startSqr) || !Board.isOnTheBoard(endSqr))
 			throw new IllegalMoveException("This is an illegal move");
-		Move userMove = board.constructNonPawnMove(startSqr, endSqr);
+		Move userMove = board.constructNonPromotionMove(startSqr, endSqr);
 		if (userMove.isPromotion()) {
 			if (whiteToPlay)
-				userMove.setPromoteTo(Chess.WH_PAWN);
+				userMove.setPromoteTo(Chess.WH_QUEEN);
 			else
-				userMove.setPromoteTo(Chess.BK_PAWN);
+				userMove.setPromoteTo(Chess.BK_QUEEN);
 		}
 		return userMove;
+	}
+
+	/**
+	 * Returns a new move in a <code>LinkedList</code>. The <code>LinkedList</code>
+	 * allows this function to return promotion moves as 4 distinct moves (one for each type of promotion).
+	 * 
+	 * @param startSqr index of the square that the pawn originated from
+	 * @param endSqr index of the square that the pawn ends on
+	 * @return the <code>LinkedList</code> with the new <code>Move</code> inside
+	 */
+	public LinkedList<Move> constructMove(int startSqr, int endSqr) {
+		LinkedList<Move> moveInList = new LinkedList<>();
+		Move newMove = board.constructNonPromotionMove(startSqr, endSqr);
+		if (newMove.isPromotion()) {
+			moveInList.addAll(board.constructPromotionMove(newMove));
+		} else {
+			moveInList.add(newMove);
+		}
+		for(Move move : moveInList) {
+			move.setOriginalPosition(this);
+		}
+		return moveInList;
 	}
 
 	/**
@@ -268,7 +292,7 @@ public class Position {
 			if (Board.hasExceededAnEdge(testSqr, testVector))
 				continue;
 			else if (isMovableSqr(testSqr))
-				knightMoves.add(board.constructNonPawnMove(knightSqr, testSqr));
+				knightMoves.addAll(constructMove(knightSqr, testSqr));
 		}
 		return knightMoves;
 	}
@@ -302,7 +326,7 @@ public class Position {
 			if (Board.hasExceededAnEdge(testSqr, testVector))
 				continue;
 			else if (isMovableSqr(testSqr))
-				normalKingMoves.add(board.constructNonPawnMove(kingSqr, testSqr));
+				normalKingMoves.addAll(constructMove(kingSqr, testSqr));
 		}
 		return normalKingMoves;
 	}
@@ -317,11 +341,11 @@ public class Position {
 		LinkedList<Move> castlingKingMoves = new LinkedList<>();
 		if (castlingRights.kingCanCastleKingside(kingSqr) && board.isEmptySqr(kingSqr + Chess.EAST_1)
 				&& board.isEmptySqr(kingSqr + Chess.EAST_2)) {
-			castlingKingMoves.add(board.constructNonPawnMove(kingSqr, kingSqr + Chess.EAST_2));
+			castlingKingMoves.addAll(constructMove(kingSqr, kingSqr + Chess.EAST_2));
 		}
 		if (castlingRights.kingCanCastleQueenside(kingSqr) && board.isEmptySqr(kingSqr + Chess.WEST_1)
 				&& board.isEmptySqr(kingSqr + Chess.WEST_2) && board.isEmptySqr(kingSqr + Chess.WEST_3)) {
-			castlingKingMoves.add(board.constructNonPawnMove(kingSqr, kingSqr + Chess.WEST_2));
+			castlingKingMoves.addAll(constructMove(kingSqr, kingSqr + Chess.WEST_2));
 		}
 		return castlingKingMoves;
 	}
@@ -376,7 +400,7 @@ public class Position {
 				continue;
 			if (board.isCapturableSqr(testSqr, whiteToPlay)
 					|| enPassantRights.isCapturableSqr(pawnSqr + captureVector))
-				diagonalPawnMoves.addAll(board.constructPawnMove(pawnSqr, testSqr));
+				diagonalPawnMoves.addAll(constructMove(pawnSqr, testSqr));
 		}
 		return diagonalPawnMoves;
 	}
@@ -394,10 +418,10 @@ public class Position {
 		LinkedList<Move> straightPawnMoves = new LinkedList<>();
 		int testSqr = pawnSqr + movementVector;
 		if (board.isEmptySqr(testSqr))
-			straightPawnMoves.addAll(board.constructPawnMove(pawnSqr, testSqr));
+			straightPawnMoves.addAll(constructMove(pawnSqr, testSqr));
 		testSqr += movementVector;
 		if (board.pawnCanMove2SqrsAhead(pawnSqr, movementVector))
-			straightPawnMoves.addAll(board.constructPawnMove(pawnSqr, testSqr));
+			straightPawnMoves.addAll(constructMove(pawnSqr, testSqr));
 		return straightPawnMoves;
 	}
 
@@ -418,9 +442,9 @@ public class Position {
 			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr,
 					testVector); testSqr += testVector) {
 				if (board.isEmptySqr(testSqr)) {
-					straightMoves.add(board.constructNonPawnMove(pieceSqr, testSqr));
+					straightMoves.addAll(constructMove(pieceSqr, testSqr));
 				} else if (board.isCapturableSqr(testSqr, whiteToPlay)) {
-					straightMoves.add(board.constructNonPawnMove(pieceSqr, testSqr));
+					straightMoves.addAll(constructMove(pieceSqr, testSqr));
 					break;
 				} else {
 					break;
@@ -447,9 +471,9 @@ public class Position {
 			for (int testSqr = (pieceSqr + testVector); !Board.hasExceededAnEdge(testSqr,
 					testVector); testSqr += testVector) {
 				if (board.isEmptySqr(testSqr)) {
-					diagonalMoves.add(board.constructNonPawnMove(pieceSqr, testSqr));
+					diagonalMoves.addAll(constructMove(pieceSqr, testSqr));
 				} else if (board.isCapturableSqr(testSqr, whiteToPlay)) {
-					diagonalMoves.add(board.constructNonPawnMove(pieceSqr, testSqr));
+					diagonalMoves.addAll(constructMove(pieceSqr, testSqr));
 					break;
 				} else {
 					break;

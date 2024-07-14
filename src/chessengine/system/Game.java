@@ -8,7 +8,6 @@ import java.util.Scanner;
  * To play a game, this class must be extended and the <code>play()</code> method be implemented.
  * 
  * @author Darcy McCoy
- * @version %I%
  * @since 1.0
  */
 public abstract class Game {

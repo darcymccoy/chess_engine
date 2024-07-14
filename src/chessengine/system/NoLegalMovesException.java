@@ -7,7 +7,6 @@ import java.io.Serial;
  * to find the legal moves in a position is made when there are none.
  * 
  * @author Darcy McCoy
- * @version %I%
  * @since 1.0
  */
 public class NoLegalMovesException extends Exception {

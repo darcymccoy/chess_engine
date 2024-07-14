@@ -4,7 +4,6 @@ package chessengine.system;
  * A game of type: user playing against engine.
  * 
  * @author Darcy McCoy
- * @version %I%
  * @since 1.0
  */
 public class UserVsEngine extends Game {
